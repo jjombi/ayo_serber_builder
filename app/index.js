@@ -10,7 +10,6 @@ const router = express.Router();
 const port = 45509;
 const app = express()
 app.use(body_parser.json());
-app.use(cookieParser());
 app.use(cors({
   origin: "https://jjombi.github.io", // 접근 권한을 부여하는 도메인 "http://localhost:3000"
   credentials : true, // 응답 헤더에 Access-Control-Allow-Credentials 추가
