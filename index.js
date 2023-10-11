@@ -3,7 +3,7 @@ const cors = require('cors');
 const mysql = require('mysql');
 const body_parser = require("body-parser");
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const saltRounds = 5;
 
 const router = express.Router();
