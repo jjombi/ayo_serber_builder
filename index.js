@@ -12,7 +12,8 @@ const port = 45509;
 const app = express()
 app.use(body_parser.json());
 app.use(cors({
-  origin: "https://jjombi.github.io", // 접근 권한을 부여하는 도메인 "http://localhost:3000"
+  origin: "https://jjombi.github.io",
+  origin : "http://localhost:8080", // 접근 권한을 부여하는 도메인 "http://localhost:3000"
   credentials : true, // 응답 헤더에 Access-Control-Allow-Credentials 추가
   // optionsSuccessStatus: 200, // 응답 상태 200으로 설정
 }))
@@ -279,6 +280,7 @@ app.post('/queze_type',(req,res)=>{
 /*---------------------------------- --------------------------- */
 app.post('/login',cors({
   origin : 'https://jjombi.github.io',
+  origin : "http://localhost:8080",
   methods : ['POST'],
   allowedHeaders : {"Content-Type" : "application/json"},
   credentials : true,
@@ -557,6 +559,7 @@ app.post('/create_queze',(req,res)=> {
 ///////////////////////////////////////////////
 app.post('/vote',cors({
   origin : 'https://jjombi.github.io',
+  origin : "http://localhost:8080",
 
 }),(req,res)=>{
   
