@@ -222,9 +222,9 @@ app.post('/queze2',(req,res)=>{
 })
 app.post('/queze_type',(req,res)=>{
   console.log('queze_type 시작 됨');
-  const type = req.body.type; //학교,학급,반 
-  console.log(type);
-  const token = jwt.verify(req.body.token,'secretKey');
+  //const type = req.body.type; //학교,학급,반 
+  //console.log(type);
+  //const token = jwt.verify(req.body.token,'secretKey');
   // const school = token.school;
   // const class_ = token.class;
   // const number = token.number;
