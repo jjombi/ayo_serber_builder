@@ -225,54 +225,64 @@ app.post('/queze_type',(req,res)=>{
   const type = req.body.type; //학교,학급,반 
   console.log(type);
   const token = jwt.verify(req.body.token,'secretKey');
-  const school = token.school;
-  const class_ = token.class;
-  const number = token.number;
+  // const school = token.school;
+  // const class_ = token.class;
+  // const number = token.number;
 
-  if(type == '학교'){
-    `select * from queze where school = "병점중학교"`;
-
-    pool.getConnection()
-    .then((conn)=>{
-      console.log('connetcinn is done');
-      conn.query(`select * from queze where school = "${school}";`).then((result)=>{
-        console.log('11231423424',result);
-        return(res.send(result));
-      })
-      conn.end();
+  pool.getConnection()
+  .then((conn)=>{
+    console.log('connetcinn is done');
+    conn.query(`select * from queze where school = "${req.body.school}";`).then((result)=>{
+      console.log('11231423424',result);
+      return(res.send(result));
     })
+    conn.end();
+  })
 
-  }
-  else if(type == '학급'){
-    `select * from queze where school = "병점중학교" and class = 1`;
+  // if(type == '학교'){
+  //   `select * from queze where school = "병점중학교"`;
 
-    pool.getConnection()
-    .then((conn)=>{
-      console.log('connetcinn is done');
-      conn.query(`select * from queze where school = "${school}" and class = ${class_};`).then((result)=>{
-        console.log('11231423424',result);
-        return(res.send(result));
-      })
-      conn.end();
-    })
+  //   pool.getConnection()
+  //   .then((conn)=>{
+  //     console.log('connetcinn is done');
+  //     conn.query(`select * from queze where school = "${school}";`).then((result)=>{
+  //       console.log('11231423424',result);
+  //       return(res.send(result));
+  //     })
+  //     conn.end();
+  //   })
+
+  // }
+  // else if(type == '학급'){
+  //   `select * from queze where school = "병점중학교" and class = 1`;
+
+  //   pool.getConnection()
+  //   .then((conn)=>{
+  //     console.log('connetcinn is done');
+  //     conn.query(`select * from queze where school = "${school}" and class = ${class_};`).then((result)=>{
+  //       console.log('11231423424',result);
+  //       return(res.send(result));
+  //     })
+  //     conn.end();
+  //   })
 
    
-  }
-  else if(type == '반'){
-    `select * from queze where school = "병점중학교" and class = 1 and number = 1`;
+  // }
+  // else if(type == '반'){
+  //   `select * from queze where school = "병점중학교" and class = 1 and number = 1`;
 
-    pool.getConnection()
-    .then((conn)=>{
-      console.log('connetcinn is done');
-      conn.query(`select * from queze where school = "${school}" and class = ${class_} and number = ${number};`).then((result)=>{
-        console.log('11231423424',result);
-        return(res.send(result));
-      })
-      conn.end();
-    })
+  //   pool.getConnection()
+  //   .then((conn)=>{
+  //     console.log('connetcinn is done');
+  //     conn.query(`select * from queze where school = "${school}" and class = ${class_} and number = ${number};`).then((result)=>{
+  //       console.log('11231423424',result);
+  //       return(res.send(result));
+  //     })
+  //     conn.end();
+  //   })
 
     
-  }
+  // }
 })
 
 /*----------------------------로그인 --------------------------- */
