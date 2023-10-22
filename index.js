@@ -66,12 +66,12 @@ const pool = mariadb.createPool({
 /*---------------------------------- --------------------------- */
 
 /*------------퀴즈----------------------------------*/
-app.get('/queze',(req,res)=>{ // queze 페이지 에서 같은 학교친구들 문제 가져엄
+app.post('/queze',(req,res)=>{ // queze 페이지 에서 같은 학교친구들 문제 가져엄
 
   pool.getConnection()
   .then((conn)=>{
     console.log('connetcinn is done');
-    conn.query(`select value,school,class,number,roomName from queze where school='${req.body.school}';`).then((result)=>{
+    conn.query(`select roomName from queze where school='${req.body.school}';`).then((result)=>{
       console.log('reslut',result);
       return (
         res.send(result)
@@ -154,15 +154,38 @@ app.post('/api/take_name',(req,res)=>{
 
   
   })
+
+
+app.post('/queze_option',(req,res)=>{//************************************************************************************************************ */
+  console.log('queze reslut start ');
+  const sequence = req.body.sequence;// ex : date desc, likes desc, date asc.. 
+  const school_name = req.body.school_name;
+  console.log('sequence',sequence,'school name ',school_name);
+  pool.getConnection()
+  .then((conn)=>{
+    console.log('connetcinn is done');
+    conn.query(`select roomName from queze where school='${school_name}' order by ${sequence} limit 20;`).then((result)=>{
+      console.log('ressss',result);
+      if(result.length === 0){
+        console.log('result is 0');
+        return (res.send('없음'));
+      }
+      else{
+        console.log('result is not null');
+        return (res.send(result));
+      }
+    })
+    conn.end();
+  })
+})
 app.post('/Q_queze_value',(req,res)=>{//************************************************************************************************************ */
   console.log('queze reslut start ');
-
   const roomName = req.body.roomName;
   console.log(roomName);
   pool.getConnection()
   .then((conn)=>{
     console.log('connetcinn is done');
-    conn.query(`select value from queze where roomName='${roomName}';`).then((result)=>{
+    conn.query(`select * from queze where roomName='${roomName}'`).then((result)=>{
       console.log(result);
       if(result.length === 0){
         console.log('result is 0');
@@ -200,11 +223,57 @@ app.post('/queze_result',(req,res)=>{//*****************************************
 
 })
 
+app.post('/queze_popularity',(req,res)=>{
+  const roomName = req.body.roomName;
+  console.log(roomName);
+  pool.getConnection()
+  .then((conn)=>{
+    console.log('connetcinn is done');
+    conn.query(`select likes,date,maker from queze where roomName = '${roomName}'`).then((result)=>{
+      console.log(result);
+      if(result.length === 0){
+        console.log('result is 0');
+        return (res.send('없음'));
+      }
+      else{
+        console.log('result is not null');
+        return (res.send(result));
+      }
+    })
+    conn.end();
+  })
+})
+
+
+app.post('/up_queze_popularity',(req,res)=>{
+  const roomName = req.body.roomName;
+  console.log(roomName);
+  pool.getConnection()
+  .then((conn)=>{
+    console.log('connetcinn is done');
+    conn.query(`select likes from queze where roomName = '${roomName}'`).then((result)=>{
+      if(result.length === 0){
+        conn.query(`update queze set likes = 1 where roomName='${roomName}'`).then((result)=>{
+          return(res.send('likes 값을 1로 바꿈'));
+        })
+      }else{
+        const likes_value = result[0].likes + 1;
+        conn.query(`update queze set likes = ${likes_value} where roomName='${roomName}'`).then((result)=>{
+          return(res.send('likes 값을 1증가'));
+        })
+      }
+    })
+    
+    conn.end();
+  })
+})
 //----------------------투표 시스템------------------------------- ******************************************************************
 app.post('/create_queze',(req,res)=> {
   console.log(req.body);
   const school = req.body.school;
   const queze = req.body.queze;
+  const date = req.body.date;
+  const maker = req.body.maker;
   pool.getConnection()
   .then((conn)=>{
     console.log('connetcinn is done');
@@ -227,7 +296,7 @@ app.post('/create_queze',(req,res)=> {
         }
         const roomName = roomName_arr.join('');
         console.log('roomName : ',roomName);
-        conn.query(`insert into queze (value,school,roomName) value('${queze}','${school}','${roomName}');`)
+        conn.query(`insert into queze (value,school,roomName,date,likes,maker) value('${queze}','${school}','${roomName}',${date},1,'${maker}');`)
         conn.query(`create table ${roomName} (id varchar(40), value int, class int, number int);`)
         return(
           res.send(roomName)
