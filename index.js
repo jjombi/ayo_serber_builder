@@ -42,22 +42,22 @@ const pool = mariadb.createPool({
 // /*--------------------------------------------------------------*/
 
 
-// app.get('/',(req,res)=>{
-//   res.send('성공');
-//   // asyncFunction();
-//   pool.getConnection()
-//   .then((conn)=>{
-//     console.log('connetcinn is done');
-//     conn.query(`show tables;`).then((result)=>{
-//       console.log('reslut',result);
-//       conn.query('show tables').then((result)=>{
-//         console.log('reslut2',result);
-//       })
-//     })
-//     conn.end();
-//   })
+app.get('/',(req,res)=>{
+  res.send('성공');
+  // asyncFunction();
+  pool.getConnection()
+  .then((conn)=>{
+    console.log('connetcinn is done');
+    conn.query(`show tables;`).then((result)=>{
+      console.log('reslut',result);
+      conn.query('show tables').then((result)=>{
+        console.log('reslut2',result);
+      })
+    })
+    conn.end();
+  })
 
-// })
+})
 
 
 
@@ -269,7 +269,7 @@ app.post('/up_queze_popularity',(req,res)=>{
 })
 //----------------------투표 시스템------------------------------- ******************************************************************
 app.post('/create_queze',(req,res)=> {
-  console.log(req.body);
+  console.log('create queze',req.body);
   const school = req.body.school;
   const queze = req.body.queze;
   const date = req.body.date;
