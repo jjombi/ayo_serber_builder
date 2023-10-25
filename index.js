@@ -305,7 +305,7 @@ app.post('/create_queze',(req,res)=> {
         )
       }
       else {
-        conn.query(`insert into queze (value,school,roomName,date,maker) value('${queze}','${school}','A',${date},'${maker}')`);
+        conn.query(`insert into queze (value,school,roomName,date,maker) value('${queze}','${school}','A',${date},'${maker}');`);
         conn.query(`create table A (id varchar(40), value int, class int, number int);`);
         return(
           res.send('A')
