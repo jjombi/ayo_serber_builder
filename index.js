@@ -592,6 +592,7 @@ app.post('/upload_img',(req,res)=>{
 // existence 존재 
 //-------------------------------------------------------------------
 app.get('/main_select_queze',(req,res)=>{ //main 페이지 대표 사진과 제목 보냄 queze desc 변경 후 수정 /할 일
+  console.log('sssssssssssdirrnam',__dirname,);
   pool_main.getConnection().then((conn)=>{
     conn.query(`select * from queze where existence = 1`).then((result)=>{
       console.log(result);
