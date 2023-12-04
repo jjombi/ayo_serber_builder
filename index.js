@@ -475,7 +475,7 @@ const cb_ = (roomName_arr,cb) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
-  cb(null, `uploads/${roomName_arr}`);
+  cb(null, __dirname+`uploads/${roomName_arr}`);
 }
 const upload_query = async (req, roomName_arr) =>{
   console.log('upload query 시작 req : ',req.body,roomName_arr);
@@ -597,7 +597,7 @@ app.get('/main_select_queze',(req,res)=>{ //main 페이지 대표 사진과 제�
       console.log(result);
       let base64_img_arr = [];
       result.map(e=>{
-        base64_img_arr = [...base64_img_arr,(fs.readFileSync(`uploads/${e.roomName}/${e.title_img_name}`).toString('base64'))];
+        base64_img_arr = [...base64_img_arr,(fs.readFileSync(__dirname +`uploads/${e.roomName}/${e.title_img_name}`).toString('base64'))];
       });
       console.log('a-typr',base64_img_arr);
       return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });
@@ -613,7 +613,7 @@ app.post('/main_a_queze',(req,res)=>{
       console.log('select from result whee roomName=',roomName,result);
       result.map(e=>{
         text_arr = [...text_arr,e.text];
-        img_arr = [...img_arr,(fs.readFileSync(`uploads/${roomName}/`+e.originalname).toString('base64'))];
+        img_arr = [...img_arr,(fs.readFileSync(__dirname+`uploads/${roomName}/`+e.originalname).toString('base64'))];
       })
     }).then(()=>{
       console.log('text_arr',text_arr,img_arr); // text arr [queze_length,text1,text2,text3]
@@ -711,7 +711,7 @@ app.post('/main_result',(req,res)=>{
       console.log(result);
       const send_ = result.map(e=>{
         return {
-          img : fs.readFileSync(`uploads/${roomName}/${e.originalname}`).toString('base64'),
+          img : fs.readFileSync(__dirname+`uploads/${roomName}/${e.originalname}`).toString('base64'),
           text : e.text,
           value : e.value
         }
