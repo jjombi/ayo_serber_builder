@@ -13,6 +13,7 @@ const fileUpload = require('express-fileupload');
 const { v4: uuidv4 } = require('uuid');
 
 const port = 45509;
+const url = 'https://ay0.netlify.app';
 const app = express()
 app.use(body_parser.json());
 app.use(
@@ -583,7 +584,7 @@ app.post('/upload_img',(req,res)=>{
     // }
   
     // res.send('seccess');
-    res.redirect('http://localhost:8080/ayoworldrank');
+    res.redirect(url+'/ayoworldrank');
     
     }
     
@@ -671,7 +672,7 @@ app.post('/main_a_queze_plus_comments',(req,res)=>{
         return res.send('success');
       })
     }
-    res.redirect(`http://localhost:8080/result?roomName=${roomName}`);
+    res.redirect(url+`/result?roomName=${roomName}`);
   })
 })
 app.post('/result_plus',(req,res)=>{
