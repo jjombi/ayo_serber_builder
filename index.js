@@ -493,7 +493,7 @@ const upload_query = async (req, roomName_arr) =>{
             conn.query(`insert into result (text, value, originalname, roomName) value('${req.body.text[i]}', 0, 'img${i}.jpg','${roomName_arr}')`);
           }
         }
-        conn.query(`create table ${roomName_arr}_comments (value varchar(40), parent_room_num int, likes int, type tinyint);`)
+        // conn.query(`create table ${roomName_arr}_comments (value varchar(40), parent_room_num int, likes int, type tinyint);`)
       }
     })  
   })  
