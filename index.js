@@ -50,20 +50,20 @@ const pool = mariadb.createPool({
   port: 32325,
   database: 'ayodb',
 });
-// const pool_main = mariadb.createPool({  // main2 db
-//   host   : 'svc.sel5.cloudtype.app',
-//   user   : 'root', 
-//   password: 'sis01066745950@', 
-//   port: 32325,
-//   database: 'ayo_main',
-// });
-const pool_main = mariadb.createPool({  // main2 db local
-  host   : 'localhost',
+const pool_main = mariadb.createPool({  // main2 db
+  host   : 'svc.sel5.cloudtype.app',
   user   : 'root', 
   password: 'sis01066745950@', 
-  port: 3306,
-  database: 'ayo_main_local',
+  port: 32325,
+  database: 'ayo_main',
 });
+// const pool_main = mariadb.createPool({  // main2 db local
+//   host   : 'localhost',
+//   user   : 'root', 
+//   password: 'sis01066745950@', 
+//   port: 3306,
+//   database: 'ayo_main_local',
+// });
 
 // /*--------------------------------------------------------------*/
 
