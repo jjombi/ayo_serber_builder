@@ -598,8 +598,8 @@ app.get('/main_select_queze',async (req,res)=>{ //main 페이지 대표 사진�
           console.log('base64 img arr after map func',base64_img_arr);
           return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });    
         })
-      }  
-      return res.send(null); 
+      }else return res.send(null); 
+
     })
   })
 })
@@ -716,18 +716,27 @@ app.post('/result_plus',(req,res)=>{
 })
 app.post('/main_result',(req,res)=>{
   const roomName = req.body.roomName;
-  
+  let send_ = [];
   pool_main.getConnection().then((conn)=>{
     conn.query(`select * from result where roomName = '${roomName}' order by value desc;`).then(result=>{
       console.log(result);
-      const send_ = result.map(e=>{
-        return {
-          img : fs.readFileSync(__dirname+`/uploads/${roomName}/${e.originalname}`).toString('base64'),
+      Promise.all(result.map(async(e)=>{
+        const  command = new GetObjectCommand({
+          Bucket: "dlworjs",
+          Key: e.originalname,
+        });
+        const response = await client.send(command);
+        const response_body = await response.Body.transformToByteArray();
+        const img_src = (Buffer.from(response_body).toString('base64'));
+        send_ = [...send_,
+          {
+          img : img_src,
           text : e.text,
           value : e.value
-        }
+          }]
+      })).then(()=>{
+        return res.send(send_);
       })
-      return res.send(send_);
     })
   })
 })
