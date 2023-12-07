@@ -578,29 +578,27 @@ app.get('/main_select_queze',async (req,res)=>{ //main 페이지 대표 사진�
   pool_main.getConnection().then((conn)=>{
     conn.query(`select * from queze where existence = 1`).then(async(result)=>{
       console.log(result);
-      await Promise.all(
-        result.map(async(e)=>{
-          console.log(e.roomName+"/"+e.title_img_name);
-          const  command = new GetObjectCommand({
-            Bucket: "dlworjs",
-            Key: e.roomName+"/"+e.title_img_name,
-          });
-          const response = await client.send(command);
-          const response_body = await response.Body.transformToByteArray();
-          const img_src = (Buffer.from(response_body).toString('base64'));
-          console.log('img_src',img_src);
-          base64_img_arr = [...base64_img_arr,img_src];
-          console.log('base64 img arr in result.map',base64_img_arr);
-
+      if(result.length !== 0){
+        await Promise.all(
+          result.map(async(e)=>{
+            console.log(e.roomName+"/"+e.title_img_name);
+            const  command = new GetObjectCommand({
+              Bucket: "dlworjs",
+              Key: e.roomName+"/"+e.title_img_name,
+            });
+            const response = await client.send(command);
+            const response_body = await response.Body.transformToByteArray();
+            const img_src = (Buffer.from(response_body).toString('base64'));
+            console.log('img_src',img_src);
+            base64_img_arr = [...base64_img_arr,img_src];
+            console.log('base64 img arr in result.map',base64_img_arr);
+  
+          })
+        ).then(()=>{
+          console.log('base64 img arr after map func',base64_img_arr);
+          return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });    
         })
-      ).then(()=>{
-        console.log('base64 img arr after map func',base64_img_arr);
-        return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });    
-      })    
-      // promise.then(()=>{
-      //   console.log('base64 img arr after map func',base64_img_arr);
-      //   return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });    
-      // })    
+      }   
     })
   })
 })
