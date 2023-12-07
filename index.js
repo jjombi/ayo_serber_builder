@@ -662,7 +662,7 @@ app.post('/main_a_queze_plus_comments',(req,res)=>{
     const value = req.body.value;
     if(type === 1){
       conn.query(`insert into comments (value,parentsKey,likes,type,roomName) value('${value}','${uuidv4()}',0,1,'${roomName}')`).then(()=>{
-        return res.status(201).redirect(url+`/result?roomName=${roomName}`); //url+`/result?roomName=${roomName}`
+        return res.send('success'); //url+`/result?roomName=${roomName}`
         
       })
     }
