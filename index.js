@@ -15,8 +15,8 @@ const { GetObjectCommand, S3Client } = require("@aws-sdk/client-s3");
 require('dotenv').config()
 
 const port = 45509;
-// const url = 'https://ay0.netlify.app';
-const url = 'http://localhost:8080';
+const url = 'https://ay0.netlify.app';
+// const url = 'http://localhost:8080';
 const app = express()
 app.use(body_parser.json());
 app.use(
