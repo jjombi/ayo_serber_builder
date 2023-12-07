@@ -11,9 +11,12 @@ const fs = require('fs');
 const { title } = require('process');
 const fileUpload = require('express-fileupload');
 const { v4: uuidv4 } = require('uuid');
+const { GetObjectCommand, S3Client } = require("@aws-sdk/client-s3");
+require('dotenv').config()
 
 const port = 45509;
-const url = 'https://ay0.netlify.app';
+// const url = 'https://ay0.netlify.app';
+const url = 'http://localhost:8080';
 const app = express()
 app.use(body_parser.json());
 app.use(
@@ -23,7 +26,7 @@ app.use(
 );
 app.use(fileUpload());
 app.use(cors({
-  // origin : "https://ay0.netlify.app",
+  origin : "https://ay0.netlify.app",
   // origin: "https://jjombi.github.io",
   origin : "http://localhost:8080", // 접근 권한을 부여하는 도메인 "http://localhost:3000"
   credentials : true, // 응답 헤더에 Access-Control-Allow-Credentials 추가
@@ -31,26 +34,34 @@ app.use(cors({
   methods : '*',
 }))
 
+const client = new S3Client(
+  {
+    region: 'ap-northeast-2',
+    credentials : {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    }
+  });
 
 
 
 
 
 // /*-------------------------mysql 연결--------------------------*/
-const connection = mysql.createConnection({
-  host     : 'localhost',//svc.sel5.cloudtype.app:32325
-  user     : 'root',
-  password : 'sis01066745950@',
-  database : 'ayodb'
-});
+// const connection = mysql.createConnection({
+//   host     : 'localhost',//svc.sel5.cloudtype.app:32325
+//   user     : 'root',
+//   password : 'sis01066745950@',
+//   database : 'ayodb'
+// });
 // const pool = mariadb.createPool({host: 'svc.sel5.cloudtype.app:32325', user: 'root', connectionLimit: 5});
-const pool = mariadb.createPool({ 
-  host   : 'svc.sel5.cloudtype.app',
-  user: 'root', 
-  password: 'sis01066745950@', 
-  port: 32325,
-  database: 'ayodb',
-});
+// const pool = mariadb.createPool({ 
+//   host   : 'svc.sel5.cloudtype.app',
+//   user: 'root', 
+//   password: 'sis01066745950@', 
+//   port: 32325,
+//   database: 'ayodb',
+// });
 const pool_main = mariadb.createPool({  // main2 db
   host   : 'svc.sel5.cloudtype.app',
   user   : 'root', 
@@ -482,7 +493,7 @@ const upload_query = async (req, roomName_arr) =>{
  
   pool_main.getConnection().then((conn)=>{
     conn.query(`select * from queze where roomName = '${roomName_arr}';`).then(result=>{ // 수정 필요
-      console.log('444 result',result,req);
+      // console.log('444 result',result,req);
       if(result.length === 0){
         conn.query(`insert into queze (roomName, existence, title, title_img_name) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg');`);
         if(typeof(req.body.img_name) === 'string'){
@@ -506,120 +517,120 @@ const upload = multer({ storage : storage }).array('img');
 app.use(body_parser.urlencoded({ extended: true }));
 
 app.post('/upload_img',(req,res)=>{
-  console.log('upload img 시작',req.body,req.files,req.file); //req.files.img[0].name or data(type BUffer)
+  console.log('upload img 시작',req.body,req.file); //req.files.img[0].name or data(type BUffer)
 
+  pool_main.getConnection()
+  .then((conn)=>{
+    conn.query(`select roomName from queze ORDER BY roomName DESC LIMIT 1;`).then((result)=>{
+      if(result.length != 0){
+        let roomName_arr = Array.from(result[0].roomName);// ['A','B','C']; 
+        if(roomName_arr[roomName_arr.length - 1].charCodeAt() >= 90)
+        { 
+          roomName_arr.push(String.fromCharCode(65));
+          upload_query(req,roomName_arr);
+        }
+        else
+        { 
+          roomName_arr[roomName_arr.length - 1] =  String.fromCharCode(roomName_arr[roomName_arr.length - 1].charCodeAt() + 1);
+          upload_query(req,roomName_arr);     
 
-  // if(!callbackExecuted) {
-    if(req.files !== null){
-      pool_main.getConnection()
-      .then((conn)=>{
-        conn.query(`select roomName from queze ORDER BY roomName DESC LIMIT 1;`).then((result)=>{
-          if(result.length != 0){
-            let roomName_arr = Array.from(result[0].roomName);// ['A','B','C']; 
-              if(roomName_arr[roomName_arr.length - 1].charCodeAt() >= 90)
-            { 
-              roomName_arr.push(String.fromCharCode(65));
-              const dir = __dirname + `/uploads/${roomName_arr}`;
-              if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, { recursive: true });
-              }
-              if(req.files.img.length === undefined) { // img is one
-                req.files.img.mv(dir+`/img0`+'.jpg');
-                upload_query(req,roomName_arr)
+        }
+      }
+      else {
+        upload_query(req,'A');     
+      }     
+    })
+  })
   
-              }
-              else {
-                let i = 0;
-                req.files.img.map(e=>{ // img가 하나 일때 예외 수정
-                  e.mv(dir+`/img`+i+'.jpg');
-                  i++; // 'img'+i
-                })
-                upload_query(req,roomName_arr)
-              }
-            }
-            else
-            { 
-              roomName_arr[roomName_arr.length - 1] =  String.fromCharCode(roomName_arr[roomName_arr.length - 1].charCodeAt() + 1);
-              const dir = __dirname + `/uploads/${roomName_arr}`;
-              console.log(typeof(req.files.img),req.files.img.length);
-              if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, { recursive: true });
-              }
-              if(req.files.img.length === undefined) { // img is one
-                req.files.img.mv(dir+`/img0`+'.jpg');              
-                upload_query(req,roomName_arr)
+  return res.redirect(url+'/ayoworldrank');
+  // return res.send('success');
   
-              }
-              else {
-                let i = 0;
-                req.files.img.map(e=>{ // img가 하나 일때 예외 수정
-                  e.mv(dir+`/img`+i+'.jpg'); 
-                  i++; // 'img'+i
-                })
-                upload_query(req,roomName_arr)
-              }
-            }
-          }
-          else {
-            const dir = __dirname + `/uploads/A`;
-            if (!fs.existsSync(dir)) {
-              fs.mkdirSync(dir, { recursive: true });
-            }
-            if(req.files.img.length === undefined) { // img is one
-              req.files.img.mv(dir+`/img0`+'.jpg');
-              upload_query(req,'A');
-            }
-            else {
-              let i = 0;
-              req.files.img.map(e=>{ // img가 하나 일때 예외 수정
-                e.mv(dir+`/img`+i+'.jpg');
-                i++; // 'img'+i
-              })
-              upload_query(req,'A');
-            }      
-          }     
-        })
-      })
-      callbackExecuted = true;
-    // }
-  
-    // res.send('seccess');
-    res.redirect(url+'/ayoworldrank');
-    
-    }
     
 })
 // existence 존재 
-//-------------------------------------------------------------------
-app.get('/main_select_queze',(req,res)=>{ //main 페이지 대표 사진과 제목 보냄 queze desc 변경 후 수정 /할 일
-  console.log('sssssssssssdirrnam',__dirname,);
+app.get('/selectroomname',(req,res)=>{
   pool_main.getConnection().then((conn)=>{
-    conn.query(`select * from queze where existence = 1`).then((result)=>{
+    let roomName;
+    conn.query(`select roomName from queze ORDER BY roomName DESC LIMIT 1;`).then((result)=>{
+      if(result.length != 0){
+        let roomName_arr = Array.from(result[0].roomName);// ['A','B','C']; 
+        if(roomName_arr[roomName_arr.length - 1].charCodeAt() >= 90)
+        { 
+          roomName_arr.push(String.fromCharCode(65));
+          roomName = roomName_arr.join('');
+        }
+        else
+        { 
+          roomName_arr[roomName_arr.length - 1] =  String.fromCharCode(roomName_arr[roomName_arr.length - 1].charCodeAt() + 1);
+          roomName = roomName_arr.join('');
+        }
+      }else roomName = 'A';
+      console.log('roomName',roomName);   
+      return res.send(roomName);  
+    })  
+  })
+})
+//-------------------------------------------------------------------
+app.get('/main_select_queze',async (req,res)=>{ //main 페이지 대표 사진과 제목 보냄 queze desc 변경 후 수정 /할 일
+  console.log('main_select_queze 실행 됨');
+  let base64_img_arr = [];
+
+  pool_main.getConnection().then((conn)=>{
+    conn.query(`select * from queze where existence = 1`).then(async(result)=>{
       console.log(result);
-      let base64_img_arr = [];
-      result.map(e=>{
-        base64_img_arr = [...base64_img_arr,(fs.readFileSync(__dirname +`/uploads/${e.roomName}/${e.title_img_name}`).toString('base64'))];
-      });
-      console.log('a-typr',base64_img_arr);
-      return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });
+      await Promise.all(
+        result.map(async(e)=>{
+          console.log(e.roomName+"/"+e.title_img_name);
+          const  command = new GetObjectCommand({
+            Bucket: "dlworjs",
+            Key: e.roomName+"/"+e.title_img_name,
+          });
+          const response = await client.send(command);
+          const response_body = await response.Body.transformToByteArray();
+          const img_src = (Buffer.from(response_body).toString('base64'));
+          console.log('img_src',img_src);
+          base64_img_arr = [...base64_img_arr,img_src];
+          console.log('base64 img arr in result.map',base64_img_arr);
+
+        })
+      ).then(()=>{
+        console.log('base64 img arr after map func',base64_img_arr);
+        return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });    
+      })    
+      // promise.then(()=>{
+      //   console.log('base64 img arr after map func',base64_img_arr);
+      //   return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });    
+      // })    
     })
   })
 })
+
+
+
 app.post('/main_a_queze',(req,res)=>{
   const roomName = req.body.roomName;
   let   text_arr = [];
   let   img_arr  = [];
-  pool_main.getConnection().then((conn)=>{
+  pool_main.getConnection().then(async(conn)=>{
     conn.query(`select * from result where roomName='${roomName}'`).then(result=>{
       console.log('select from result whee roomName=',roomName,result);
-      result.map(e=>{
+      let i = 0;
+      Promise.all(result.map(async(e)=>{
+        const  command = new GetObjectCommand({
+          Bucket: "dlworjs",
+          Key: roomName+"/img"+i+'.jpg',
+        });
+        const response = await client.send(command);
+        const response_body = await response.Body.transformToByteArray();
+        const img_src = (Buffer.from(response_body).toString('base64'));
+
         text_arr = [...text_arr,e.text];
-        img_arr = [...img_arr,(fs.readFileSync(__dirname+`/uploads/${roomName}/`+e.originalname).toString('base64'))];
-      })
-    }).then(()=>{
-      console.log('text_arr',text_arr,img_arr); // text arr [queze_length,text1,text2,text3]
-      return res.send({text : text_arr, img : img_arr});
-    })  
+        img_arr = [...img_arr,img_src];
+      })).then(()=>{
+        console.log('text_arr',text_arr,img_arr); // text arr [queze_length,text1,text2,text3]
+        return res.send({text : text_arr, img : img_arr});
+      })  
+    })
   })  
 
 
