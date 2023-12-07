@@ -598,7 +598,8 @@ app.get('/main_select_queze',async (req,res)=>{ //main 페이지 대표 사진�
           console.log('base64 img arr after map func',base64_img_arr);
           return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });    
         })
-      }   
+      }  
+      return res.send(null); 
     })
   })
 })
