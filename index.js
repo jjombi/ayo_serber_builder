@@ -615,6 +615,7 @@ app.post('/main_a_queze',(req,res)=>{
       console.log('select from result whee roomName=',roomName,result);
       let i = 0;
       Promise.all(result.map(async(e)=>{
+        console.log('result 이미지 경로',roomName+"/img"+i+'.jpg');
         const  command = new GetObjectCommand({
           Bucket: "dlworjs",
           Key: roomName+"/img"+i+'.jpg',
@@ -637,8 +638,8 @@ app.post('/main_a_queze',(req,res)=>{
 // comments desc : create table $roomName_comments (value varchar(40), parent_room_num int, likes int, type tinyint); parent_room_num 1,2,3 type : 0=자식, 1=부모
 app.post('/main_a_queze_comments',(req,res)=>{ // url 파라미터로 roomName 가져오게 바꾸기
   pool_main.getConnection().then((conn)=>{
-    conn.query(`select * from comments where type = 1`).then((result)=>{
-      console.log('result',result);
+    conn.query(`select * from comments where type = 1 && roomName = '${req.body.roomName}'`).then((result)=>{
+      console.log('queze 안에 comments all',result);
       return res.send(result);
     })
     
@@ -660,30 +661,14 @@ app.post('/main_a_queze_plus_comments',(req,res)=>{
     const type = req.body.type;
     const value = req.body.value;
     if(type === 1){
-      conn.query(`insert into comments (value,parentsKey,likes,type) value('${value}','${uuidv4()}',0,1)`);
-      // conn.query(`select parent_room_num from ${roomName}_comments where type = 1 order by parent_room_num desc;`).then(result=>{
-      //   console.log('댓글 type 1dml room_num 가져온 걀과 result : ',result);
-      //   if(result.length === 0){
-      //     conn.query(`insert into ${roomName}_comments (value, parent_room_num, likes, type) value('${value}',0,0,1)`).then((result)=>{
-      //       return res.send('success');
-      //     })
-      //   }
-      //   else {
-      //     const new_parent_room_num = result[0].parent_room_num + 1;
-      //     console.log('new_parent_room_num',new_parent_room_num);
-      //     conn.query(`insert into ${roomName}_comments (value, parent_room_num, likes, type) value('${value}',${new_parent_room_num},0,1)`).then((result)=>{
-      //       return res.send('success');
-      //     })
-      //   }
-      // })
-
-    }
-    else{
-      conn.query(`insert into ${roomName}_comments (value, parent_room_num, likes, type) value('${value}',${type},0,0)`).then((result)=>{
-        return res.send('success');
+      conn.query(`insert into comments (value,parentsKey,likes,type,roomName) value('${value}','${uuidv4()}',0,1,'${roomName}')`).then(()=>{
+        return res.status(201).redirect(url+`/result?roomName=${roomName}`); //url+`/result?roomName=${roomName}`
+        
       })
     }
-    return res.redirect(url+`/result?roomName=${roomName}`);
+    else{
+      return res.send('err');
+    }
   })
 })
 app.post('/result_plus',(req,res)=>{
@@ -718,25 +703,27 @@ app.post('/main_result',(req,res)=>{
   const roomName = req.body.roomName;
   let send_ = [];
   pool_main.getConnection().then((conn)=>{
-    conn.query(`select * from result where roomName = '${roomName}' order by value desc;`).then(result=>{
+    conn.query(`select * from result where roomName = '${roomName}' order by value asc;`).then(result=>{
       console.log(result);
-      Promise.all(result.map(async(e)=>{
-        const  command = new GetObjectCommand({
-          Bucket: "dlworjs",
-          Key: e.originalname,
-        });
-        const response = await client.send(command);
-        const response_body = await response.Body.transformToByteArray();
-        const img_src = (Buffer.from(response_body).toString('base64'));
-        send_ = [...send_,
-          {
-          img : img_src,
-          text : e.text,
-          value : e.value
-          }]
-      })).then(()=>{
-        return res.send(send_);
-      })
+      if(result.length !== 0){
+        Promise.all(result.map(async(e)=>{
+          const  command = new GetObjectCommand({
+            Bucket: "dlworjs",
+            Key: roomName+'/'+e.originalname,
+          });
+          const response = await client.send(command);
+          const response_body = await response.Body.transformToByteArray();
+          const img_src = (Buffer.from(response_body).toString('base64'));
+          send_ = [...send_,
+            {
+            img : img_src,
+            text : e.text,
+            value : e.value
+            }]
+        })).then(()=>{
+          return res.send(send_);
+        })
+      }
     })
   })
 })
