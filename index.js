@@ -683,7 +683,7 @@ app.post('/main_a_queze_plus_comments',(req,res)=>{
         return res.send('success');
       })
     }
-    res.redirect(url+`/result?roomName=${roomName}`);
+    return res.redirect(url+`/result?roomName=${roomName}`);
   })
 })
 app.post('/result_plus',(req,res)=>{
