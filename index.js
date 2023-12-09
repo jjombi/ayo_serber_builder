@@ -626,6 +626,7 @@ app.post('/main_a_queze',(req,res)=>{
 
         text_arr = [...text_arr,e.text];
         img_arr = [...img_arr,img_src];
+        i++;
       })).then(()=>{
         console.log('text_arr',text_arr,img_arr); // text arr [queze_length,text1,text2,text3]
         return res.send({text : text_arr, img : img_arr});
