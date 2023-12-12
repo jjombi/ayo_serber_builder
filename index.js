@@ -50,7 +50,7 @@ const client = new S3Client(
 const connection = mysql.createConnection({
   host     : 'database-1.cz0opmzpwiht.ap-northeast-2.rds.amazonaws.com',//svc.sel5.cloudtype.app:32325
   user     : 'admin',
-  password : process.env.AWS_MYSQL_PASSWORD,
+  password : 'Dlworjs6',
   database : 'ayo_db'
 });
 console.log('connection');
