@@ -280,7 +280,7 @@ app.get('/main_select_queze',async (req,res)=>{ //main 페이지 대표 사진�
           return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });
 
         })
-      }else console.log('err'); return res.send([]); 
+      }else console.log('err'); return res.send(false); 
 
     });
   
