@@ -15,8 +15,7 @@ const { GetObjectCommand, S3Client } = require("@aws-sdk/client-s3");
 require('dotenv').config()
 
 const port = 45509;
-const url = 'https://ay0.netlify.app';
-// const url = 'http://localhost:8080';
+const url = process.env.FRONT_REDIRECT_URL;
 const app = express()
 app.use(body_parser.json());
 app.use(
@@ -48,12 +47,42 @@ const client = new S3Client(
 
 
 // /*-------------------------mysql 연결--------------------------*/
-// const connection = mysql.createConnection({
-//   host     : 'localhost',//svc.sel5.cloudtype.app:32325
-//   user     : 'root',
-//   password : 'sis01066745950@',
-//   database : 'ayodb'
-// });
+const connection = mysql.createConnection({
+  host     : 'database-1.cz0opmzpwiht.ap-northeast-2.rds.amazonaws.com',//svc.sel5.cloudtype.app:32325
+  user     : 'admin',
+  password : process.env.AWS_MYSQL_PASSWORD,
+  database : 'ayo_db'
+});
+console.log('connection');
+connection.connect((err)=>{
+  if (err) {
+    console.error('error connecting: ' + err.stack);
+    return;
+  }
+  console.log('connected as id ' + connection.threadId);
+
+})
+
+// function handleDisconnect() {
+//   connection.connect(function(err) {            
+//     if(err) {                            
+//       console.log('error when connecting to db:', err);
+//       setTimeout(handleDisconnect, 2000); 
+//     }                                   
+//   });                                 
+                                         
+//   connection.on('error', function(err) {
+//     console.log('db error', err);
+//     if(err.code === 'PROTOCOL_CONNECTION_LOST') { 
+//       return handleDisconnect();                      
+//     } else {                                    
+//       throw err;                              
+//     }
+//   });
+// }
+
+// handleDisconnect();
+
 // const pool = mariadb.createPool({host: 'svc.sel5.cloudtype.app:32325', user: 'root', connectionLimit: 5});
 // const pool = mariadb.createPool({ 
 //   host   : 'svc.sel5.cloudtype.app',
@@ -62,14 +91,14 @@ const client = new S3Client(
 //   port: 32325,
 //   database: 'ayodb',
 // });
-const pool_main = mariadb.createPool({  // main2 db
-  host   : 'svc.sel5.cloudtype.app',
-  user   : 'root', 
-  password: 'sis01066745950@', 
-  port: 32325,
-  database: 'ayo_main',
-});
-// const pool_main = mariadb.createPool({  // main2 db local
+// const pool_main = mariadb.createPool({  // main2 db
+//   host   : 'database-1.cz0opmzpwiht.ap-northeast-2.rds.amazonaws.com',
+//   user   : 'admin', 
+//   password: 'Dlworjs@', 
+//   port: 3306,
+//   database: 'ayo_db',
+// });
+// const pool_main = mariadb.createPool({  // main2 db local>
 //   host   : 'localhost',
 //   user   : 'root', 
 //   password: 'sis01066745950@', 
@@ -81,20 +110,25 @@ const pool_main = mariadb.createPool({  // main2 db
 
 
 app.get('/',(req,res)=>{
-  res.send('성공');
   // asyncFunction();
-  pool.getConnection()
-  .then((conn)=>{
-    console.log('connetcinn is done');
-    conn.query(`show tables;`).then((result)=>{
-      console.log('reslut',result);
-      conn.query('show tables').then((result)=>{
-        console.log('reslut2',result);
-      })
-    })
-    conn.end();
+  // pool_main.getConnection()
+  // .then((conn)=>{
+  //   console.log('connetcinn is done');
+  //   conn.query(`show tables;`).then((result)=>{
+  //     console.log('reslut',result);
+  //     conn.query('show tables').then((result)=>{
+  //       console.log('reslut2',result);
+  //     })
+  //   })
+  //   conn.end();
+  // })
+   
+  connection.query('show tables', function (error, results, fields) {
+    if (error) throw error;
+    console.log('The solution is: ', results[0].solution);
+    return res.send('success');
   })
-
+  
 })
 
 
@@ -576,12 +610,13 @@ app.get('/main_select_queze',async (req,res)=>{ //main 페이지 대표 사진�
   let base64_img_arr = [];
 
   pool_main.getConnection().then((conn)=>{
-    conn.query(`select * from queze where existence = 1`).then(async(result)=>{
+    conn.query(`select * from queze where existence = 1`).then( async (result)=>{
       console.log(result);
       if(result.length !== 0){
+        console.log('????');
         await Promise.all(
-          result.map(async(e)=>{
-            console.log(e.roomName+"/"+e.title_img_name);
+          result.map(async(e,i)=>{
+            console.log(e.roomName+"/"+e.title_img_name,i);
             const  command = new GetObjectCommand({
               Bucket: "dlworjs",
               Key: e.roomName+"/"+e.title_img_name,
@@ -589,16 +624,60 @@ app.get('/main_select_queze',async (req,res)=>{ //main 페이지 대표 사진�
             const response = await client.send(command);
             const response_body = await response.Body.transformToByteArray();
             const img_src = (Buffer.from(response_body).toString('base64'));
-            console.log('img_src',img_src);
-            base64_img_arr = [...base64_img_arr,img_src];
-            console.log('base64 img arr in result.map',base64_img_arr);
-  
+            base64_img_arr[i] = [img_src];
+            i++;
           })
         ).then(()=>{
-          console.log('base64 img arr after map func',base64_img_arr);
-          return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });    
+          console.log('res send');
+          return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });
+
         })
-      }else return res.send(null); 
+        // result.map((e)=>{
+        //   console.log(e.roomName+"/"+e.title_img_name); // ------------1
+        //   const  command = new GetObjectCommand({
+        //     Bucket: "dlworjs",
+        //     Key: e.roomName+"/"+e.title_img_name,
+        //   });
+        //   // const response = client.send(command);
+        //   const promise = client.send(command).then((response)=>{
+        //     console.log('command client send');  //  ------------  4
+        //     response.Body.transformToByteArray().then((response_body)=>{
+        //       console.log('이미지 불러오기 완료',i,e.roomName);  // -------- 5
+        //       const img_src = (Buffer.from(response_body).toString('base64'));
+        //       console.log('이미지 불러오기 완료 img src');  //  ------------ 6
+        //       base64_img_arr[i] = [img_src];
+        //       if(i >= result.length-1) {
+        //         console.log('send',i,result.length-1);
+        //         return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });
+        //       }
+        //       i++;
+        //     })
+        //   })
+
+        //   console.log('base64 img arr after map func',base64_img_arr)  // ------------2
+          
+        // })
+        // for(let i=0;i <= result.length-1;i++){
+        //   console.log('for문 시작');
+        //   const func = async () => {
+        //     const  command = new GetObjectCommand({
+        //       Bucket: "dlworjs",
+        //       Key: result[i].roomName+"/"+result[i].title_img_name,
+        //     });
+        //     const response = await client.send(command);
+        //     const response_body = await response.Body.transformToByteArray();
+        //     const img_src = (Buffer.from(response_body).toString('base64'));
+        //     console.log('img_src');
+        //     base64_img_arr[i] = [img_src];
+        //     console.log('for문 안에 마지막',i,result[i].roomName);
+        //     if(i >= result.length-1) console.log('res send'); return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });
+        //   }
+        //   func();
+        // }
+        // console.log('res send');
+        // return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });
+
+      }else console.log('err');
 
     })
   })
@@ -613,8 +692,7 @@ app.post('/main_a_queze',(req,res)=>{
   pool_main.getConnection().then(async(conn)=>{
     conn.query(`select * from result where roomName='${roomName}'`).then(result=>{
       console.log('select from result whee roomName=',roomName,result);
-      let i = 0;
-      Promise.all(result.map(async(e)=>{
+      Promise.all(result.map(async(e,i)=>{
         console.log('result 이미지 경로',roomName+"/img"+i+'.jpg');
         const  command = new GetObjectCommand({
           Bucket: "dlworjs",
