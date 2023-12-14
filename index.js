@@ -228,8 +228,9 @@ app.get('/selectroomname',(req,res)=>{
         roomName = roomName_arr.join('');
       }
     }else roomName = 'A';
-    console.log('roomName',roomName);   
-    return res.send(roomName);  
+    console.log('roomName',roomName);
+    return res.redirect(url+'ayoworldrank');   
+    // return res.send(roomName);  
   })  
 
   // pool_main.getConnection().then((conn)=>{
