@@ -15,7 +15,7 @@ const { GetObjectCommand, S3Client } = require("@aws-sdk/client-s3");
 require('dotenv').config()
 
 const port = 45509;
-const url = process.env.FRONT_REDIRECT_URL;
+const url = process.env.FRONT_REDIRECT_URL_SERVICE;
 const app = express()
 app.use(body_parser.json());
 app.use(
