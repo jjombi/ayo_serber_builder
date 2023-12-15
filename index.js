@@ -229,8 +229,8 @@ app.get('/selectroomname',(req,res)=>{
       }
     }else roomName = 'A';
     console.log('roomName',roomName);
-    return res.redirect(url+'ayoworldrank');   
-    // return res.send(roomName);  
+    // return res.redirect(url+'/ayoworldrank');   
+    return res.send(roomName);  
   })  
 
   // pool_main.getConnection().then((conn)=>{
