@@ -16,6 +16,7 @@ require('dotenv').config()
 
 const port = 45509;
 const url = process.env.FRONT_REDIRECT_URL_SERVICE;
+// const url = 'http://localhost:8080';
 const app = express()
 app.use(body_parser.json());
 app.use(
@@ -46,7 +47,7 @@ const client = new S3Client(
 
 
 
-// /*-------------------------mysql 연결--------------------------*/
+// /*-------------------------mysql 연결--------------------------*/// rds 
 const connection = mysql.createConnection({
   host     : 'database-1.cz0opmzpwiht.ap-northeast-2.rds.amazonaws.com',//svc.sel5.cloudtype.app:32325
   user     : 'admin',
@@ -62,6 +63,22 @@ connection.connect((err)=>{
   console.log('connected as id ' + connection.threadId);
 
 })
+///////////////////////////////////////////////////////////////////////  local
+// const connection = mysql.createConnection({
+//   host     : 'localhost',//svc.sel5.cloudtype.app:32325
+//   user     : 'root',
+//   password : 'sis01066745950@',
+//   database : 'ayo_mysql_local'
+// });
+// console.log('connection');
+// connection.connect((err)=>{
+//   if (err) {
+//     console.error('error connecting: ' + err.stack);
+//     return;
+//   }
+//   console.log('connected as id ' + connection.threadId);
+
+// })
 
 // function handleDisconnect() {
 //   connection.connect(function(err) {            
@@ -133,7 +150,8 @@ const upload_query = async (req, roomName_arr) =>{
       }
       else{
         for(i=0 ; i < req.body.img_name.length ;i++){
-          connection.query(`insert into result (text, value, originalname, roomName) value('${req.body.text[i]}', 0, 'img${i}.jpg','${roomName_arr}')`);
+          if(req.body.text[i] === undefined || req.body.text[i] === '') connection.query(`insert into result (text, value, originalname, roomName) value('', 0, 'img${i}.jpg','${roomName_arr}')`);
+          else connection.query(`insert into result (text, value, originalname, roomName) value('${req.body.text[i]}', 0, 'img${i}.jpg','${roomName_arr}')`);
         }
       }
     }
