@@ -360,9 +360,9 @@ app.post('/main_result',(req,res)=>{
         });
         const response = await client.send(command);
         const response_body = await response.Body.transformToByteArray();
-        // const img_src = (Buffer.from(response_body).toString('base64'));
+        const img_src = (Buffer.from(response_body).toString('base64'));
         send_[i] ={
-          img : response_body,
+          img : img_src,
           text : e.text,
           value : e.value
         }
