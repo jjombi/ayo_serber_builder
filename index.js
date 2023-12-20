@@ -230,7 +230,6 @@ app.get('/main_select_queze',async (req,res)=>{ //main 페이지 대표 사진�
             const response_body = await response.Body.transformToByteArray();
             const img_src = (Buffer.from(response_body).toString('base64'));
             base64_img_arr[i] = [img_src];
-            i++;
           })
         ).then(()=>{
           console.log('res send');
@@ -239,7 +238,8 @@ app.get('/main_select_queze',async (req,res)=>{ //main 페이지 대표 사진�
         })
       }else {
         console.log('err');
-        return res.send(false);} 
+        return res.send(false);
+      } 
 
     });
   
@@ -360,9 +360,9 @@ app.post('/main_result',(req,res)=>{
         });
         const response = await client.send(command);
         const response_body = await response.Body.transformToByteArray();
-        const img_src = (Buffer.from(response_body).toString('base64'));
+        // const img_src = (Buffer.from(response_body).toString('base64'));
         send_[i] ={
-          img : img_src,
+          img : response_body,
           text : e.text,
           value : e.value
         }
