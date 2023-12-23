@@ -259,6 +259,7 @@ app.post('/main_a_queze',(req,res)=>{
   let   text_arr = [];
   let   img_arr  = [];
   let   uuid_arr = [];
+  // let   sendresult = [];
     connection.query(`select * from result where roomName='${roomName}'`,(err,result)=>{
       console.log('select from result whee roomName=',roomName,result);
       Promise.all(result.map(async(e,i)=>{
@@ -271,9 +272,10 @@ app.post('/main_a_queze',(req,res)=>{
         const response_body = await response.Body.transformToByteArray();
         const img_src = (Buffer.from(response_body).toString('base64'));
 
-        text_arr = [...text_arr,e.text];
-        uuid_arr = [...uuid_arr,e.uuid];
-        img_arr = [...img_arr,img_src];
+        // sendresult = {text : e.text}];
+        text_arr[i] = e.text;
+        uuid_arr[i] = e.uuid;
+        img_arr[i] = img_src;
       })).then(()=>{
         console.log('text_arr',text_arr,img_arr); // text arr [queze_length,text1,text2,text3]
         return res.send({text : text_arr, img : img_arr, uuid : uuid_arr});
