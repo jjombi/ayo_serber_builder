@@ -141,21 +141,24 @@ app.get('/',(req,res)=>{
 
 
 const upload_query = async (req, roomName_arr) =>{
-  console.log('upload query 시작 req : ',req.body,roomName_arr);
-  // connection.query(`select * from queze where roomName = '${roomName_arr}';`,(err,result) => {
-  //   if(result.length === 0){
-  //     connection.query(`insert into queze (roomName, existence, title, title_img_name, uuid, likes) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg', '${uuidv4()}',0);`);
-  //     if(typeof(req.body.img_name) === 'string'){
-  //       connection.query(`insert into result (text, value, originalname, roomName) value('${req.body.text}', 0, 'img0.jpg','${roomName_arr}')`);
-  //     }
-  //     else{
-  //       for(i=0 ; i < req.body.img_name.length ;i++){
-  //         if(req.body.text[i] === undefined || req.body.text[i] === '') connection.query(`insert into result (text, value, uuid, originalname, roomName) value('', 0, '${uuidv4()}', 'img${i}.jpg','${roomName_arr}')`);
-  //         else connection.query(`insert into result (text, value, uuid, originalname, roomName) value('${req.body.text[i]}', 0, '${uuidv4()}', 'img${i}.jpg','${roomName_arr}')`);
-  //       }
-  //     }
-  //   }
-  // })    
+  console.log('upload query 시작 req : ',req.body,roomName_arr); //upload query 시작 req :  { title: '제목', publicAccess: '수정가능', img[...] text[...] } [ 'C' ] or { title: '제목', img[...] text[...] } -> publicAccess is undefind
+  let publicAccess;
+  if(req.body.publicAccess === undefined) publicAccess = 0;
+  else publicAccess = 1;
+  connection.query(`select * from queze where roomName = '${roomName_arr}';`,(err,result) => {
+    if(result.length === 0){
+      connection.query(`insert into queze (roomName, existence, title, title_img_name, uuid, likes, publicAccess) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg', '${uuidv4()}',0,${publicAccess});`);
+      if(typeof(req.body.img_name) === 'string'){
+        connection.query(`insert into result (text, value, originalname, roomName) value('${req.body.text}', 0, 'img0.jpg','${roomName_arr}')`);
+      }
+      else{
+        for(i=0 ; i < req.body.img_name.length ;i++){
+          if(req.body.text[i] === undefined || req.body.text[i] === '') connection.query(`insert into result (text, value, uuid, originalname, roomName) value('', 0, '${uuidv4()}', 'img${i}.jpg','${roomName_arr}')`);
+          else connection.query(`insert into result (text, value, uuid, originalname, roomName) value('${req.body.text[i]}', 0, '${uuidv4()}', 'img${i}.jpg','${roomName_arr}')`);
+        }
+      }
+    }
+  })    
 }
 
 
