@@ -265,7 +265,7 @@ app.post('/main_a_queze',(req,res)=>{
         console.log('result 이미지 경로',roomName+e.originalname);
         const  command = new GetObjectCommand({
           Bucket: "dlworjs",
-          Key: roomName+e.originalname,
+          Key: roomName+'/'+e.originalname,
         });
         const response = await client.send(command);
         const response_body = await response.Body.transformToByteArray();
