@@ -136,7 +136,11 @@ app.get('/',(req,res)=>{
   
 })
 
-
+app.post('/make_queze_modify',(req,res)=>{
+  connection.query(`select originalname from result where roomName = '${req.roomName}'`,(err,result)=>{
+    return res.send(result);
+  })
+})
 
 
 
