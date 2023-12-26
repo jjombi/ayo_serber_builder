@@ -220,7 +220,16 @@ app.post('/upload_img',(req,res)=>{
   })
   return res.send('success');
   
-    
+})
+app.post('/upload_img_plus',(req,res)=>{
+  const roomName = req.body.roomName;
+  const last_num = req.body.last_num;
+  console.log('upload img plus 시작');
+  for(i=0 ; i < req.body.img_name.length ;i++){
+    if(req.body.text[i] === undefined || req.body.text[i] === '') connection.query(`insert into result (text, value, uuid, originalname, roomName) value('', 0, '${uuidv4()}', 'img${last_num+i+1}.jpg','${roomName}')`);
+    else connection.query(`insert into result (text, value, uuid, originalname, roomName) value('${req.body.text[i]}', 0, '${uuidv4()}', 'img${i}.jpg','${roomName}')`);
+  }
+  return res.send('success');
 })
 // existence 존재 
 app.get('/selectroomname',(req,res)=>{
