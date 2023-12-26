@@ -143,6 +143,7 @@ app.post('/make_queze_modify',(req,res)=>{
 })
 app.post('/search_queze',(req,res)=>{
   console.log(req.body);
+  let base64_img_arr = [];
   connection.query(`select * from queze where title like "%${req.body.value}%";`,async (err,result)=>{
     console.log(result);
     if(result.length !== 0){
