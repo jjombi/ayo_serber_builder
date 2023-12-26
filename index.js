@@ -224,7 +224,7 @@ app.post('/upload_img',(req,res)=>{
 app.post('/upload_img_plus',(req,res)=>{
   const roomName = req.body.roomName;
   const last_num = req.body.last_num;
-  console.log('upload img plus 시작',req.body);
+  console.log('upload img plus 시작',req.body,typeof(req.body.text));
   if(typeof(req.body.text) !== "String"){
     for(i=0 ; i < req.body.img_name.length ;i++){
       if(req.body.text[i] === undefined || req.body.text[i] === '') connection.query(`insert into result (text, value, uuid, originalname, roomName) value('', 0, '${uuidv4()}', 'img${last_num+i+1}.jpg','${roomName}')`);
