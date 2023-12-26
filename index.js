@@ -235,7 +235,7 @@ app.post('/upload_img_plus',(req,res)=>{
   }else{
     console.log('type str');
     if(req.body.text === undefined || req.body.text === '') connection.query(`insert into result (text, value, uuid, originalname, roomName) value('', 0, '${uuidv4()}', 'img${last_num+1}.jpg','${roomName}')`);
-    else connection.query(`insert into result (text, value, uuid, originalname, roomName) value('${req.body.text}', 0, '${uuidv4()}', 'img${last_num+1}.jpg','${roomName}')`);
+    else connection.query(`insert into result (text, value, uuid, originalname, roomName) value('${req.body.text}', 0, '${uuidv4()}', 'img${(Number(last_num)+1)}.jpg','${roomName}')`);
   }
   return res.send('success');
 })
