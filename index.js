@@ -226,11 +226,14 @@ app.post('/upload_img_plus',(req,res)=>{
   const last_num = req.body.last_num;
   console.log('upload img plus 시작',req.body,typeof(req.body.text));
   if(typeof(req.body.text) !== "String"){
+    console.log('typeof(req.body.text) !== "String"');
     for(i=0 ; i < req.body.img_name.length ;i++){
+      console.log(i);
       if(req.body.text[i] === undefined || req.body.text[i] === '') connection.query(`insert into result (text, value, uuid, originalname, roomName) value('', 0, '${uuidv4()}', 'img${last_num+i+1}.jpg','${roomName}')`);
       else connection.query(`insert into result (text, value, uuid, originalname, roomName) value('${req.body.text[i]}', 0, '${uuidv4()}', 'img${i}.jpg','${roomName}')`);
     }
   }else{
+    console.log('type str');
     if(req.body.text === undefined || req.body.text === '') connection.query(`insert into result (text, value, uuid, originalname, roomName) value('', 0, '${uuidv4()}', 'img${last_num+1}.jpg','${roomName}')`);
     else connection.query(`insert into result (text, value, uuid, originalname, roomName) value('${req.body.text}', 0, '${uuidv4()}', 'img${i}.jpg','${roomName}')`);
   }
