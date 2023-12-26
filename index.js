@@ -137,11 +137,37 @@ app.get('/',(req,res)=>{
 })
 
 app.post('/make_queze_modify',(req,res)=>{
-  connection.query(`select originalname from result where roomName = '${req.roomName}'`,(err,result)=>{
+  connection.query(`select originalname from result where roomName = '${req.body.roomName}'`,(err,result)=>{
     return res.send(result);
   })
 })
+app.post('/search_queze',(req,res)=>{
+  connection.query(`select * from queze where title like "%${req.body.value}%";`,async (err,result)=>{
+    console.log(result);
+    if(result.length !== 0){
+      await Promise.all(
+        result.map(async(e,i)=>{
+          console.log(e.roomName+"/"+e.title_img_name,i);
+          const  command = new GetObjectCommand({
+            Bucket: "dlworjs",
+            Key: e.roomName+"/"+e.title_img_name,
+          });
+          const response = await client.send(command);
+          const response_body = await response.Body.transformToByteArray();
+          const img_src = (Buffer.from(response_body).toString('base64'));
+          base64_img_arr[i] = [img_src];
+        })
+      ).then(()=>{
+        console.log('res send');
+        return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });
 
+      })
+    }else {
+      console.log('err');
+      return res.send(false);
+    } 
+  })
+})
 
 
 const upload_query = async (req, roomName_arr) =>{
