@@ -28,7 +28,7 @@ app.use(fileUpload());
 app.use(cors({
   origin : "https://ay0.netlify.app",
   // origin: "https://jjombi.github.io",
-  origin : "http://localhost:8080", // 접근 권한을 부여하는 도메인 "http://localhost:3000"
+  // origin : "http://localhost:8080", // 접근 권한을 부여하는 도메인 "http://localhost:3000"
   credentials : true, // 응답 헤더에 Access-Control-Allow-Credentials 추가
   // optionsSuccessStatus: 200, // 응답 상태 200으로 설정
   methods : '*',
@@ -180,11 +180,11 @@ const upload_query = async (req, roomName_arr) =>{
   connection.query(`select * from queze where roomName = '${roomName_arr}';`,(err,result) => {
     if(result.length === 0){
       connection.query(`insert into queze (roomName, existence, title, title_img_name, uuid, likes, publicAccess) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg', '${uuidv4()}',0,${publicAccess});`);
-      if(typeof(req.body.img_name) === 'string'){
+      if(typeof(req.body.img_name) === 'string'){ // 이미지가 하나 일때
         connection.query(`insert into result (text, value, originalname, roomName) value('${req.body.text}', 0, 'img0.jpg','${roomName_arr}')`);
       }
-      else{
-        for(i=0 ; i < req.body.img_name.length ;i++){
+      else{                                       //이미지가 여러개 일때
+        for(i=0 ; i < req.body.img_name.length ;i++){// text에 값이 없을 때
           if(req.body.text[i] === undefined || req.body.text[i] === '') connection.query(`insert into result (text, value, uuid, originalname, roomName) value('', 0, '${uuidv4()}', 'img${i}.jpg','${roomName_arr}')`);
           else connection.query(`insert into result (text, value, uuid, originalname, roomName) value('${req.body.text[i]}', 0, '${uuidv4()}', 'img${i}.jpg','${roomName_arr}')`);
         }
