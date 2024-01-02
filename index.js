@@ -26,7 +26,8 @@ app.use(
 );
 app.use(fileUpload());
 app.use(cors({
-  origin : "https://ay0.netlify.app",
+  // origin : "https://ay0.netlify.app",
+  origin : "https://ay0.site",
   // origin: "https://jjombi.github.io",
   // origin : "http://localhost:8080", // 접근 권한을 부여하는 도메인 "http://localhost:3000"
   credentials : true, // 응답 헤더에 Access-Control-Allow-Credentials 추가
