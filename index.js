@@ -175,8 +175,8 @@ app.post('/search_queze',(req,res)=>{
 app.post('/password_checker',(req,res)=>{
   console.log('password checker 시행됨');
   connection.query(`select password from queze where uuid = '${req.body.uuid}'`,(err,passHash)=>{
-    bcrypt.compare(req.body.password, passHash.password, function(err, result) {
-      console.log('pass, 원본, 결과',req.body.password, passHash.password, result);
+    bcrypt.compare(req.body.password, passHash[0], function(err, result) {
+      console.log('pass, 원본, 결과',req.body.password, passHash, result);
       if(result) return(res.send(true))
       else return(res.send(false))
     });
