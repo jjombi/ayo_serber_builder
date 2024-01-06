@@ -193,7 +193,7 @@ const upload_query = async (req, roomName_arr) =>{
         })
       }
       if(typeof(req.body.img_name) === 'string'){ // 이미지가 하나 일때
-        connection.query(`insert into result (text, value, originalname, roomName) value('${req.body.text}', 0, 'img0.jpg','${roomName_arr}')`);
+        connection.query(`insert into result (text, value, originalname, roomName, uuid) value('${req.body.text}', 0, 'img0.jpg','${roomName_arr}', '${uuidv4()}')`);
       }
       else{                                       //이미지가 여러개 일때
         for(i=0 ; i < req.body.img_name.length ;i++){// text에 값이 없을 때
