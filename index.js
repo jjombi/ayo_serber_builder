@@ -146,7 +146,7 @@ app.post('/make_queze_modify',(req,res)=>{
 app.post('/search_queze',(req,res)=>{
   console.log(req.body);
   let base64_img_arr = [];
-  connection.query(`select * from queze where title like "%${req.body.value}%" and password = '';`,async (err,result)=>{
+  connection.query(`select * from queze where title like "%${req.body.value}%";`,async (err,result)=>{
     console.log(result);
     if(result.length !== 0){
       await Promise.all(
@@ -279,7 +279,7 @@ app.get('/main_select_queze',async (req,res)=>{ //main 페이지 대표 사진�
   console.log('main_select_queze 실행 됨');
   let base64_img_arr = [];
 
-    connection.query(`select * from queze where existence = 1 and password = ''`,async (err,result)=>{
+    connection.query(`select * from queze where existence = 1`,async (err,result)=>{
       console.log(result);
       if(result.length !== 0){
         console.log('????');
