@@ -12,12 +12,13 @@ const { title } = require('process');
 const fileUpload = require('express-fileupload');
 const { v4: uuidv4 } = require('uuid');
 const { GetObjectCommand, S3Client } = require("@aws-sdk/client-s3");
+const { resolve } = require('path');
 require('dotenv').config()
 
 const port = 45509;
 const url = process.env.FRONT_REDIRECT_URL_SERVICE;
 // const url = 'http://localhost:8080';
-const app = express()
+const app = express();
 app.use(body_parser.json());
 app.use(
   body_parser.urlencoded({
@@ -145,7 +146,7 @@ app.post('/make_queze_modify',(req,res)=>{
 app.post('/search_queze',(req,res)=>{
   console.log(req.body);
   let base64_img_arr = [];
-  connection.query(`select * from queze where title like "%${req.body.value}%";`,async (err,result)=>{
+  connection.query(`select * from queze where title like "%${req.body.value}%" and password = '';`,async (err,result)=>{
     console.log(result);
     if(result.length !== 0){
       await Promise.all(
@@ -176,11 +177,21 @@ app.post('/search_queze',(req,res)=>{
 const upload_query = async (req, roomName_arr) =>{
   console.log('upload query 시작 req : ',req.body,roomName_arr); //upload query 시작 req :  { title: '제목', publicAccess: '수정가능', img[...] text[...] } [ 'C' ] or { title: '제목', img[...] text[...] } -> publicAccess is undefind
   let publicAccess;
+  const password = req.body.password;
   if(req.body.publicAccess === undefined) publicAccess = 0;
   else publicAccess = 1;
   connection.query(`select * from queze where roomName = '${roomName_arr}';`,(err,result) => {
     if(result.length === 0){
-      connection.query(`insert into queze (roomName, existence, title, title_img_name, uuid, likes, publicAccess) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg', '${uuidv4()}',0,${publicAccess});`);
+      if(password === ''){
+        connection.query(`insert into queze (roomName, existence, title, title_img_name, uuid, likes, publicAccess, password) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg', '${uuidv4()}',0,${publicAccess}, '');`);
+      }
+      else{
+        bcrypt.genSalt(saltRounds, function(err, salt) {
+          bcrypt.hash(password, salt, function(err, hash) {
+              connection.query(`insert into queze (roomName, existence, title, title_img_name, uuid, likes, publicAccess, password) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg', '${uuidv4()}',0,${publicAccess},'${hash}');`);
+          });
+        })
+      }
       if(typeof(req.body.img_name) === 'string'){ // 이미지가 하나 일때
         connection.query(`insert into result (text, value, originalname, roomName) value('${req.body.text}', 0, 'img0.jpg','${roomName_arr}')`);
       }
@@ -268,7 +279,7 @@ app.get('/main_select_queze',async (req,res)=>{ //main 페이지 대표 사진�
   console.log('main_select_queze 실행 됨');
   let base64_img_arr = [];
 
-    connection.query(`select * from queze where existence = 1`,async (err,result)=>{
+    connection.query(`select * from queze where existence = 1 and password = ''`,async (err,result)=>{
       console.log(result);
       if(result.length !== 0){
         console.log('????');
