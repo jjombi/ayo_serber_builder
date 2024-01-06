@@ -172,7 +172,14 @@ app.post('/search_queze',(req,res)=>{
     } 
   })
 })
-
+app.post('/password_checker',(req,res)=>{
+  connection.query(`select password from queze where uuid = '${req.body.uuid}'`,(err,passHash)=>{
+    bcrypt.compare(req.body.password, passHash, function(err, result) {
+      if(result) return(res.send(true))
+      else return(res.send(false))
+    });
+  })
+})
 
 const upload_query = async (req, roomName_arr) =>{
   console.log('upload query 시작 req : ',req.body,roomName_arr); //upload query 시작 req :  { title: '제목', publicAccess: '수정가능', img[...] text[...] } [ 'C' ] or { title: '제목', img[...] text[...] } -> publicAccess is undefind
