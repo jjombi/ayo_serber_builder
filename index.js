@@ -6,7 +6,7 @@ const multer  = require('multer');
 const body_parser = require("body-parser");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const saltRounds = 5;
+const saltRounds = 10;
 const fs = require('fs');
 const { title } = require('process');
 const fileUpload = require('express-fileupload');
@@ -197,6 +197,7 @@ const upload_query = async (req, roomName_arr) =>{
       else{
         bcrypt.genSalt(saltRounds, function(err, salt) {
           bcrypt.hash(password, salt, function(err, hash) {
+            console.log('hash password',hash);
               connection.query(`insert into queze (roomName, existence, title, title_img_name, uuid, likes, publicAccess, password) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg', '${uuidv4()}',0,${publicAccess},'${hash}');`);
           });
         })
