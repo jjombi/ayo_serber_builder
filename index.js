@@ -367,9 +367,10 @@ app.post('/oneandonequeze',(req,res)=>{
       });
       const response = await client.send(command);
       const response_body = await response.Body.transformToByteArray();
-      const img_src = (Buffer.from(response_body).toString('base64'));
+      const img_src = await (Buffer.from(response_body).toString('base64'));
 
       // sendresult = {text : e.text}];
+      console.log('e.text, e.uuid, img_src',e.text, e.uuid, img_src);
       data[i] = {text : e.text, uuid : e.uuid, img : img_src};
     })).then(()=>{
       console.log('one and one 다끝난 후   data : ',data); // text arr [queze_length,text1,text2,text3]
