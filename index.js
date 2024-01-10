@@ -356,7 +356,8 @@ app.post('/oneandonequeze',(req,res)=>{
   const roomName = req.body.roomName;
   const type = req.body.type;
   let data;
-  connection.query(`select * from result where roomName='${roomName} order by value limit ${type}'`,(err,result)=>{
+  console.log('one and one; roomName, type',roomName,type);
+  connection.query(`select * from result where roomName='${roomName} order by value desc limit ${type}'`,(err,result)=>{
     console.log('one and one queze roomName, result',roomName,result);
     Promise.all(result.map(async(e,i)=>{
       console.log('result 이미지 경로',roomName+e.originalname);
@@ -371,7 +372,7 @@ app.post('/oneandonequeze',(req,res)=>{
       // sendresult = {text : e.text}];
       data[i] = {text : e.text, uuid : e.uuid, img : img_src};
     })).then(()=>{
-      console.log('one and one 다끝난 후 data : ',data); // text arr [queze_length,text1,text2,text3]
+      console.log('one and one 다끝난 후   data : ',data); // text arr [queze_length,text1,text2,text3]
       return res.send(data);
     })  
   })
