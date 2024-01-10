@@ -355,8 +355,9 @@ app.post('/main_a_queze',(req,res)=>{
 app.post('/oneandonequeze',(req,res)=>{
   const roomName = req.body.roomName;
   const type = req.body.type;
-  let data;
-  console.log('one and one; roomName, type',roomName,type);
+  let   text_arr = [];
+  let   img_arr  = [];
+  let   uuid_arr = [];  console.log('one and one; roomName, type',roomName,type);
   connection.query(`select * from result where roomName='${roomName}' order by value desc limit ${type}`,(err,result)=>{
     console.log('one and one queze roomName, result',roomName,result);
     Promise.all(result.map(async(e,i)=>{
@@ -371,10 +372,12 @@ app.post('/oneandonequeze',(req,res)=>{
 
       // sendresult = {text : e.text}];
       console.log('e.text, e.uuid, img_src',e.text, e.uuid, img_src);
-      data[i] = [...{text : e.text, uuid : e.uuid, img : img_src}];
-    })).then(()=>{
-      console.log('one and one 다끝난 후   data : ',data); // text arr [queze_length,text1,text2,text3]
-      return res.send(data);
+      text_arr[i] = e.text;
+      uuid_arr[i] = e.uuid;
+      img_arr[i] = img_src;
+      })).then(()=>{
+      console.log('one and one 다끝난 후   data : ',{text : text_arr, img : img_arr, uuid : uuid_arr}); // text arr [queze_length,text1,text2,text3]
+      return res.send({text : text_arr, img : img_arr, uuid : uuid_arr});
     })  
   })
 })
