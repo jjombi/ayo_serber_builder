@@ -357,7 +357,7 @@ app.post('/oneandonequeze',(req,res)=>{
   const type = req.body.type;
   let data;
   console.log('one and one; roomName, type',roomName,type);
-  connection.query(`select * from result where roomName='${roomName} order by value desc limit ${type}'`,(err,result)=>{
+  connection.query(`select * from result where roomName='${roomName}' order by value desc limit ${type}`,(err,result)=>{
     console.log('one and one queze roomName, result',roomName,result);
     Promise.all(result.map(async(e,i)=>{
       console.log('result 이미지 경로',roomName+e.originalname);
