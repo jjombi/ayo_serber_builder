@@ -352,6 +352,30 @@ app.post('/main_a_queze',(req,res)=>{
 
 
 })
+app.post('/oneandonequeze',(req,res)=>{
+  const roomName = req.body.roomName;
+  const type = req.body.type;
+  let data;
+  connection.query(`select * from result where roomName='${roomName} order by value limit ${type}'`,(err,result)=>{
+    console.log('one and one queze roomName, result',roomName,result);
+    Promise.all(result.map(async(e,i)=>{
+      console.log('result 이미지 경로',roomName+e.originalname);
+      const  command = new GetObjectCommand({
+        Bucket: "dlworjs",
+        Key: roomName+'/'+e.originalname,
+      });
+      const response = await client.send(command);
+      const response_body = await response.Body.transformToByteArray();
+      const img_src = (Buffer.from(response_body).toString('base64'));
+
+      // sendresult = {text : e.text}];
+      data[i] = {text : e.text, uuid : e.uuid, img : img_src};
+    })).then(()=>{
+      console.log('one and one 다끝난 후 data : ',data); // text arr [queze_length,text1,text2,text3]
+      return res.send(data);
+    })  
+  })
+})
 app.post('/main_a_queze_comments',(req,res)=>{ // url 파라미터로 roomName 가져오게 바꾸기
   
     connection.query(`select * from comments where type = 1 && roomName = '${req.body.roomName}'`,(err,result)=>{
