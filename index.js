@@ -352,6 +352,21 @@ app.post('/main_a_queze',(req,res)=>{
 
 
 })
+app.post('oneandoneresult',(req,res)=>{
+  const rank = req.body.result;
+  const roomName = req.body.roomName;
+  connection.query(`select * from result where roomName = '${roomName}'`,(err,result)=>{
+    console.log('selct uuid from result where roomName',result); //[ {uuid : 'asdadjshblaebgaubg' }, {uuid : 'asdadjshblaebgaubg' }, {uuid : 'asdadjshblaebgaubg' }]
+    result.map(result_e=>{
+      rank.map((res_e,i)=>{
+        console.log('result 와 res_e 값 비교',result_e.uuid,res_e);
+        if(result_e.uuid === res_e.uuid){
+          connection.query(`update result set value = ${Number(result_e.value) + Number(res_e.point)} where uuid = '${[res_e.uuid]}'`);
+        }
+      })
+    })
+  })
+})
 app.post('/oneandonequeze',(req,res)=>{
   const roomName = req.body.roomName;
   const type = req.body.type;
