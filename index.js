@@ -352,7 +352,7 @@ app.post('/main_a_queze',(req,res)=>{
 
 
 })
-app.post('oneandoneresult',(req,res)=>{
+app.post('/oneandoneresult',(req,res)=>{
   const rank = req.body.result;
   const roomName = req.body.roomName;
   connection.query(`select * from result where roomName = '${roomName}'`,(err,result)=>{
