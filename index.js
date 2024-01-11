@@ -365,6 +365,7 @@ app.post('oneandoneresult',(req,res)=>{
         }
       })
     })
+    return res.send('succcess');
   })
 })
 app.post('/oneandonequeze',(req,res)=>{
