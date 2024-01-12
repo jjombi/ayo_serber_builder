@@ -370,20 +370,21 @@ app.post('/oneandoneresult',(req,res)=>{
 })
 app.post('/oneandonequeze',(req,res)=>{
   const roomName = req.body.roomName;
-  const num = [2,4,8,16,32,63,128,256];
-  let comparisontype = 512;
-  let type;
-  if(req.body.type !== 2 || req.body.type !== 4 || req.body.type !== 8 || req.body.type !== 16 || req.body.type !== 32 || req.body.type !== 64 || req.body.type !== 128 || req.body.type !== 2256){
-    num.map((e,i)=>{
-      if(Math.abs(req.body.type - e) < comparisontype && Math.sign(e - req.body.type) === -1){//1,1,5,13,60,125,153 ,,, 298,296,
-        comparisontype = Math.abs(req.body.type - e);// com 5 3 
-        type = e;
-      }
-    })
-  }
-  else{
-    type = req.body.type;
-  }
+  const type = req.body.type;
+  // const num = [2,4,8,16,32,64,128,256];
+  // let comparisontype = 512;
+  // let type;
+  // if(req.body.type !== 2 || req.body.type !== 4 || req.body.type !== 8 || req.body.type !== 16 || req.body.type !== 32 || req.body.type !== 64 || req.body.type !== 128 || req.body.type !== 2256){
+  //   num.map((e,i)=>{
+  //     if(Math.abs(req.body.type - e) < comparisontype && Math.sign(e - req.body.type) === -1){//1,1,5,13,60,125,153 ,,, 298,296,
+  //       comparisontype = Math.abs(req.body.type - e);// com 5 3 
+  //       type = e;
+  //     }
+  //   })
+  // }
+  // else{
+  //   type = req.body.type;
+  // }
   // const type = req.body.type; // req.body.type이 2,4,8,16,32,64,128,256,512 등이 아니면 가장 가까운 작은수 로 type 바꾸기 ex req.bo.typ = 12 , type = 8
   let   text_arr = [];
   let   img_arr  = [];
