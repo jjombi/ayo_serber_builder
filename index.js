@@ -191,7 +191,7 @@ const upload_query = async (req, roomName_arr) =>{
   else publicAccess = 1;
   connection.query(`select * from queze where roomName = '${roomName_arr}';`,(err,result) => {
     if(result.length === 0){
-      if(password === ''){
+      if(password === '' || password === undefined || password === null){
         connection.query(`insert into queze (roomName, existence, title, title_img_name, uuid, likes, publicAccess, password) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg', '${uuidv4()}',0,${publicAccess}, '');`);
       }
       else{
