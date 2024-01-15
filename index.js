@@ -550,6 +550,7 @@ app.post('/make_quezeshow',(req,res)=>{
       }
     })
   }
+  res.send('success');
 })
 
 app.listen(port, (err) => {
