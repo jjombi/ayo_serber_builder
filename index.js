@@ -512,6 +512,46 @@ app.post('/main_result',(req,res)=>{
   
 })
 
+app.post('/make_quezeshow',(req,res)=>{
+  const queze_title = req.body.queze_title;
+  const content_title = req.body.content_title;
+  const explain_text = req.body.explain_text;
+  const img_tinyint = req.body.img_tinyint;
+  const uuid = req.body.uuid;
+  const date = req.body.date
+  console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'date',date);
+  connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes) value('${uuid}', '${queze_title}', 1, ${date}, 0)`,(err,result)=>{
+    if(err){
+      throw err
+    }
+  })
+  
+  if(typeof(content_title) === 'string'){
+    console.log('make quezeshow 선택지 하나만 들어옴');
+  }
+  else{
+    console.log('make quezeshow 선택지 여러개');
+    content_title.map((e,i)=>{
+      if(img_tinyint){
+        console.log('이미지 있음');
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text) value('${uuid}', '${queze_title}', 1, '${i}.jpg', '${explain_text}')`,(err,result)=>{
+          if(err){
+            throw err
+          }
+        })
+      }
+      else{
+        console.log('이미지 없음');
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text) value('${uuid}', '${queze_title}', 1, '', '${explain_text}')`,(err,result)=>{
+          if(err){
+            throw err
+          }
+        })
+      }
+    })
+  }
+})
+
 app.listen(port, (err) => {
   console.log(`Example app listening on port ${port}`)
   console.log(err);
