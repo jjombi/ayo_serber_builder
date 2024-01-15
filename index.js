@@ -532,7 +532,7 @@ app.post('/make_quezeshow',(req,res)=>{
   else{
     console.log('make quezeshow 선택지 여러개');
     content_title.map((e,i)=>{
-      if(img_tinyint){
+      if(img_tinyint[i]){
         console.log('이미지 있음');
         connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text) value('${uuid}', '${queze_title}', 1, '${i}.jpg', '${explain_text}')`,(err,result)=>{
           if(err){
