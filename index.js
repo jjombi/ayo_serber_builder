@@ -563,13 +563,52 @@ app.get('/quezeshow_main',(req,res)=>{
   console.log(type,req.query);
   if(type === 'likes'){
     connection.query(`select * from quezeshowqueze order by likes asc`,(err,result)=>{
-      res.send(result);
+      Promise.all(result.map(async(e,i)=>{
+        const  command = new GetObjectCommand({
+          Bucket: "dlworjs",
+          Key: e.uuid+'/'+e.img,
+        });
+        const response = await client.send(command);
+        const response_body = await response.Body.transformToByteArray();
+        const img_src = (Buffer.from(response_body).toString('base64'));
+        send_[i] ={
+          img : img_src,
+          date : e.date,
+          likes : e.likes,
+          title : e.title,
+          uuid : e.uuid,
+        }
+        console.log('send message 만들어 자는 중 ');
+      })).then(()=>{
+        console.log('res send',send_);
+        return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+      })
     })
   }
   else if(type === 'date'){
     connection.query(`select * from quezeshowqueze order by date asc`,(err,result)=>{
-      res.send(result);
-    })
+      connection.query(`select * from quezeshowqueze order by likes asc`,(err,result)=>{
+        Promise.all(result.map(async(e,i)=>{
+          const  command = new GetObjectCommand({
+            Bucket: "dlworjs",
+            Key: e.uuid+'/'+e.img,
+          });
+          const response = await client.send(command);
+          const response_body = await response.Body.transformToByteArray();
+          const img_src = (Buffer.from(response_body).toString('base64'));
+          send_[i] ={
+            img : img_src,
+            date : e.date,
+            likes : e.likes,
+            title : e.title,
+            uuid : e.uuid,
+          }
+          console.log('send message 만들어 자는 중 ');
+        })).then(()=>{
+          console.log('res send',send_);
+          return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+        })
+      })    })
   }
 })
 
