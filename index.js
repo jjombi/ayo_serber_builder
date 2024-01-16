@@ -534,7 +534,7 @@ app.post('/make_quezeshow',(req,res)=>{
     content_title.map((e,i)=>{
       if(img_tinyint[i] === 'true'){
         console.log('이미지 있음');
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text) value('${uuid}', '${queze_title}', 1, '${i}.jpg', '${explain_text}')`,(err,result)=>{
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text) value('${uuid}', '${content_title[i]}', 1, '${i}.jpg', '${explain_text[i]}')`,(err,result)=>{
           if(err){
             throw err
           }
@@ -542,7 +542,7 @@ app.post('/make_quezeshow',(req,res)=>{
       }
       else{
         console.log('이미지 없음');
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text) value('${uuid}', '${queze_title}', 1, '', '${explain_text}')`,(err,result)=>{
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}')`,(err,result)=>{
           if(err){
             throw err
           }
