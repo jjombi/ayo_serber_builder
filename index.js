@@ -613,6 +613,7 @@ app.get('/quezeshow_main',(req,res)=>{
 })
 app.get('/quezeshowqueze',(req,res)=>{
   const uuid = req.query.uuid;
+  let send_ = [];
   console.log(uuid);
   connection.query(`select * from quezeshowcontent where uuid = '${uuid}'`,(err,result)=>{
     Promise.all(result.map(async(e,i)=>{
