@@ -518,9 +518,10 @@ app.post('/make_quezeshow',(req,res)=>{
   const explain_text = req.body.explain_text;
   const img_tinyint = req.body.img_tinyint;
   const uuid = req.body.uuid;
-  const date = req.body.date
-  console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'date',date);
-  connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes) value('${uuid}', '${queze_title}', 1, ${date}, 0)`,(err,result)=>{
+  const date = req.body.date;
+  const representativeimg = req.body.representativeimg;
+  console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'date',date,'representativeimg',representativeimg);
+  connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${representativeimg}.jpg')`,(err,result)=>{
     if(err){
       throw err
     }
@@ -561,12 +562,12 @@ app.get('/quezeshow_main',(req,res)=>{
   const type = req.query.type;
   console.log(type,req.query);
   if(type === 'likes'){
-    connection.query(`select * from quezeshowqueze order by likes desc`,(err,result)=>{
+    connection.query(`select * from quezeshowqueze order by likes asc`,(err,result)=>{
       res.send(result);
     })
   }
   else if(type === 'date'){
-    connection.query(`select * from quezeshowqueze order by date desc`,(err,result)=>{
+    connection.query(`select * from quezeshowqueze order by date asc`,(err,result)=>{
       res.send(result);
     })
   }
