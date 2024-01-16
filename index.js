@@ -611,7 +611,7 @@ app.get('/quezeshow_main',(req,res)=>{
     })
   }
 })
-app.get('quezeshowqueze',(req,res)=>{
+app.get('/quezeshowqueze',(req,res)=>{
   const uuid = req.query.uuid;
   console.log(uuid);
   connection.query(`select * from quezeshowcontent where uuid = '${uuid}'`,(err,result)=>{
