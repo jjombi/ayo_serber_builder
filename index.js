@@ -528,6 +528,11 @@ app.post('/make_quezeshow',(req,res)=>{
   
   if(typeof(content_title) === 'string'){
     console.log('make quezeshow 선택지 하나만 들어옴');
+    connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text) value('${uuid}', '${content_title}', 1, '${0}.jpg', '${explain_text}')`,(err,result)=>{
+      if(err){
+        throw err
+      }
+    })
   }
   else{
     console.log('make quezeshow 선택지 여러개');
@@ -553,18 +558,18 @@ app.post('/make_quezeshow',(req,res)=>{
   res.send('success');
 })
 app.get('/quezeshow_main',(req,res)=>{
-  const type = req.params;
+  const type = req.query.type;
   console.log(type,req.query);
-  // if(type === 'likes'){
-  //   connection.query(`select * from quezeshowqueze order by likes desc`,(err,result)=>{
-  //     res.send(result);
-  //   })
-  // }
-  // else if(type === 'date'){
-  //   connection.query(`select * from quezeshowqueze order by date desc`,(err,result)=>{
-  //     res.send(result);
-  //   })
-  // }
+  if(type === 'likes'){
+    connection.query(`select * from quezeshowqueze order by likes desc`,(err,result)=>{
+      res.send(result);
+    })
+  }
+  else if(type === 'date'){
+    connection.query(`select * from quezeshowqueze order by date desc`,(err,result)=>{
+      res.send(result);
+    })
+  }
 })
 
 app.listen(port, (err) => {
