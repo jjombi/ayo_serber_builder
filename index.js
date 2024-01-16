@@ -552,6 +552,19 @@ app.post('/make_quezeshow',(req,res)=>{
   }
   res.send('success');
 })
+app.get('/quezeshow_main',(req,res)=>{
+  const type = req.params('type');
+  if(type === 'likes'){
+    connection.query(`select * from quezeshowqueze order by likes desc`,(err,result)=>{
+      res.send(result);
+    })
+  }
+  else if(type === 'date'){
+    connection.query(`select * from quezeshowqueze order by date desc`,(err,result)=>{
+      res.send(result);
+    })
+  }
+})
 
 app.listen(port, (err) => {
   console.log(`Example app listening on port ${port}`)
