@@ -621,10 +621,9 @@ app.get('/quezeshowqueze',(req,res)=>{
       if(e.img === ''){
         send_[i] ={
           img : '',
-          date : e.date,
-          likes : e.likes,
           title : e.title,
           uuid : e.uuid,
+          text : e.text
         }
       }
       else{
@@ -637,10 +636,9 @@ app.get('/quezeshowqueze',(req,res)=>{
         const img_src = (Buffer.from(response_body).toString('base64'));
         send_[i] ={
           img : img_src,
-          date : e.date,
-          likes : e.likes,
           title : e.title,
           uuid : e.uuid,
+          text : e.text
         }
       }
       console.log('send message 만들어 자는 중 ');
