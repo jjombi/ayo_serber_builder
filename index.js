@@ -25,6 +25,7 @@ app.use(
     extended: true,
   })
 );
+app.use(express.urlencoded({ extended: false }));
 app.use(fileUpload());
 app.use(cors({
   // origin : "https://ay0.netlify.app",
