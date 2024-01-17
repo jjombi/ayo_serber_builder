@@ -658,6 +658,28 @@ app.post('/quezeshowqueze_plus_value',(req,res)=>{
     return res.send('success');
   })
 })
+app.post('/quezeshowcomment',(req,res)=>{
+  const uuid = req.query.uuid;
+  connection.query(`select * from quezeshowcomment where uuid='${uuid} order by likes asc'`,(err,result)=>{
+    return res.send(result);
+  });
+})
+app.post('/quezeshowcommentchange',(req,res)=>{
+  const uuid = req.body.uuid;
+  const title = req.body.title;
+  const text = req.body.text;
+  const type = req.body.type;
+  if(type === 'plus'){
+    connection.query(`select likes from quezeshowcomment where uuid = "${uuid}" & title = "${title}" & text = "${text}"`,(err,result)=>{
+      connection.query(`update quezeshowcomment set likes = ${result[0].likes + 1} where uuid = "${uuid}" & title = "${title}" & text = "${text}"`);
+    });
+  }
+  else if(type === 'minus'){
+    connection.query(`select likes from quezeshowcomment where uuid = "${uuid}" & title = "${title}" & text = "${text}"`,(err,result)=>{
+      connection.query(`update quezeshowcomment set likes = ${result[0].likes - 1} where uuid = "${uuid}" & title = "${title}" & text = "${text}"`);
+    });
+  }
+})
 app.listen(port, (err) => {
   console.log(`Example app listening on port ${port}`)
   console.log(err);
