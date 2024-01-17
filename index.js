@@ -654,7 +654,7 @@ app.post('/quezeshowqueze_plus_value',(req,res)=>{
   const uuid2 = req.body.uuid2;
   connection.query(`select value from quezeshowcontent where uuid2 = '${uuid2}'`,(err,result)=>{
     console.log('select value from quezeshowcontent where uuid2 = ${uuid2}',result);
-    connection.query(`update quezeshowcontent set value = ${result + 1} where uuid2 = '${uuid2}'`);  
+    connection.query(`update quezeshowcontent set value = ${result[0].value + 1} where uuid2 = '${uuid2}'`);  
     return res.send('success');
   })
 })
