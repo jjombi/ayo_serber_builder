@@ -530,7 +530,7 @@ app.post('/make_quezeshow',(req,res)=>{
   
   if(typeof(content_title) === 'string'){
     console.log('make quezeshow 선택지 하나만 들어옴');
-    connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text) value('${uuid}', '${content_title}', 1, '${0}.jpg', '${explain_text}')`,(err,result)=>{
+    connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value) value('${uuid}', '${content_title}', 1, '${0}.jpg', '${explain_text}', '${uuidv4()}',0)`,(err,result)=>{
       if(err){
         throw err
       }
@@ -541,7 +541,7 @@ app.post('/make_quezeshow',(req,res)=>{
     content_title.map((e,i)=>{
       if(img_tinyint[i] === 'true'){
         console.log('이미지 있음');
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text) value('${uuid}', '${content_title[i]}', 1, '${i}.jpg', '${explain_text[i]}')`,(err,result)=>{
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value) value('${uuid}', '${content_title[i]}', 1, '${i}.jpg', '${explain_text[i]}', '${uuidv4()}',0)`,(err,result)=>{
           if(err){
             throw err
           }
@@ -549,7 +549,7 @@ app.post('/make_quezeshow',(req,res)=>{
       }
       else{
         console.log('이미지 없음');
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}')`,(err,result)=>{
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuidv4()}',0)`,(err,result)=>{
           if(err){
             throw err
           }
@@ -646,6 +646,13 @@ app.get('/quezeshowqueze',(req,res)=>{
       console.log('res send',send_);
       return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
     })
+  })
+})
+app.post('/quezeshowqueze_plus_value',(req,res)=>{
+  const uuid2 = req.body.uuid;
+  connection.query(`select value from quezeshowcontent where uuid2 = '${uuid2}'`,(err,result)=>{
+    console.log('select value from quezeshowcontent where uuid2 = ${uuid2}',result);
+    connection.query(`update quezeshowcontent set value = ${result + 1} where uuid2 = '${uuid2}'`);  
   })
 })
 app.listen(port, (err) => {
