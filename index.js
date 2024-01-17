@@ -623,7 +623,8 @@ app.get('/quezeshowqueze',(req,res)=>{
           img : '',
           title : e.title,
           uuid : e.uuid,
-          text : e.text
+          text : e.text,
+          uuid2 : e.uuid2,
         }
       }
       else{
@@ -638,7 +639,8 @@ app.get('/quezeshowqueze',(req,res)=>{
           img : img_src,
           title : e.title,
           uuid : e.uuid,
-          text : e.text
+          text : e.text,
+          uuid2 : e.uuid2,
         }
       }
       console.log('send message 만들어 자는 중 ');
