@@ -665,20 +665,34 @@ app.get('/quezeshowcomment',(req,res)=>{
   });
 })
 app.post('/quezeshowcommentchange',(req,res)=>{
-  const uuid = req.body.uuid;
-  const title = req.body.title;
-  const text = req.body.text;
+  // const uuid = req.body.uuid;
+  // const title = req.body.title;
+  // const text = req.body.text;
   const type = req.body.type;
+  const uuid2 = req.body.uuid2;
+  // console.log(uuid,title,text,type);
+  // if(type === 'plus'){
+  //   connection.query(`select likes from quezeshowcomment where uuid = "${uuid}" & title = "${title}" & text = "${text}"`,(err,result)=>{
+  //     console.log(result);
+  //     connection.query(`update quezeshowcomment set likes = ${result[0].likes + 1} where uuid = "${uuid}" & title = "${title}" & text = "${text}"`);
+  //   });
+  // }
+  // else if(type === 'minus'){  
+  //   connection.query(`select likes from quezeshowcomment where uuid = "${uuid}" & title = "${title}" & text = "${text}"`,(err,result)=>{
+  //     console.log(result);
+  //     connection.query(`update quezeshowcomment set likes = ${result[0].likes - 1} where uuid = "${uuid}" & title = "${title}" & text = "${text}"`);
+  //   });
+  // }
   if(type === 'plus'){
-    connection.query(`select likes from quezeshowcomment where uuid = "${uuid}" & title = "${title}" & text = "${text}"`,(err,result)=>{
+    connection.query(`select likes from quezeshowcomment where uuid2 = "${uuid2}"`,(err,result)=>{
       console.log(result);
-      connection.query(`update quezeshowcomment set likes = ${result[0].likes + 1} where uuid = "${uuid}" & title = "${title}" & text = "${text}"`);
+      connection.query(`update quezeshowcomment set likes = ${result[0].likes + 1} where uuid2 = "${uuid2}"`);
     });
   }
-  else if(type === 'minus'){
-    connection.query(`select likes from quezeshowcomment where uuid = "${uuid}" & title = "${title}" & text = "${text}"`,(err,result)=>{
+  else if(type === 'minus'){  
+    connection.query(`select likes from quezeshowcomment where uuid2 = "${uuid2}"`,(err,result)=>{
       console.log(result);
-      connection.query(`update quezeshowcomment set likes = ${result[0].likes - 1} where uuid = "${uuid}" & title = "${title}" & text = "${text}"`);
+      connection.query(`update quezeshowcomment set likes = ${result[0].likes - 1} where uuid2 = "${uuid2}"`);
     });
   }
   return res.send('success');
@@ -687,7 +701,7 @@ app.post('/quezeshowcomment_upload',(req,res)=>{
   const uuid = req.body.uuid;
   const title = req.body.title;
   const text = req.body.text;
-  connection.query(`insert into quezeshowcomment (title, text, likes, uuid) value('${title}', '${text}', 0, '${uuid}')`);
+  connection.query(`insert into quezeshowcomment (title, text, likes, uuid, uuid2) value('${title}', '${text}', 0, '${uuid}', '${uuidv4()}')`);
   return res.send('success');
 })
 app.listen(port, (err) => {
