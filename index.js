@@ -671,11 +671,13 @@ app.post('/quezeshowcommentchange',(req,res)=>{
   const type = req.body.type;
   if(type === 'plus'){
     connection.query(`select likes from quezeshowcomment where uuid = "${uuid}" & title = "${title}" & text = "${text}"`,(err,result)=>{
+      console.log(result);
       connection.query(`update quezeshowcomment set likes = ${result[0].likes + 1} where uuid = "${uuid}" & title = "${title}" & text = "${text}"`);
     });
   }
   else if(type === 'minus'){
     connection.query(`select likes from quezeshowcomment where uuid = "${uuid}" & title = "${title}" & text = "${text}"`,(err,result)=>{
+      console.log(result);
       connection.query(`update quezeshowcomment set likes = ${result[0].likes - 1} where uuid = "${uuid}" & title = "${title}" & text = "${text}"`);
     });
   }
