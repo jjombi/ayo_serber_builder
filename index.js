@@ -680,6 +680,13 @@ app.post('/quezeshowcommentchange',(req,res)=>{
     });
   }
 })
+app.post('/quezeshowcomment_upload',(req,res)=>{
+  const uuid = req.body.uuid;
+  const title = req.body.title;
+  const text = req.body.text;
+  connection.query(`insert into quezeshowcomment (title, text, likes, uuid) value('${title}', '${text}', 0, '${uuid}')`);
+  return res.send('success');
+})
 app.listen(port, (err) => {
   console.log(`Example app listening on port ${port}`)
   console.log(err);
