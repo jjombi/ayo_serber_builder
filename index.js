@@ -679,6 +679,7 @@ app.post('/quezeshowcommentchange',(req,res)=>{
       connection.query(`update quezeshowcomment set likes = ${result[0].likes - 1} where uuid = "${uuid}" & title = "${title}" & text = "${text}"`);
     });
   }
+  return res.send('success');
 })
 app.post('/quezeshowcomment_upload',(req,res)=>{
   const uuid = req.body.uuid;
