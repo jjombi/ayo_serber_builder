@@ -660,7 +660,7 @@ app.post('/quezeshowqueze_plus_value',(req,res)=>{
 })
 app.get('/quezeshowcomment',(req,res)=>{
   const uuid = req.query.uuid;
-  connection.query(`select * from quezeshowcomment where uuid='${uuid} order by likes asc'`,(err,result)=>{
+  connection.query(`select * from quezeshowcomment where uuid='${uuid}' order by likes asc`,(err,result)=>{
     return res.send(result);
   });
 })
