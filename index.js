@@ -522,41 +522,43 @@ app.post('/make_quezeshow',(req,res)=>{
   const date = req.body.date;
   const representativeimg = req.body.representativeimg;
   console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'date',date,'representativeimg',representativeimg);
-  connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${representativeimg}.jpg')`,(err,result)=>{
-    if(err){
-      throw err
-    }
-  })
-  
-  if(typeof(content_title) === 'string'){
-    console.log('make quezeshow 선택지 하나만 들어옴');
-    connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value) value('${uuid}', '${content_title}', 1, '${0}.jpg', '${explain_text}', '${uuidv4()}',0)`,(err,result)=>{
+  connection.query(`select roomnum from quezeshowqueze order by roomnum asc limit 1`,(err,result)=>{
+    connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${representativeimg}.jpg', ${result[0].roomnum + 1})`,(err,result)=>{
       if(err){
         throw err
       }
     })
-  }
-  else{
-    console.log('make quezeshow 선택지 여러개');
-    content_title.map((e,i)=>{
-      if(img_tinyint[i] === 'true'){
-        console.log('이미지 있음');
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value) value('${uuid}', '${content_title[i]}', 1, '${i}.jpg', '${explain_text[i]}', '${uuidv4()}',0)`,(err,result)=>{
-          if(err){
-            throw err
-          }
-        })
-      }
-      else{
-        console.log('이미지 없음');
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuidv4()}',0)`,(err,result)=>{
-          if(err){
-            throw err
-          }
-        })
-      }
-    })
-  }
+    if(typeof(content_title) === 'string'){
+      console.log('make quezeshow 선택지 하나만 들어옴');
+      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '${0}.jpg', '${explain_text}', '${uuidv4()}',0, ${result[0].roomnum + 1})`,(err,result)=>{
+        if(err){
+          throw err
+        }
+      })
+    }
+    else{
+      console.log('make quezeshow 선택지 여러개');
+      content_title.map((e,i)=>{
+        if(img_tinyint[i] === 'true'){
+          console.log('이미지 있음');
+          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '${i}.jpg', '${explain_text[i]}', '${uuidv4()}',0, ${result[0].roomnum + 1})`,(err,result)=>{
+            if(err){
+              throw err
+            }
+          })
+        }
+        else{
+          console.log('이미지 없음');
+          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuidv4()}',0, ${result[0].roomnum + 1})`,(err,result)=>{
+            if(err){
+              throw err
+            }
+          })
+        }
+      })
+    }
+
+  });
   res.send('success');
 })
 app.get('/quezeshow_main',(req,res)=>{
@@ -579,6 +581,7 @@ app.get('/quezeshow_main',(req,res)=>{
           likes : e.likes,
           title : e.title,
           uuid : e.uuid,
+          roomnum : e.roomnum
         }
         console.log('send message 만들어 자는 중 ');
       })).then(()=>{
@@ -603,6 +606,7 @@ app.get('/quezeshow_main',(req,res)=>{
           likes : e.likes,
           title : e.title,
           uuid : e.uuid,
+          roomnum : e.roomnum
         }
         console.log('send message 만들어 자는 중 ');
       })).then(()=>{
@@ -613,10 +617,10 @@ app.get('/quezeshow_main',(req,res)=>{
   }
 })
 app.get('/quezeshowqueze',(req,res)=>{
-  const uuid = req.query.uuid;
+  const roomnum = req.query.roomnum;
   let send_ = [];
   console.log(uuid);
-  connection.query(`select * from quezeshowcontent where uuid = '${uuid}'`,(err,result)=>{
+  connection.query(`select * from quezeshowcontent where roomnum = '${roomnum}'`,(err,result)=>{
     Promise.all(result.map(async(e,i)=>{
       if(e.img === ''){
         send_[i] ={
@@ -625,6 +629,7 @@ app.get('/quezeshowqueze',(req,res)=>{
           uuid : e.uuid,
           text : e.text,
           uuid2 : e.uuid2,
+          roomnum : e.roomnum
         }
       }
       else{
@@ -641,6 +646,7 @@ app.get('/quezeshowqueze',(req,res)=>{
           uuid : e.uuid,
           text : e.text,
           uuid2 : e.uuid2,
+          roomnum : e.roomnum
         }
       }
       console.log('send message 만들어 자는 중 ');
@@ -659,8 +665,8 @@ app.post('/quezeshowqueze_plus_value',(req,res)=>{
   })
 })
 app.get('/quezeshowcomment',(req,res)=>{
-  const uuid = req.query.uuid;
-  connection.query(`select * from quezeshowcomment where uuid='${uuid}' order by likes asc`,(err,result)=>{
+  const roomnum = req.query.roomnum;
+  connection.query(`select * from quezeshowcomment where roomnum='${roomnum}' order by likes asc`,(err,result)=>{
     return res.send(result);
   });
 })
