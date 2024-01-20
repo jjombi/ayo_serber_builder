@@ -616,6 +616,12 @@ app.get('/quezeshow_main',(req,res)=>{
     })
   }
 })
+app.get('/quezeshowtitle',(req,res)=>{
+  const roomnum = req.query.roomnum;
+  connection.query(`select * from quezeshowqueze where roomnum = ${roomnum}`,(err,result)=>{
+    return res.send(result);
+  })
+})
 app.get('/quezeshowqueze',(req,res)=>{
   const roomnum = req.query.roomnum;
   let send_ = [];
