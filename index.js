@@ -635,7 +635,8 @@ app.get('/quezeshowqueze',(req,res)=>{
           uuid : e.uuid,
           text : e.text,
           uuid2 : e.uuid2,
-          roomnum : e.roomnum
+          roomnum : e.roomnum,
+          value : e.value
         }
       }
       else{
@@ -652,7 +653,8 @@ app.get('/quezeshowqueze',(req,res)=>{
           uuid : e.uuid,
           text : e.text,
           uuid2 : e.uuid2,
-          roomnum : e.roomnum
+          roomnum : e.roomnum,
+          value : e.value
         }
       }
       console.log('send message 만들어 자는 중 ');
@@ -677,24 +679,9 @@ app.get('/quezeshowcomment',(req,res)=>{
   });
 })
 app.post('/quezeshowcommentchange',(req,res)=>{
-  // const uuid = req.body.uuid;
-  // const title = req.body.title;
-  // const text = req.body.text;
+
   const type = req.body.type;
   const uuid2 = req.body.uuid2;
-  // console.log(uuid,title,text,type);
-  // if(type === 'plus'){
-  //   connection.query(`select likes from quezeshowcomment where uuid = "${uuid}" & title = "${title}" & text = "${text}"`,(err,result)=>{
-  //     console.log(result);
-  //     connection.query(`update quezeshowcomment set likes = ${result[0].likes + 1} where uuid = "${uuid}" & title = "${title}" & text = "${text}"`);
-  //   });
-  // }
-  // else if(type === 'minus'){  
-  //   connection.query(`select likes from quezeshowcomment where uuid = "${uuid}" & title = "${title}" & text = "${text}"`,(err,result)=>{
-  //     console.log(result);
-  //     connection.query(`update quezeshowcomment set likes = ${result[0].likes - 1} where uuid = "${uuid}" & title = "${title}" & text = "${text}"`);
-  //   });
-  // }
   if(type === 'plus'){
     connection.query(`select likes from quezeshowcomment where uuid2 = "${uuid2}"`,(err,result)=>{
       console.log(result);
@@ -714,9 +701,11 @@ app.post('/quezeshowcomment_upload',(req,res)=>{
   const title = req.body.title;
   const text = req.body.text;
   const roomnum = req.body.roomnum;
-  connection.query(`insert into quezeshowcomment (title, text, likes, uuid, uuid2, roomnum) value('${title}', '${text}', 0, '${uuid}', '${uuidv4()}', ${roomnum})`);
-  return res.send('success');
+  connection.query(`insert into quezeshowcomment (title, text, likes, uuid, uuid2, roomnum) value('${title}', '${text}', 0, '${uuid}', '${uuidv4()}', ${roomnum})`,(err,result)=>{
+    return res.send(result);
+  });
 })
+
 app.listen(port, (err) => {
   console.log(`Example app listening on port ${port}`)
   console.log(err);
