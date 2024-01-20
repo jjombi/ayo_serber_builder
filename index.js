@@ -619,7 +619,7 @@ app.get('/quezeshow_main',(req,res)=>{
 app.get('/quezeshowqueze',(req,res)=>{
   const roomnum = req.query.roomnum;
   let send_ = [];
-  console.log(uuid);
+  console.log(roomnum);
   connection.query(`select * from quezeshowcontent where roomnum = '${roomnum}'`,(err,result)=>{
     Promise.all(result.map(async(e,i)=>{
       if(e.img === ''){
