@@ -713,7 +713,8 @@ app.post('/quezeshowcomment_upload',(req,res)=>{
   const uuid = req.body.uuid;
   const title = req.body.title;
   const text = req.body.text;
-  connection.query(`insert into quezeshowcomment (title, text, likes, uuid, uuid2) value('${title}', '${text}', 0, '${uuid}', '${uuidv4()}')`);
+  const roomnum = req.body.roomnum;
+  connection.query(`insert into quezeshowcomment (title, text, likes, uuid, uuid2, roomnum) value('${title}', '${text}', 0, '${uuid}', '${uuidv4()}', ${roomnum})`);
   return res.send('success');
 })
 app.listen(port, (err) => {
