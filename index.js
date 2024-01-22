@@ -521,36 +521,54 @@ app.post('/make_quezeshow',(req,res)=>{
   const uuid = req.body.uuid;
   const date = req.body.date;
   const representativeimg = req.body.representativeimg;
+  let result_roomnum;
   console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'date',date,'representativeimg',representativeimg);
   connection.query(`select roomnum from quezeshowqueze order by roomnum desc limit 1`,(err,result)=>{
     console.log(result);
-    if(representativeimg === null){
-      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result[0].roomnum + 1})`,(err,result)=>{
+    if(result.length === 0){
+      result_roomnum = 0;
+    }
+    else{
+      result_roomnum = result[0].roomnum;
+    }
+    if(representativeimg === null){ // 섬내일 없을 때
+      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1})`,(err,result)=>{
         if(err){
           throw err
         }
       })
     }else{
-      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${representativeimg}.jpg', ${result[0].roomnum + 1})`,(err,result)=>{
+      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${representativeimg}.jpg', ${result_roomnum + 1})`,(err,result)=>{
         if(err){
           throw err
         }
       })
     }
-    if(typeof(content_title) === 'string'){
+    if(typeof(content_title) === 'string'){ // content 하나 일때
       console.log('make quezeshow 선택지 하나만 들어옴');
-      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '${0}.jpg', '${explain_text}', '${uuidv4()}',0, ${result[0].roomnum + 1})`,(err,result)=>{
-        if(err){
-          throw err
-        }
-      })
+      if(img_tinyint === 'true'){
+        console.log('이미지 있음');
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '${0}.jpg', '${explain_text}', '${uuidv4()}',0, ${result_roomnum + 1})`,(err,result)=>{
+          if(err){
+            throw err
+          }
+        })
+      }
+      else{
+        console.log('이미지 없음');
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '', '${explain_text}', '${uuidv4()}',0, ${result_roomnum + 1})`,(err,result)=>{
+          if(err){
+            throw err
+          }
+        })
+      }
     }
     else{
       console.log('make quezeshow 선택지 여러개');
       content_title.map((e,i)=>{
         if(img_tinyint[i] === 'true'){
           console.log('이미지 있음');
-          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '${i}.jpg', '${explain_text[i]}', '${uuidv4()}',0, ${result[0].roomnum + 1})`,(err,result)=>{
+          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '${i}.jpg', '${explain_text[i]}', '${uuidv4()}',0, ${result_roomnum + 1})`,(err,result)=>{
             if(err){
               throw err
             }
@@ -558,7 +576,7 @@ app.post('/make_quezeshow',(req,res)=>{
         }
         else{
           console.log('이미지 없음');
-          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuidv4()}',0, ${result[0].roomnum + 1})`,(err,result)=>{
+          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuidv4()}',0, ${result_roomnum + 1})`,(err,result)=>{
             if(err){
               throw err
             }
