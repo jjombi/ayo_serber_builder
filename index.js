@@ -523,6 +523,7 @@ app.post('/make_quezeshow',(req,res)=>{
   const representativeimg = req.body.representativeimg;
   console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'date',date,'representativeimg',representativeimg);
   connection.query(`select roomnum from quezeshowqueze order by roomnum asc limit 1`,(err,result)=>{
+    console.log(result);
     connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${representativeimg}.jpg', ${result[0].roomnum + 1})`,(err,result)=>{
       if(err){
         throw err
