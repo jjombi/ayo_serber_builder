@@ -703,7 +703,7 @@ app.post('/quezeshowqueze_plus_value',(req,res)=>{
 })
 app.get('/quezeshowcomment',(req,res)=>{
   const roomnum = req.query.roomnum;
-  connection.query(`select * from quezeshowcomment where roomnum='${roomnum}' order by likes asc`,(err,result)=>{
+  connection.query(`select * from quezeshowcomment where roomnum='${roomnum}' order by likes desc`,(err,result)=>{
     return res.send(result);
   });
 })
