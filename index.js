@@ -750,6 +750,23 @@ app.get('/community',(req,res)=>{
     else return res.send(result);
   })
 })
+app.post('/community_likes_change',(req,res)=>{
+  const type = req.body.type;
+  const uuid = req.body.uuid;
+  if(type === 'plus'){
+    connection.query(`select likes from community where uuid = "${uuid}"`,(err,result)=>{
+      console.log(result);
+      connection.query(`update community set likes = ${result[0].likes + 1} where uuid2 = "${uuid}"`);
+    });
+  }
+  else if(type === 'minus'){  
+    connection.query(`select likes from community where uuid = "${uuid}"`,(err,result)=>{
+      console.log(result);
+      connection.query(`update community set likes = ${result[0].likes - 1} where uuid2 = "${uuid}"`);
+    });
+  }
+  return res.send('success');
+})
 app.listen(port, (err) => {
   console.log(`Example app listening on port ${port}`)
   console.log(err);
