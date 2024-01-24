@@ -756,13 +756,13 @@ app.post('/community_likes_change',(req,res)=>{
   if(type === 'plus'){
     connection.query(`select likes from community where uuid = "${uuid}"`,(err,result)=>{
       console.log(result);
-      connection.query(`update community set likes = ${result[0].likes + 1} where uuid2 = "${uuid}"`);
+      connection.query(`update community set likes = ${result[0].likes + 1} where uuid = "${uuid}"`);
     });
   }
   else if(type === 'minus'){  
     connection.query(`select likes from community where uuid = "${uuid}"`,(err,result)=>{
       console.log(result);
-      connection.query(`update community set likes = ${result[0].likes - 1} where uuid2 = "${uuid}"`);
+      connection.query(`update community set likes = ${result[0].likes - 1} where uuid = "${uuid}"`);
     });
   }
   return res.send('success');
