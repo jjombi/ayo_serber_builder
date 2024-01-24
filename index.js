@@ -734,7 +734,22 @@ app.post('/quezeshowcomment_upload',(req,res)=>{
     return res.send(result);
   });
 })
-
+app.post('/community_plus',(req,res)=>{
+  console.log(req.body);
+  const text = req.body.text;
+  const date = req.body.date;
+  connection.query(`insert into community (text,date,uuid,likes) value('${text}', ${date}, '${uuidv4()}', 0)`,(err,result)=>{
+    if(err) throw err
+    else return res.send('success');
+  });
+})
+app.get('/community',(req,res)=>{
+  const type = req.query.type; // "date" or "likes"
+  connection.query(`select * from community order by ${type} limit 20;`,(err,result)=>{
+    if(err) throw err
+    else return res.send(result);
+  })
+})
 app.listen(port, (err) => {
   console.log(`Example app listening on port ${port}`)
   console.log(err);
