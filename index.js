@@ -590,12 +590,97 @@ app.post('/make_quezeshow',(req,res)=>{
 })
 app.get('/quezeshow_main',(req,res)=>{
   const type = req.query.type;
+  const space_uuid = req.query.space_uuid; //null or uuid
+
   console.log(type,req.query);
   let send_ = [];
-  if(type === 'likes'){
-    connection.query(`select * from quezeshowqueze order by likes asc limit 20`,(err,result)=>{
-      Promise.all(result.map(async(e,i)=>{
-        if(e.img !== ''){
+  if(space_uuid !== null){
+    if(type === 'likes'){
+      connection.query(`select * from spacequezeshowqueze order by likes asc limit 20`,(err,result)=>{
+        Promise.all(result.map(async(e,i)=>{
+          if(e.img !== ''){
+            const  command = new GetObjectCommand({
+              Bucket: "dlworjs",
+              Key: `space/${e.uuid}/e.img`,
+            });
+            const response = await client.send(command);
+            const response_body = await response.Body.transformToByteArray();
+            const img_src = (Buffer.from(response_body).toString('base64'));
+            send_[i] ={
+              img : img_src,
+              date : e.date,
+              likes : e.likes,
+              title : e.title,
+              uuid : e.uuid,
+              uuid2 : e.uuid2,
+              roomnum : e.roomnum
+            }
+            console.log('send message 만들어 자는 중 ');
+          }
+        })).then(()=>{
+          console.log('res send',send_);
+          return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+        })
+      })
+    }
+    else if(type === 'date'){
+      connection.query(`select * from quezeshowqueze order by likes asc limit 20`,(err,result)=>{
+        Promise.all(result.map(async(e,i)=>{
+          const  command = new GetObjectCommand({
+            Bucket: "dlworjs",
+            Key: `space/${e.uuid}/e.img`,
+          });
+          const response = await client.send(command);
+          const response_body = await response.Body.transformToByteArray();
+          const img_src = (Buffer.from(response_body).toString('base64'));
+          send_[i] ={
+            img : img_src,
+            date : e.date,
+            likes : e.likes,
+            title : e.title,
+            uuid : e.uuid,
+            uuid2 : e.uuid2,
+            roomnum : e.roomnum
+          }
+          console.log('send message 만들어 자는 중 ');
+        })).then(()=>{
+          console.log('res send',send_);
+          return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+        })
+      })
+    }
+  }
+  else {
+    if(type === 'likes'){
+      connection.query(`select * from quezeshowqueze order by likes asc limit 20`,(err,result)=>{
+        Promise.all(result.map(async(e,i)=>{
+          if(e.img !== ''){
+            const  command = new GetObjectCommand({
+              Bucket: "dlworjs",
+              Key: e.uuid+'/'+e.img,
+            });
+            const response = await client.send(command);
+            const response_body = await response.Body.transformToByteArray();
+            const img_src = (Buffer.from(response_body).toString('base64'));
+            send_[i] ={
+              img : img_src,
+              date : e.date,
+              likes : e.likes,
+              title : e.title,
+              uuid : e.uuid,
+              roomnum : e.roomnum
+            }
+            console.log('send message 만들어 자는 중 ');
+          }
+        })).then(()=>{
+          console.log('res send',send_);
+          return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+        })
+      })
+    }
+    else if(type === 'date'){
+      connection.query(`select * from quezeshowqueze order by likes asc limit 20`,(err,result)=>{
+        Promise.all(result.map(async(e,i)=>{
           const  command = new GetObjectCommand({
             Bucket: "dlworjs",
             Key: e.uuid+'/'+e.img,
@@ -612,37 +697,12 @@ app.get('/quezeshow_main',(req,res)=>{
             roomnum : e.roomnum
           }
           console.log('send message 만들어 자는 중 ');
-        }
-      })).then(()=>{
-        console.log('res send',send_);
-        return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+        })).then(()=>{
+          console.log('res send',send_);
+          return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+        })
       })
-    })
-  }
-  else if(type === 'date'){
-    connection.query(`select * from quezeshowqueze order by likes asc limit 20`,(err,result)=>{
-      Promise.all(result.map(async(e,i)=>{
-        const  command = new GetObjectCommand({
-          Bucket: "dlworjs",
-          Key: e.uuid+'/'+e.img,
-        });
-        const response = await client.send(command);
-        const response_body = await response.Body.transformToByteArray();
-        const img_src = (Buffer.from(response_body).toString('base64'));
-        send_[i] ={
-          img : img_src,
-          date : e.date,
-          likes : e.likes,
-          title : e.title,
-          uuid : e.uuid,
-          roomnum : e.roomnum
-        }
-        console.log('send message 만들어 자는 중 ');
-      })).then(()=>{
-        console.log('res send',send_);
-        return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
-      })
-    })
+    }
   }
 })
 app.get('/quezeshowtitle',(req,res)=>{
@@ -818,8 +878,40 @@ app.get('/space',(req,res)=>{
     })
   })
 })
+app.get('/in_space',(req,res)=>{
+  const type = req.query.type; // "date" or "likes"
+  let send_ = [];
+  connection.query(`select * from space_content order by ${type} limit 20;`,(err,result)=>{
+    Promise.all(result.map(async(e,i)=>{
+      if(e.img === ''){
+        send_[i] ={
+          img : '',
+          title : e.title,
+          uuid : e.uuid,
+        }
+      }
+      else{
+        const  command = new GetObjectCommand({
+          Bucket: "dlworjs",
+          Key: e.img,
+        });
+        const response = await client.send(command);
+        const response_body = await response.Body.transformToByteArray();
+        const img_src = (Buffer.from(response_body).toString('base64'));
+        send_[i] ={
+          img : img_src,
+          title : e.title,
+          uuid : e.uuid,
+        }
+      }
+      console.log('send message 만들어 자는 중 ');
+    })).then(()=>{
+      console.log('res send',send_);
+      return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+    })
+  })
+})
 app.get('/search_space',(req,res)=>{
-  let base64_img_arr = [];
   let send_ = [];
   connection.query(`select * from space where title like "%${req.query.value}%";`,(err,result)=>{
     console.log(result);
@@ -831,6 +923,10 @@ app.get('/search_space',(req,res)=>{
               img : '',
               title : e.title,
               uuid : e.uuid,
+              text : e.text,
+              uuid2 : e.uuid2,
+              roomnum : e.roomnum,
+              value : e.value
             }
           }
           else{
@@ -845,6 +941,10 @@ app.get('/search_space',(req,res)=>{
               img : img_src,
               title : e.title,
               uuid : e.uuid,
+              text : e.text,
+              uuid2 : e.uuid2,
+              roomnum : e.roomnum,
+              value : e.value
             }
           }
         })
