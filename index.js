@@ -711,6 +711,13 @@ app.get('/quezeshowtitle',(req,res)=>{
     return res.send(result);
   })
 })
+app.get('/spacequezeshowtitle',(req,res)=>{
+  const roomnum = req.query.roomnum;
+  const uuid = req.query.uuid;
+  connection.query(`select * from spacequezeshowqueze where roomnum = ${roomnum} & uuid = '${uuid}'`,(err,result)=>{
+    return res.send(result);
+  })
+})
 app.get('/quezeshowqueze',(req,res)=>{
   const roomnum = req.query.roomnum;
   let send_ = [];
@@ -742,6 +749,51 @@ app.get('/quezeshowqueze',(req,res)=>{
           uuid : e.uuid,
           text : e.text,
           uuid2 : e.uuid2,
+          roomnum : e.roomnum,
+          value : e.value
+        }
+      }
+      console.log('send message 만들어 자는 중 ');
+    })).then(()=>{
+      console.log('res send',send_);
+      return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+    })
+  })
+})
+app.get('/spacequezeshowqueze',(req,res)=>{
+  const roomnum = req.query.roomnum;
+  const uuid = req.query.uuid;
+  let send_ = [];
+  console.log(roomnum);
+  connection.query(`select * from space_content where roomnum = '${roomnum}' & uuid = '${uuid}'`,(err,result)=>{
+    Promise.all(result.map(async(e,i)=>{
+      if(e.img === ''){
+        send_[i] ={
+          img : '',
+          title : e.title,
+          uuid : e.uuid,
+          uuid2 : e.uuid2,
+          uuid3 : e.uuid3,
+          text : e.text,
+          roomnum : e.roomnum,
+          value : e.value
+        }
+      }
+      else{
+        const  command = new GetObjectCommand({
+          Bucket: "dlworjs",
+          Key: `space/${e.uuid}/${e.uuid2}/${e.img}`,
+        });
+        const response = await client.send(command);
+        const response_body = await response.Body.transformToByteArray();
+        const img_src = (Buffer.from(response_body).toString('base64'));
+        send_[i] ={
+          img : img_src,
+          title : e.title,
+          uuid : e.uuid,
+          uuid2 : e.uuid2,
+          uuid3 : e.uuid3,
+          text : e.text,
           roomnum : e.roomnum,
           value : e.value
         }
