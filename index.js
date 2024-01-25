@@ -1023,7 +1023,7 @@ app.post('/make_spacequezeshow',(req,res)=>{
         }
         else{
           console.log('이미지 없음');
-          connection.query(`insert into space_content (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuid2}',0, ${result_roomnum + 1}, '${uuidv4()}')`,(err,result)=>{
+          connection.query(`insert into space_content (uuid, title, existence, img, text, uuid2, value, roomnum, uuid3) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuid2}',0, ${result_roomnum + 1}, '${uuidv4()}')`,(err,result)=>{
             if(err){
               throw err
             }
