@@ -969,9 +969,9 @@ app.post('/make_spacequezeshow',(req,res)=>{
   const date = req.body.date;
   const representativeimg = req.body.representativeimg;
   let result_roomnum;
-  console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'date',date,'representativeimg',representativeimg);
+  console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'uuid2',uuid2,'date',date,'representativeimg',representativeimg);
   connection.query(`select roomnum from spacequezeshowqueze order by roomnum desc limit 1`,(err,result)=>{
-    console.log(result);
+    console.log('make space quezeshow result : ',result);
     if(result.length === 0){
       result_roomnum = 0;
     }
