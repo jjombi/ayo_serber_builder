@@ -959,6 +959,82 @@ app.get('/search_space',(req,res)=>{
     } 
   })
 })
+app.post('/make_spacequezeshow',(req,res)=>{
+  const queze_title = req.body.queze_title;
+  const content_title = req.body.content_title;
+  const explain_text = req.body.explain_text;
+  const img_tinyint = req.body.img_tinyint;
+  const uuid = req.body.uuid; // space uuid
+  const uuid2 = req.body.uuid2; // queze uuid
+  const date = req.body.date;
+  const representativeimg = req.body.representativeimg;
+  let result_roomnum;
+  console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'date',date,'representativeimg',representativeimg);
+  connection.query(`select roomnum from spacequezeshowqueze order by roomnum desc limit 1`,(err,result)=>{
+    console.log(result);
+    if(result.length === 0){
+      result_roomnum = 0;
+    }
+    else{
+      result_roomnum = result[0].roomnum;
+    }
+    if(representativeimg === null){ // 섬내일 없을 때
+      connection.query(`insert into spacequezeshowqueze (uuid, uuid2, title, existence, date, likes, img, roomnum) value('${uuid}', '${uuid2}','${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1})`,(err,result)=>{
+        if(err){
+          throw err
+        }
+      })
+    }else{
+      connection.query(`insert into spacequezeshowqueze (uuid, uuid2, title, existence, date, likes, img, roomnum) value('${uuid}', '${uuid2}', '${queze_title}', 1, ${date}, 0, '${representativeimg}.jpg', ${result_roomnum + 1})`,(err,result)=>{
+        if(err){
+          throw err
+        }
+      })
+    }
+    if(typeof(content_title) === 'string'){ // content 하나 일때
+      console.log('make quezeshow 선택지 하나만 들어옴');
+      if(img_tinyint === 'true'){
+        console.log('이미지 있음');
+        connection.query(`insert into space_content (uuid, title, existence, img, text, uuid2, value, roomnum, uuid3) value('${uuid}', '${content_title}', 1, '${0}.jpg', '${explain_text}', '${uuid2}',0, ${result_roomnum + 1}), '${uuidv4()}'`,(err,result)=>{
+          if(err){
+            throw err
+          }
+        })
+      }
+      else{
+        console.log('이미지 없음');
+        connection.query(`insert into space_content (uuid, title, existence, img, text, uuid2, value, roomnum, uuid3) value('${uuid}', '${content_title}', 1, '', '${explain_text}', '${uuid2}',0, ${result_roomnum + 1}), '${uuidv4()}'`,(err,result)=>{
+          if(err){
+            throw err
+          }
+        })
+      }
+    }
+    else{
+      console.log('make quezeshow 선택지 여러개');
+      content_title.map((e,i)=>{
+        if(img_tinyint[i] === 'true'){
+          console.log('이미지 있음');
+          connection.query(`insert into space_content (uuid, title, existence, img, text, uuid2, value, roomnum, uuid3) value('${uuid}', '${content_title[i]}', 1, '${i}.jpg', '${explain_text[i]}', '${uuid2}',0, ${result_roomnum + 1}, '${uuidv4()}')`,(err,result)=>{
+            if(err){
+              throw err
+            }
+          })
+        }
+        else{
+          console.log('이미지 없음');
+          connection.query(`insert into space_content (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuid2}',0, ${result_roomnum + 1}, '${uuidv4()}')`,(err,result)=>{
+            if(err){
+              throw err
+            }
+          })
+        }
+      })
+    }
+
+  });
+  res.send('success');
+})
 app.listen(port, (err) => {
   console.log(`Example app listening on port ${port}`)
   console.log(err);
