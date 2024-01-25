@@ -770,11 +770,20 @@ app.post('/community_likes_change',(req,res)=>{
 app.post('/make_space',(req,res)=>{
   const uuid = req.body.uuid;
   const title = req.body.title;
-  
-  connection.query(`insert into space (uuid, img, title) value('${uuid}', 'space/${uuid}.jpg', '${title}')`,(err,result)=>{
-    if(err) throw err;
-    else return res.send('success');
-  })
+  const img = req.body.img;
+  if(img === ''){
+    connection.query(`insert into space (uuid, img, title) value('${uuid}', '', '${title}')`,(err,result)=>{
+      if(err) throw err;
+      else return res.send('success');
+    })
+  }
+  else{
+    connection.query(`insert into space (uuid, img, title) value('${uuid}', '${img}', '${title}')`,(err,result)=>{
+      if(err) throw err;
+      else return res.send('success');
+    })
+  }
+
 })
 app.get('/space',(req,res)=>{
   const type = req.query.type; // "date" or "likes"
