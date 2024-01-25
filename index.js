@@ -767,6 +767,89 @@ app.post('/community_likes_change',(req,res)=>{
   }
   return res.send('success');
 })
+app.post('/make_space',(req,res)=>{
+  const uuid = req.body.uuid;
+  const title = req.body.title;
+  
+  connection.query(`insert into space (uuid, img, title) value('${uuid}', 'space/${uuid}.jpg', '${title}')`,(err,result)=>{
+    if(err) throw err;
+    else return res.send('success');
+  })
+})
+app.get('/space',(req,res)=>{
+  const type = req.query.type; // "date" or "likes"
+  let send_ = [];
+  connection.query(`select * from space order by ${type} limit 20;`,(err,result)=>{
+    Promise.all(result.map(async(e,i)=>{
+      if(e.img === ''){
+        send_[i] ={
+          img : '',
+          title : e.title,
+          uuid : e.uuid,
+        }
+      }
+      else{
+        const  command = new GetObjectCommand({
+          Bucket: "dlworjs",
+          Key: e.img,
+        });
+        const response = await client.send(command);
+        const response_body = await response.Body.transformToByteArray();
+        const img_src = (Buffer.from(response_body).toString('base64'));
+        send_[i] ={
+          img : img_src,
+          title : e.title,
+          uuid : e.uuid,
+        }
+      }
+      console.log('send message 만들어 자는 중 ');
+    })).then(()=>{
+      console.log('res send',send_);
+      return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+    })
+  })
+})
+app.get('/search_space',(req,res)=>{
+  let base64_img_arr = [];
+  let send_ = [];
+  connection.query(`select * from space where title like "%${req.query.value}%";`,(err,result)=>{
+    console.log(result);
+    if(result.length !== 0){
+      Promise.all(
+        result.map(async(e,i)=>{
+          if(e.img === ''){
+            send_[i] ={
+              img : '',
+              title : e.title,
+              uuid : e.uuid,
+            }
+          }
+          else{
+            const  command = new GetObjectCommand({
+              Bucket: "dlworjs",
+              Key: e.roomName+"/"+e.title_img_name,
+            });
+            const response = await client.send(command);
+            const response_body = await response.Body.transformToByteArray();
+            const img_src = (Buffer.from(response_body).toString('base64'));
+            send_[i] ={
+              img : img_src,
+              title : e.title,
+              uuid : e.uuid,
+            }
+          }
+        })
+      ).then(()=>{
+        console.log('res send');
+        return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+
+      })
+    }else {
+      console.log('err');
+      return res.send(false);
+    } 
+  })
+})
 app.listen(port, (err) => {
   console.log(`Example app listening on port ${port}`)
   console.log(err);
