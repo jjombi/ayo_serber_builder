@@ -814,12 +814,16 @@ app.post('/quezeshowqueze_plus_value',(req,res)=>{
   })
 })
 app.post('/spacequezeshowqueze_plus_value',(req,res)=>{
-  const uuid2 = req.body.uuid2;
-  const space_uuid = req.body.space_uuid;
-  connection.query(`select value from space_content where uuid2 = '${uuid2}' & uuid = '${space_uuid}'`,(err,result)=>{
+  const uuid = req.body.uuid;
+  connection.query(`select value from space_content where uuid3 = '${uuid}'`,(err,result)=>{
     console.log('select value from space_content where uuid2 = ${uuid2 & uuid = space_uuid',result);
-    connection.query(`update space_content set value = ${result[0].value + 1} where uuid2 = '${uuid2}' & uuid = '${space_uuid}'`);  
-    return res.send('success');
+    if(result.length === 0) {
+      console.log(err);
+      return res.send('spacequezeshowqueze_plus_value err, 값을 올릴 수 없습니다. result.length === 0');
+    }else{
+      connection.query(`update space_content set value = ${result[0].value + 1} where uuid3 = '${uuid}'`);  
+      return res.send('success');
+    }
   })
 })
 app.get('/quezeshowcomment',(req,res)=>{
@@ -869,6 +873,7 @@ app.post('/spacequezeshowcomment_upload',(req,res)=>{
   const title = req.body.title;
   const text = req.body.text;
   const roomnum = req.body.roomnum;
+  console.log(uuid,uuid2,title,text,roomnum);
   connection.query(`insert into spacequezeshowcomment (title, text, likes, uuid, uuid2, uuid3, roomnum) value('${title}', '${text}', 0, '${uuid}', '${uuid2}','${uuidv4()}', ${roomnum})`,(err,result)=>{
     return res.send(result);
   });
