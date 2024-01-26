@@ -859,6 +859,24 @@ app.post('/quezeshowcommentchange',(req,res)=>{
   }
   return res.send('success');
 })
+app.post('/spacequezeshowcommentchange',(req,res)=>{
+
+  const type = req.body.type;
+  const uuid3 = req.body.uuid3;
+  if(type === 'plus'){
+    connection.query(`select likes from spacequezeshowcomment where uuid3 = "${uuid3}"`,(err,result)=>{
+      console.log(result);
+      connection.query(`update spacequezeshowcomment set likes = ${result[0].likes + 1} where uuid3 = "${uuid3}"`);
+    });
+  }
+  else if(type === 'minus'){  
+    connection.query(`select likes from spacequezeshowcomment where uuid3 = "${uuid3}"`,(err,result)=>{
+      console.log(result);
+      connection.query(`update spacequezeshowcomment set likes = ${result[0].likes - 1} where uuid3 = "${uuid3}"`);
+    });
+  }
+  return res.send('success');
+})
 app.post('/quezeshowcomment_upload',(req,res)=>{
   const uuid = req.body.uuid;
   const title = req.body.title;
