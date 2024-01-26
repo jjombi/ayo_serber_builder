@@ -601,7 +601,7 @@ app.get('/quezeshow_main',(req,res)=>{
           if(e.img !== ''){
             const  command = new GetObjectCommand({
               Bucket: "dlworjs",
-              Key: `space/${e.uuid}/${e.img}`,
+              Key: `${e.img}`,
             });
             const response = await client.send(command);
             const response_body = await response.Body.transformToByteArray();
