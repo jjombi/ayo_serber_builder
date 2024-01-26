@@ -837,7 +837,7 @@ app.get('/spacequezeshowcomment',(req,res)=>{
   const uuid = req.query.uuid;
   const uuid2 = req.query.uuid2;
   console.log(roomnum,uuid,uuid2);
-  connection.query(`select * from spacequezeshowcomment where roomnum=${roomnum} & uuid = '${uuid}' & uuid2 = '${uuid2}' order by likes desc`,(err,result)=>{
+  connection.query(`select * from spacequezeshowcomment where roomnum=${roomnum} && uuid = '${uuid}' && uuid2 = '${uuid2}' order by likes desc`,(err,result)=>{
     return res.send(result);
   });
 })
