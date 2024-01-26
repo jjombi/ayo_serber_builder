@@ -714,7 +714,7 @@ app.get('/quezeshowtitle',(req,res)=>{
 app.get('/spacequezeshowtitle',(req,res)=>{
   const roomnum = req.query.roomnum;
   const uuid = req.query.uuid;
-  connection.query(`select * from spacequezeshowqueze where roomnum = ${roomnum} & uuid = '${uuid}'`,(err,result)=>{
+  connection.query(`select * from spacequezeshowqueze where roomnum = ${roomnum} && uuid = '${uuid}'`,(err,result)=>{
     return res.send(result);
   })
 })
@@ -765,7 +765,7 @@ app.get('/spacequezeshowqueze',(req,res)=>{
   const uuid = req.query.uuid;
   let send_ = [];
   console.log(roomnum);
-  connection.query(`select * from space_content where roomnum = '${roomnum}' & uuid = '${uuid}'`,(err,result)=>{
+  connection.query(`select * from space_content where roomnum = '${roomnum}' && uuid = '${uuid}'`,(err,result)=>{
     Promise.all(result.map(async(e,i)=>{
       if(e.img === ''){
         send_[i] ={
