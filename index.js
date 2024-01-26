@@ -813,9 +813,26 @@ app.post('/quezeshowqueze_plus_value',(req,res)=>{
     return res.send('success');
   })
 })
+app.post('/spacequezeshowqueze_plus_value',(req,res)=>{
+  const uuid2 = req.body.uuid2;
+  const space_uuid = req.body.space_uuid;
+  connection.query(`select value from space_content where uuid2 = '${uuid2}' & uuid = '${space_uuid}'`,(err,result)=>{
+    console.log('select value from space_content where uuid2 = ${uuid2 & uuid = space_uuid',result);
+    connection.query(`update space_content set value = ${result[0].value + 1} where uuid2 = '${uuid2}' & uuid = '${space_uuid}'`);  
+    return res.send('success');
+  })
+})
 app.get('/quezeshowcomment',(req,res)=>{
   const roomnum = req.query.roomnum;
   connection.query(`select * from quezeshowcomment where roomnum='${roomnum}' order by likes desc`,(err,result)=>{
+    return res.send(result);
+  });
+})
+app.get('/spacequezeshowcomment',(req,res)=>{
+  const roomnum = req.query.roomnum;
+  const uuid = req.query.uuid;
+  const uuid2 = req.query.uuid2;
+  connection.query(`select * from spacequezeshowcomment where roomnum='${roomnum}' & uuid = '${uuid}' & uuid2 = '${uuid2}' order by likes desc`,(err,result)=>{
     return res.send(result);
   });
 })
@@ -843,6 +860,16 @@ app.post('/quezeshowcomment_upload',(req,res)=>{
   const text = req.body.text;
   const roomnum = req.body.roomnum;
   connection.query(`insert into quezeshowcomment (title, text, likes, uuid, uuid2, roomnum) value('${title}', '${text}', 0, '${uuid}', '${uuidv4()}', ${roomnum})`,(err,result)=>{
+    return res.send(result);
+  });
+})
+app.post('/spacequezeshowcomment_upload',(req,res)=>{
+  const uuid = req.body.uuid;
+  const uuid2 = req.body.uuid2;
+  const title = req.body.title;
+  const text = req.body.text;
+  const roomnum = req.body.roomnum;
+  connection.query(`insert into spacequezeshowcomment (title, text, likes, uuid, uuid2, uuid3, roomnum) value('${title}', '${text}', 0, '${uuid}', '${uuid2}','${uuidv4()}', ${roomnum})`,(err,result)=>{
     return res.send(result);
   });
 })
