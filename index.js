@@ -596,7 +596,7 @@ app.get('/quezeshow_main',(req,res)=>{
   let send_ = [];
   if(space_uuid !== undefined){
     if(type === 'likes'){
-      connection.query(`select * from spacequezeshowqueze order by likes asc limit 20`,(err,result)=>{
+      connection.query(`select * from spacequezeshowqueze where uuid = '${space_uuid}' order by likes asc limit 20`,(err,result)=>{
         Promise.all(result.map(async(e,i)=>{
           if(e.img !== ''){
             const  command = new GetObjectCommand({
@@ -624,7 +624,7 @@ app.get('/quezeshow_main',(req,res)=>{
       })
     }
     else if(type === 'date'){
-      connection.query(`select * from quezeshowqueze order by likes asc limit 20`,(err,result)=>{
+      connection.query(`select * from quezeshowqueze uuid = '${space_uuid}' order by likes asc limit 20`,(err,result)=>{
         Promise.all(result.map(async(e,i)=>{
           const  command = new GetObjectCommand({
             Bucket: "dlworjs",
