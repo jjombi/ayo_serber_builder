@@ -590,11 +590,11 @@ app.post('/make_quezeshow',(req,res)=>{
 })
 app.get('/quezeshow_main',(req,res)=>{
   const type = req.query.type;
-  const space_uuid = req.query.space_uuid; //null or uuid
+  const space_uuid = req.query.space_uuid; //undefind or uuid
 
   console.log(type,req.query);
   let send_ = [];
-  if(space_uuid !== null){
+  if(space_uuid !== undefined){
     if(type === 'likes'){
       connection.query(`select * from spacequezeshowqueze order by likes asc limit 20`,(err,result)=>{
         Promise.all(result.map(async(e,i)=>{
