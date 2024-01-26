@@ -592,7 +592,7 @@ app.get('/quezeshow_main',(req,res)=>{
   const type = req.query.type;
   const space_uuid = req.query.space_uuid; //undefind or uuid
 
-  console.log(type,req.query);
+  console.log(type,req.query,space_uuid);
   let send_ = [];
   if(space_uuid !== undefined){
     if(type === 'likes'){
