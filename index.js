@@ -1138,6 +1138,13 @@ app.post('/make_spacequezeshow',(req,res)=>{
   });
   res.send('success');
 })
+app.post('/shar_quezeshow',(req,res)=>{
+  connection.query(`select * from space where title like "%${req.query.value}%" limit 7`,(err,result)=>{
+    console.log('shar_quezeshow',result);
+    if(result.length === 0) return res.send(false);
+    else return res.send(result);
+  })
+})
 app.listen(port, (err) => {
   console.log(`Example app listening on port ${port}`)
   console.log(err);
