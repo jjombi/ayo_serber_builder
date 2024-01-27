@@ -934,14 +934,15 @@ app.post('/make_space',(req,res)=>{
   const uuid = req.body.uuid;
   const title = req.body.title;
   const img = req.body.img;
+  const intro_text = req.body.intro_text;
   if(img === ''){
-    connection.query(`insert into space (uuid, img, title) value('${uuid}', '', '${title}')`,(err,result)=>{
+    connection.query(`insert into space (uuid, img, title, intro_text) value('${uuid}', '', '${title}','${intro_text}')`,(err,result)=>{
       if(err) throw err;
       else return res.send('success');
     })
   }
   else{
-    connection.query(`insert into space (uuid, img, title) value('${uuid}', '${img}', '${title}')`,(err,result)=>{
+    connection.query(`insert into space (uuid, img, title, intro_text) value('${uuid}', '${img}', '${title}', '${intro_text}')`,(err,result)=>{
       if(err) throw err;
       else return res.send('success');
     })
