@@ -959,6 +959,7 @@ app.get('/space',(req,res)=>{
           img : '',
           title : e.title,
           uuid : e.uuid,
+          intro_text : e.intro_text
         }
       }
       else{
@@ -973,6 +974,7 @@ app.get('/space',(req,res)=>{
           img : img_src,
           title : e.title,
           uuid : e.uuid,
+          intro_text : e.intro_text
         }
       }
       console.log('send message 만들어 자는 중 ');
