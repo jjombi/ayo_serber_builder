@@ -1035,8 +1035,8 @@ app.get('/search_space',(req,res)=>{
           else{
             const  command = new GetObjectCommand({
               Bucket: "dlworjs",
-              Key: e.roomName+"/"+e.title_img_name,
-            });
+              Key: `${e.img}`
+            })
             const response = await client.send(command);
             const response_body = await response.Body.transformToByteArray();
             const img_src = (Buffer.from(response_body).toString('base64'));
