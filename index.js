@@ -616,6 +616,17 @@ app.get('/quezeshow_main',(req,res)=>{
               roomnum : e.roomnum
             }
             console.log('send message 만들어 자는 중 ');
+          }else{
+            send_[i] ={
+              img : '',
+              date : e.date,
+              likes : e.likes,
+              title : e.title,
+              uuid : e.uuid,
+              uuid2 : e.uuid2,
+              roomnum : e.roomnum
+            }
+            console.log('send message 만들어 자는 중 ');
           }
         })).then(()=>{
           console.log('res send',send_);
@@ -623,32 +634,32 @@ app.get('/quezeshow_main',(req,res)=>{
         })
       })
     }
-    else if(type === 'date'){
-      connection.query(`select * from spacequezeshowqueze uuid = '${space_uuid}' && existence = 1 order by likes asc limit 20`,(err,result)=>{
-        Promise.all(result.map(async(e,i)=>{
-          const  command = new GetObjectCommand({
-            Bucket: "dlworjs",
-            Key: `space/${e.uuid}/e.img`,
-          });
-          const response = await client.send(command);
-          const response_body = await response.Body.transformToByteArray();
-          const img_src = (Buffer.from(response_body).toString('base64'));
-          send_[i] ={
-            img : img_src,
-            date : e.date,
-            likes : e.likes,
-            title : e.title,
-            uuid : e.uuid,
-            uuid2 : e.uuid2,
-            roomnum : e.roomnum
-          }
-          console.log('send message 만들어 자는 중 ');
-        })).then(()=>{
-          console.log('res send',send_);
-          return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
-        })
-      })
-    }
+    // else if(type === 'date'){
+    //   connection.query(`select * from spacequezeshowqueze uuid = '${space_uuid}' && existence = 1 order by likes asc limit 20`,(err,result)=>{
+    //     Promise.all(result.map(async(e,i)=>{
+    //       const  command = new GetObjectCommand({
+    //         Bucket: "dlworjs",
+    //         Key: `space/${e.uuid}/e.img`,
+    //       });
+    //       const response = await client.send(command);
+    //       const response_body = await response.Body.transformToByteArray();
+    //       const img_src = (Buffer.from(response_body).toString('base64'));
+    //       send_[i] ={
+    //         img : img_src,
+    //         date : e.date,
+    //         likes : e.likes,
+    //         title : e.title,
+    //         uuid : e.uuid,
+    //         uuid2 : e.uuid2,
+    //         roomnum : e.roomnum
+    //       }
+    //       console.log('send message 만들어 자는 중 ');
+    //     })).then(()=>{
+    //       console.log('res send',send_);
+    //       return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+    //     })
+    //   })
+    // }
   }
   else {
     if(type === 'likes'){
@@ -1084,7 +1095,7 @@ app.post('/make_spacequezeshow',(req,res)=>{
     else{
       result_roomnum = result[0].roomnum;
     }
-    if(representativeimg === null){ // 섬내일 없을 때
+    if(representativeimg === 0){ // 섬내일 없을 때, null에 Number씌우면 0이 됨!! wow
       connection.query(`insert into spacequezeshowqueze (uuid, uuid2, title, existence, date, likes, img, roomnum) value('${uuid}', '${uuid2}','${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1})`,(err,result)=>{
         if(err){
           throw err
@@ -1146,6 +1157,13 @@ app.get('/shar_quezeshow',(req,res)=>{
     console.log('shar_quezeshow',result);
     if(result.length === 0) return res.send(false);
     else return res.send(result);
+  })
+})
+app.post('/modify_space',(req,res)=>{
+  const explain_text = req.body.explain_text;
+  const img = req.body.img;
+  connection.query(`update space set explain_text = '${explain_text}' where uuid = ${uuid};`,(err,result)=>{
+
   })
 })
 app.listen(port, (err) => {
