@@ -195,10 +195,10 @@ app.post('/modify_password_checker',(req,res)=>{
 })
 app.post('/modify_queze',(req,res)=>{ // queze 수정 전 데이터 받기
   const roomName = req.body.roomName;
-  let send_ = [];
+  let send_ = []; 
 
   connection.query(`select * from result where roomName = '${roomName}';`,(err,result)=>{
-    console.log(result);
+    console.log('select * from result modify queze , queze 수정전 데이터 받기 result : ',result);
     if(result.length !== 0){
       Promise.all(result.map(async(e,i)=>{
         const  command = new GetObjectCommand({
@@ -208,6 +208,7 @@ app.post('/modify_queze',(req,res)=>{ // queze 수정 전 데이터 받기
         const response = await client.send(command);
         const response_body = await response.Body.transformToByteArray();
         const img_src = (Buffer.from(response_body).toString('base64'));
+        console.log('e',e);
         send_[i] ={
           img   : img_src,
           text  : e.text,
