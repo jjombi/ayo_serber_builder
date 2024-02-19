@@ -189,8 +189,39 @@ app.post('/modify_password_checker',(req,res)=>{
     if(result.length !== 0){
       return res.send('success');
     }
+
     else return res.send('failed');
   })
+})
+app.post('/modify_queze',(req,res)=>{ // queze 수정 전 데이터 받기
+  const roomName = req.body.roomName;
+  let send_ = [];
+
+  connection.query(`select * from result where roomName = '${roomName}';`,(err,result)=>{
+    console.log(result);
+    if(result.length !== 0){
+      Promise.all(result.map(async(e,i)=>{
+        const  command = new GetObjectCommand({
+          Bucket: "dlworjs",
+          Key: roomName+'/'+e.originalname,
+        });
+        const response = await client.send(command);
+        const response_body = await response.Body.transformToByteArray();
+        const img_src = (Buffer.from(response_body).toString('base64'));
+        send_[i] ={
+          img   : img_src,
+          text  : e.text,
+          value : e.value,
+          uuid  : e.uuid
+        }
+        console.log('send message 만들어 자는 중 ');
+      })).then(()=>{
+        console.log('res send',send_);
+        return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+      })
+    }
+  })
+  
 })
 const upload_query = async (req, roomName_arr) =>{
   console.log('upload query 시작 req : ',req.body,roomName_arr); //upload query 시작 req :  { title: '제목', publicAccess: '수정가능', img[...] text[...] } [ 'C' ] or { title: '제목', img[...] text[...] } -> publicAccess is undefind
