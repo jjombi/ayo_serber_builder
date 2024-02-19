@@ -197,7 +197,7 @@ app.post('/modify_queze',(req,res)=>{ // queze 수정 전 데이터 받기
   const roomName = req.body.roomName;
   let send_ = []; 
 
-  connection.query(`select * from result where roomName = '${roomName}';`,(err,result)=>{
+  connection.query(`select * from result where roomName = '${roomName}' && existence = 1;`,(err,result)=>{
     console.log('select * from result modify queze , queze 수정전 데이터 받기 result : ',result);
     if(result.length !== 0){
       Promise.all(result.map(async(e,i)=>{
@@ -368,7 +368,7 @@ app.post('/main_a_queze',(req,res)=>{
   let   img_arr  = [];
   let   uuid_arr = [];
   // let   sendresult = [];
-    connection.query(`select * from result where roomName='${roomName}'`,(err,result)=>{
+    connection.query(`select * from result where roomName='${roomName}' && existence = 1`,(err,result)=>{
       console.log('select from result whee roomName=',roomName,result);
       Promise.all(result.map(async(e,i)=>{
         console.log('result 이미지 경로',roomName+e.originalname);
@@ -396,7 +396,7 @@ app.post('/main_a_queze',(req,res)=>{
 app.post('/oneandoneresult',(req,res)=>{
   const rank = req.body.result;
   const roomName = req.body.roomName;
-  connection.query(`select * from result where roomName = '${roomName}'`,(err,result)=>{
+  connection.query(`select * from result where roomName = '${roomName}' && existence = 1`,(err,result)=>{
     console.log('selct uuid from result where roomName',result); //[ {uuid : 'asdadjshblaebgaubg' }, {uuid : 'asdadjshblaebgaubg' }, {uuid : 'asdadjshblaebgaubg' }]
     result.map(result_e=>{
       rank.map((res_e,i)=>{
@@ -430,7 +430,7 @@ app.post('/oneandonequeze',(req,res)=>{
   let   text_arr = [];
   let   img_arr  = [];
   let   uuid_arr = [];  console.log('one and one; roomName, type',roomName,type);
-  connection.query(`select * from result where roomName='${roomName}' order by value desc limit ${type}`,(err,result)=>{
+  connection.query(`select * from result where roomName='${roomName}' && existence = 1 order by value desc limit ${type}`,(err,result)=>{
     console.log('one and one queze roomName, result',roomName,result);
     Promise.all(result.map(async(e,i)=>{
       console.log('result 이미지 경로',roomName+e.originalname);
@@ -508,7 +508,7 @@ app.post('/result_plus',(req,res)=>{
   const rank = req.body.rank; 
   // [uuid,uuid,uuid]
   // [ 1등, 2등, 3등]
-  connection.query(`select * from result where roomName = '${roomName}'`,(err,result)=>{
+  connection.query(`select * from result where roomName = '${roomName}' && existence = 1`,(err,result)=>{
     console.log('selct uuid from result where roomName',result); //[ {uuid : 'asdadjshblaebgaubg' }, {uuid : 'asdadjshblaebgaubg' }, {uuid : 'asdadjshblaebgaubg' }]
     result.map(result_e=>{
       rank.map((res_e,i)=>{
@@ -527,7 +527,7 @@ app.post('/main_result',(req,res)=>{
   const roomName = req.body.roomName;
   let send_ = [];
 
-  connection.query(`select * from result where roomName = '${roomName}' order by value desc;`,(err,result)=>{
+  connection.query(`select * from result where roomName = '${roomName}' && existence = 1 order by value desc;`,(err,result)=>{
     console.log(result);
     if(result.length !== 0){
       Promise.all(result.map(async(e,i)=>{
