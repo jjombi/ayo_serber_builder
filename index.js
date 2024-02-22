@@ -224,32 +224,37 @@ app.post('/modify_queze',(req,res)=>{ // queze 수정 전 데이터 받기
   })
   
 })
+app.post('/modify_change_text',(req,res)=>{
+  const changed_text = req.body.changed_text;
+  console.log('modify_change_text req :',req);
+  changed_text.map((e,i)=>{
+    connection.query(`update result set text = '${changed_text.changed_text}' where uuid = '${changed_text.uuid}'`);
+  })
+  res.send('success');
+})
 const upload_query = async (req, roomName_arr) =>{
   console.log('upload query 시작 req : ',req.body,roomName_arr); //upload query 시작 req :  { title: '제목', publicAccess: '수정가능', img[...] text[...] } [ 'C' ] or { title: '제목', img[...] text[...] } -> publicAccess is undefind
-  let publicAccess;
-  const password = req.body.password;
-  if(req.body.publicAccess === undefined) publicAccess = 0;
-  else publicAccess = 1;
+  const explain_text = req.body.queze_explain_text;
   connection.query(`select * from queze where roomName = '${roomName_arr}';`,(err,result) => {
     if(result.length === 0){
       if(password === '' || password === undefined || password === null){
-        connection.query(`insert into queze (roomName, existence, title, title_img_name, uuid, likes, publicAccess, password, modifyPassword) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg', '${uuidv4()}',0,${publicAccess}, '', '${req.body.modify_password}');`);
+        connection.query(`insert into queze (roomName, existence, title, title_img_name, uuid, likes, password, modifyPassword, explainText) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg', '${uuidv4()}',0, '', '${req.body.modify_password}', '${explain_text}');`);
       }
       else{
         bcrypt.genSalt(saltRounds, function(err, salt) {
           bcrypt.hash(password, salt, function(err, hash) {
             console.log('hash password',hash);
-              connection.query(`insert into queze (roomName, existence, title, title_img_name, uuid, likes, publicAccess, password, modifyPassword) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg', '${uuidv4()}',0,${publicAccess},'${hash}', '${req.body.modify_password}');`);
+              connection.query(`insert into queze (roomName, existence, title, title_img_name, uuid, likes, password, modifyPassword, explainText) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg', '${uuidv4()}',0,'${hash}', '${req.body.modify_password}', '${explain_text}');`);
           });
         })
       }
       if(typeof(req.body.img_name) === 'string'){ // 이미지가 하나 일때
-        connection.query(`insert into result (text, value, originalname, roomName, uuid) value('${req.body.text}', 0, 'img0.jpg','${roomName_arr}', '${uuidv4()}')`);
+        connection.query(`insert into result (text, value, originalname, roomName, uuid, existence) value('${req.body.text}', 0, 'img0.jpg','${roomName_arr}', 1, '${uuidv4()}')`);
       }
       else{                                       //이미지가 여러개 일때
         for(i=0 ; i < req.body.img_name.length ;i++){// text에 값이 없을 때
-          if(req.body.text[i] === undefined || req.body.text[i] === '') connection.query(`insert into result (text, value, uuid, originalname, roomName) value('', 0, '${uuidv4()}', 'img${i}.jpg','${roomName_arr}')`);
-          else connection.query(`insert into result (text, value, uuid, originalname, roomName) value('${req.body.text[i]}', 0, '${uuidv4()}', 'img${i}.jpg','${roomName_arr}')`);
+          if(req.body.text[i] === undefined || req.body.text[i] === '') connection.query(`insert into result (text, value, uuid, originalname, roomName, existence) value('', 0, '${uuidv4()}', 'img${i}.jpg','${roomName_arr}', 1)`);
+          else connection.query(`insert into result (text, value, uuid, originalname, roomName, existence) value('${req.body.text[i]}', 0, '${uuidv4()}', 'img${i}.jpg','${roomName_arr}', 1)`);
         }
       }
     }
@@ -557,6 +562,7 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
   const queze_title = req.body.queze_title;
   const content_title = req.body.content_title;
   const explain_text = req.body.explain_text;
+  const quezeshowqueze_explain_text = req.body.quezeshowqueze_explain_text;
   const img_tinyint = req.body.img_tinyint;
   const uuid = req.body.uuid;
   const date = req.body.date;
@@ -573,13 +579,13 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
       result_roomnum = result[0].roomnum;
     }
     if(representativeimg === null){ // 섬내일 없을 때
-      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}')`,(err,result)=>{
+      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}')`,(err,result)=>{
         if(err){
           throw err
         }
       })
     }else{
-      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${representativeimg}.jpg', ${result_roomnum + 1}, '${modify_password}')`,(err,result)=>{
+      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${representativeimg}.jpg', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}')`,(err,result)=>{
         if(err){
           throw err
         }
