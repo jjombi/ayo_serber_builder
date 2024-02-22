@@ -189,7 +189,15 @@ app.post('/modify_password_checker',(req,res)=>{
     if(result.length !== 0){
       return res.send('success');
     }
-
+    else return res.send('failed');
+  })
+})
+app.post('/modify_quezeshowqueze_password_checker',(req,res)=>{
+  console.log('modify_quezeshowqueze_password_checker 시행됨');
+  connection.query(`select modifyPassword from quezeshowqueze where uuid = '${req.body.uuid}' && modifyPassword = '${req.body.password}'`,(err,result)=>{
+    if(result.length !== 0){
+      return res.send('success');
+    }
     else return res.send('failed');
   })
 })
