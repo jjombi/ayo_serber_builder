@@ -234,10 +234,17 @@ app.post('/modify_queze',(req,res)=>{ // queze 수정 전 데이터 받기
 })
 app.post('/modify_change_text',(req,res)=>{
   const changed_text = req.body.changed_text;
+  const roomName = req.body.roomName;
   console.log('modify_change_text req :',req);
   changed_text.map((e,i)=>{
     connection.query(`update result set text = '${changed_text.changed_text}' where uuid = '${changed_text.uuid}'`);
   })
+  if(req.body.changed_title.type === true){
+    connection.query(`update queze set title = '${req.body.changed_title.data}' where roomName = '${roomName}'`)
+  }
+  if(req.body.changed_explain_text.type === true){
+    connection.query(`update queze set explainText = '${req.body.changed_explain_text.data}' where roomName = '${roomName}'`)
+  }
   res.send('success');
 })
 const upload_query = async (req, roomName_arr) =>{
