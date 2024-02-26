@@ -194,7 +194,7 @@ app.post('/modify_password_checker',(req,res)=>{
 })
 app.post('/modify_quezeshowqueze_password_checker',(req,res)=>{
   console.log('modify_quezeshowqueze_password_checker 시행됨');
-  connection.query(`select modifyPassword from quezeshowqueze where uuid = '${req.body.uuid}' && modifyPassword = '${req.body.password}'`,(err,result)=>{
+  connection.query(`select password from quezeshowqueze where uuid = '${req.body.uuid}' && password = '${req.body.password}'`,(err,result)=>{
     console.log(result);
     if(result.length !== 0){
       return res.send('success');
