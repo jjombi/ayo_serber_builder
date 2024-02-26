@@ -233,6 +233,40 @@ app.post('/modify_queze',(req,res)=>{ // queze 수정 전 데이터 받기
   })
   
 })
+app.post('/modify_quezeshow',(req,res)=>{ // 나락퀴즈 수정 전 데이터 받기
+  const uuid = req.body.uuid;
+  let send_ = []; 
+
+  connection.query(`select * from quezeshowcontent where uuid = '${uuid}' && existence = 1;`,(err,result)=>{
+    console.log('select * from quezeshowcontent modify queze , 나락퀴즈 수정전 데이터 받기 result : ',result);
+    if(result.length !== 0){
+      Promise.all(result.map(async(e,i)=>{
+        const  command = new GetObjectCommand({
+          Bucket: "dlworjs",
+          Key: roomName+'/'+e.originalname,
+        });
+        const response = await client.send(command);
+        const response_body = await response.Body.transformToByteArray();
+        const img_src = (Buffer.from(response_body).toString('base64'));
+        console.log('e',e);
+        send_[i] ={
+          img   : img_src,
+          text  : e.text,
+          value : e.value,
+          uuid  : e.uuid,
+          uuid2 : e.uuid2,
+          title : e.title,
+          roomnum : e.roomnum
+        }
+        console.log('send message 만들어 자는 중 ');
+      })).then(()=>{
+        console.log('res send',send_);
+        return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+      })
+    }
+  })
+  
+})
 app.post('/modify_change_text',(req,res)=>{
   const changed_text = req.body.changed_text;
   const roomName = req.body.roomName;
