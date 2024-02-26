@@ -241,24 +241,35 @@ app.post('/modify_quezeshow',(req,res)=>{ // 나락퀴즈 수정 전 데이터 �
     console.log('select * from quezeshowcontent modify queze , 나락퀴즈 수정전 데이터 받기 result : ',result);
     if(result.length !== 0){
       Promise.all(result.map(async(e,i)=>{
-        const  command = new GetObjectCommand({
-          Bucket: "dlworjs",
-          Key: roomName+'/'+e.originalname,
-        });
-        const response = await client.send(command);
-        const response_body = await response.Body.transformToByteArray();
-        const img_src = (Buffer.from(response_body).toString('base64'));
-        console.log('e',e);
-        send_[i] ={
-          img   : img_src,
-          text  : e.text,
-          value : e.value,
-          uuid  : e.uuid,
-          uuid2 : e.uuid2,
-          title : e.title,
-          roomnum : e.roomnum
+        if(e.img === ''){
+          send_[i] ={
+            img : '',
+            title : e.title,
+            uuid : e.uuid,
+            text : e.text,
+            uuid2 : e.uuid2,
+            roomnum : e.roomnum,
+            value : e.value
+          }
         }
-        console.log('send message 만들어 자는 중 ');
+        else{
+          const  command = new GetObjectCommand({
+            Bucket: "dlworjs",
+            Key: e.uuid+'/'+e.img,
+          });
+          const response = await client.send(command);
+          const response_body = await response.Body.transformToByteArray();
+          const img_src = (Buffer.from(response_body).toString('base64'));
+          send_[i] ={
+            img : img_src,
+            title : e.title,
+            uuid : e.uuid,
+            text : e.text,
+            uuid2 : e.uuid2,
+            roomnum : e.roomnum,
+            value : e.value
+          }
+        }
       })).then(()=>{
         console.log('res send',send_);
         return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
