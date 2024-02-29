@@ -244,6 +244,7 @@ app.post('/modify_quezeshow',(req,res)=>{ // 나락퀴즈 수정 전 데이터 �
         if(e.img === ''){
           send_[i] ={
             img : '',
+            img_num : '',
             title : e.title,
             uuid : e.uuid,
             text : e.text,
@@ -262,6 +263,7 @@ app.post('/modify_quezeshow',(req,res)=>{ // 나락퀴즈 수정 전 데이터 �
           const img_src = (Buffer.from(response_body).toString('base64'));
           send_[i] ={
             img : img_src,
+            img_num : e.img,
             title : e.title,
             uuid : e.uuid,
             text : e.text,
