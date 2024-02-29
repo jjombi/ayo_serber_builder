@@ -293,6 +293,13 @@ app.post('/modify_change_text',(req,res)=>{
   }
   res.send('success');
 })
+app.post('/modify_change_quezeshowqueze',(req,res)=>{
+  req.body.changed_data.map((e,i)=>{
+    connection.query(`update quezeshowcontent set title = '${e.title}' where uuid2 = '${e.uuid}';`);
+    connection.query(`update quezeshowcontent set text = '${e.text}' where uuid2 = '${e.uuid}';`);
+  })
+  return res.send('success');
+})
 const upload_query = async (req, roomName_arr) =>{
   console.log('upload query 시작 req : ',req.body,roomName_arr); //upload query 시작 req :  { title: '제목', publicAccess: '수정가능', img[...] text[...] } [ 'C' ] or { title: '제목', img[...] text[...] } -> publicAccess is undefind
   const explain_text = req.body.queze_explain_text;
