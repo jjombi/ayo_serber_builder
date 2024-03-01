@@ -366,11 +366,22 @@ app.post('/modify_quezeshow',(req,res)=>{
   const last_num = req.body.last_num;
   const uuid = req.body.uuid;
   const room_num = req.body.room_num;
+  console.log(img_tinyint,content_title,explain_text,last_num,uuid,room_num);
   if(typeof(content_title) !== 'string'){// 수정 콘텐츠 하나
-    connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '${last_num}.jpg', '${explain_text}', '${uuidv4()}',0, ${Number(room_num)})`)
+    if(img_tinyint){
+      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '${last_num}.jpg', '${explain_text}', '${uuidv4()}',0, ${Number(room_num)})`);
+    }
+    else{
+      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '', '${explain_text}', '${uuidv4()}',0, ${Number(room_num)})`);
+    }
   }else{
     content_title.map((e,i)=>{
-      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '${Number(last_num)+i}.jpg', '${explain_text[i]}', '${uuidv4()}',0, ${Number(room_num)})`)
+      if(img_tinyint){
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '${Number(last_num)+i}.jpg', '${explain_text[i]}', '${uuidv4()}',0, ${Number(room_num)})`);
+      }
+      else{
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuidv4()}',0, ${Number(room_num)})`);
+      }
     })
   }
   return res.send('나락퀴즈 수정 완료');
