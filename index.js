@@ -384,7 +384,7 @@ app.post('/modify_quezeshow',(req,res)=>{
       }
     })
   }
-  return res.send('나락퀴즈 수정 완료');
+  return res.send('success');
 })
 app.post('/upload_img_plus',(req,res)=>{
   const roomName = req.body.roomName;
