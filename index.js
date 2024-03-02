@@ -369,7 +369,7 @@ app.post('/modify_change_quezeshow',(req,res)=>{
   console.log(img_tinyint,content_title,explain_text,last_num,uuid,room_num);
   if(typeof(content_title) === 'string'){// 수정 콘텐츠 하나
     if(img_tinyint){
-      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '${last_num+1}.jpg', '${explain_text}', '${uuidv4()}',0, ${Number(room_num)})`);
+      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '${Number(last_num)+1}.jpg', '${explain_text}', '${uuidv4()}',0, ${Number(room_num)})`);
     }
     else{
       connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '', '${explain_text}', '${uuidv4()}',0, ${Number(room_num)})`);
