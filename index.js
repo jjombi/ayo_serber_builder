@@ -359,7 +359,7 @@ app.post('/upload_img',(req,res)=>{
   return res.send('success');
   
 })
-app.post('/modify_quezeshow',(req,res)=>{
+app.post('/modify_change_quezeshow',(req,res)=>{
   const img_tinyint = req.body.img_tinyint;
   const content_title = req.body.content_title;
   const explain_text = req.body.explain_text;
