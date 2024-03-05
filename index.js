@@ -885,37 +885,47 @@ app.get('/quezeshow_main',(req,res)=>{
             }
             console.log('send message 만들어 자는 중 ');
           }
-        })).then(()=>{
-          console.log('res send',send_);
-          return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
-        })
-      })
-    }
-    else if(type === 'date'){
-      connection.query(`select * from quezeshowqueze where existence = 1 order by likes asc limit 20`,(err,result)=>{
-        Promise.all(result.map(async(e,i)=>{
-          const  command = new GetObjectCommand({
-            Bucket: "dlworjs",
-            Key: e.uuid+'/'+e.img,
-          });
-          const response = await client.send(command);
-          const response_body = await response.Body.transformToByteArray();
-          const img_src = (Buffer.from(response_body).toString('base64'));
-          send_[i] ={
-            img : img_src,
-            date : e.date,
-            likes : e.likes,
-            title : e.title,
-            uuid : e.uuid,
-            roomnum : e.roomnum
+          else{
+            send_[i] ={
+              img : '',
+              date : e.date,
+              likes : e.likes,
+              title : e.title,
+              uuid : e.uuid,
+              roomnum : e.roomnum
+            }
           }
-          console.log('send message 만들어 자는 중 ');
         })).then(()=>{
           console.log('res send',send_);
           return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
         })
       })
     }
+    // else if(type === 'date'){
+    //   connection.query(`select * from quezeshowqueze where existence = 1 order by likes asc limit 20`,(err,result)=>{
+    //     Promise.all(result.map(async(e,i)=>{
+    //       const  command = new GetObjectCommand({
+    //         Bucket: "dlworjs",
+    //         Key: e.uuid+'/'+e.img,
+    //       });
+    //       const response = await client.send(command);
+    //       const response_body = await response.Body.transformToByteArray();
+    //       const img_src = (Buffer.from(response_body).toString('base64'));
+    //       send_[i] ={
+    //         img : img_src,
+    //         date : e.date,
+    //         likes : e.likes,
+    //         title : e.title,
+    //         uuid : e.uuid,
+    //         roomnum : e.roomnum
+    //       }
+    //       console.log('send message 만들어 자는 중 ');
+    //     })).then(()=>{
+    //       console.log('res send',send_);
+    //       return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+    //     })
+    //   })
+    // }
   // }
 })
 app.get('/quezeshowtitle',(req,res)=>{
