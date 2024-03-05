@@ -654,17 +654,102 @@ app.post('/main_result',(req,res)=>{
   })
   
 })
-
+const make_quezeshow_query_type_queze = (uuid,content_title,explain_text,result_roomnum,value1,value2,value3,value4,answer) => {
+  if(typeof(content_title) === 'string'){ // content 하나 일때
+    console.log('make quezeshow 선택지 하나만 들어옴');
+    if(img_tinyint === 'true'){
+      console.log('이미지 있음');
+      connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, value1, value2, value3, value4, answer, roomnum) value('${uuid}', '${content_title}', 1, '${0}.jpg', '${explain_text}', '${uuidv4()}', '${value1}', '${value2}', '${value3}', '${value4}', '${answer}', ${result_roomnum + 1})`,(err,result)=>{
+        if(err){
+          throw err
+        }
+      })
+    }
+    else{
+      console.log('이미지 없음');
+      connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, value1, value2, value3, value4, answer, roomnum) value('${uuid}', '${content_title}', 1, '', '${explain_text}', '${uuidv4()}', '${value1}', '${value2}', '${value3}', '${value4}', '${answer}', ${result_roomnum + 1})`,(err,result)=>{
+        if(err){
+          throw err
+        }
+      })
+    }
+  }
+  else{
+    console.log('make quezeshow 선택지 여러개');
+    content_title.map((e,i)=>{
+      if(img_tinyint[i] === 'true'){
+        console.log('이미지 있음');
+        connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, value1, value2, value3, value4, answer, roomnum) value('${uuid}', '${content_title[i]}', 1, '${i}.jpg', '${explain_text[i]}', '${uuidv4()}', '${value1[i]}', '${value2[i]}', '${value3[i]}', '${value4[i]}', '${answer[i]}', ${result_roomnum + 1})`,(err,result)=>{
+          if(err){
+            throw err
+          }
+        })
+      }
+      else{
+        console.log('이미지 없음');
+        connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, value1, value2, value3, value4, answer, roomnum) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuidv4()}', '${value1[i]}', '${value2[i]}', '${value3[i]}', '${value4[i]}', '${answer[i]}', ${result_roomnum + 1})`,(err,result)=>{
+          if(err){
+            throw err
+          }
+        })
+      }
+    })
+  }
+}
+const make_quezeshow_query_type_vote = (uuid,content_title,explain_text,result_roomnum) => {
+  if(typeof(content_title) === 'string'){ // content 하나 일때
+    console.log('make quezeshow 선택지 하나만 들어옴');
+    if(img_tinyint === 'true'){
+      console.log('이미지 있음');
+      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '${0}.jpg', '${explain_text}', '${uuidv4()}',0, ${result_roomnum + 1})`,(err,result)=>{
+        if(err){
+          throw err
+        }
+      })
+    }
+    else{
+      console.log('이미지 없음');
+      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '', '${explain_text}', '${uuidv4()}',0, ${result_roomnum + 1})`,(err,result)=>{
+        if(err){
+          throw err
+        }
+      })
+    }
+  }
+  else{
+    console.log('make quezeshow 선택지 여러개');
+    content_title.map((e,i)=>{
+      if(img_tinyint[i] === 'true'){
+        console.log('이미지 있음');
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '${i}.jpg', '${explain_text[i]}', '${uuidv4()}',0, ${result_roomnum + 1})`,(err,result)=>{
+          if(err){
+            throw err
+          }
+        })
+      }
+      else{
+        console.log('이미지 없음');
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuidv4()}',0, ${result_roomnum + 1})`,(err,result)=>{
+          if(err){
+            throw err
+          }
+        })
+      }
+    })
+  }
+}
 app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
-  const queze_title = req.body.queze_title;
-  const content_title = req.body.content_title;
-  const explain_text = req.body.explain_text;
+  const quezeshow_type = req.body.quezeshow_type;
   const quezeshowqueze_explain_text = req.body.quezeshowqueze_explain_text;
   const img_tinyint = req.body.img_tinyint;
   const uuid = req.body.uuid;
   const date = req.body.date;
   const representativeimg = req.body.representativeimg;
   const modify_password = req.body.modify_password;
+  const queze_title = req.body.queze_title;
+  const explain_text = req.body.explain_text;
+  const content_title = req.body.content_title;
+
   let result_roomnum;
   console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'date',date,'representativeimg',representativeimg);
   connection.query(`select roomnum from quezeshowqueze order by roomnum desc limit 1`,(err,result)=>{
@@ -688,49 +773,22 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
         }
       })
     }
-    if(typeof(content_title) === 'string'){ // content 하나 일때
-      console.log('make quezeshow 선택지 하나만 들어옴');
-      if(img_tinyint === 'true'){
-        console.log('이미지 있음');
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '${0}.jpg', '${explain_text}', '${uuidv4()}',0, ${result_roomnum + 1})`,(err,result)=>{
-          if(err){
-            throw err
-          }
-        })
-      }
-      else{
-        console.log('이미지 없음');
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '', '${explain_text}', '${uuidv4()}',0, ${result_roomnum + 1})`,(err,result)=>{
-          if(err){
-            throw err
-          }
-        })
-      }
+    if(quezeshow_type === 'vote'){
+      make_quezeshow_query_type_vote(uuid,content_title,explain_text,result_roomnum);
     }
-    else{
-      console.log('make quezeshow 선택지 여러개');
-      content_title.map((e,i)=>{
-        if(img_tinyint[i] === 'true'){
-          console.log('이미지 있음');
-          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '${i}.jpg', '${explain_text[i]}', '${uuidv4()}',0, ${result_roomnum + 1})`,(err,result)=>{
-            if(err){
-              throw err
-            }
-          })
-        }
-        else{
-          console.log('이미지 없음');
-          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuidv4()}',0, ${result_roomnum + 1})`,(err,result)=>{
-            if(err){
-              throw err
-            }
-          })
-        }
-      })
+    else if(quezeshow_type === 'queze'){// queze type 문제 생성 
+      const value1 = req.body.value1;
+      const value2 = req.body.value2;
+      const value3 = req.body.value3;
+      const value4 = req.body.value4;
+      const answer = req.body.answer;
+      
+      make_quezeshow_query_type_queze(uuid,content_title,explain_text,result_roomnum,value1,value2,value3,value4,answer);
     }
 
   });
-  res.send('success');
+  return res.send('success');
+  
 })
 app.get('/quezeshow_main',(req,res)=>{
   const type = req.query.type;
