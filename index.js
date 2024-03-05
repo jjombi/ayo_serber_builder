@@ -654,7 +654,7 @@ app.post('/main_result',(req,res)=>{
   })
   
 })
-const make_quezeshow_query_type_queze = (uuid,content_title,explain_text,result_roomnum,value1,value2,value3,value4,answer) => {
+const make_quezeshow_query_type_queze = (uuid,content_title,explain_text,result_roomnum,value1,value2,value3,value4,answer,img_tinyint) => {
   if(typeof(content_title) === 'string'){ // content 하나 일때
     console.log('make quezeshow 선택지 하나만 들어옴');
     if(img_tinyint === 'true'){
@@ -696,7 +696,7 @@ const make_quezeshow_query_type_queze = (uuid,content_title,explain_text,result_
     })
   }
 }
-const make_quezeshow_query_type_vote = (uuid,content_title,explain_text,result_roomnum) => {
+const make_quezeshow_query_type_vote = (uuid,content_title,explain_text,result_roomnum,img_tinyint) => {
   if(typeof(content_title) === 'string'){ // content 하나 일때
     console.log('make quezeshow 선택지 하나만 들어옴');
     if(img_tinyint === 'true'){
@@ -751,7 +751,7 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
   const content_title = req.body.content_title;
 
   let result_roomnum;
-  console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'date',date,'representativeimg',representativeimg);
+  console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'date',date,'representativeimg',representativeimg, 'modify_password',modify_password);
   connection.query(`select roomnum from quezeshowqueze order by roomnum desc limit 1`,(err,result)=>{
     console.log(result);
     if(result.length === 0){
@@ -774,7 +774,7 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
       })
     }
     if(quezeshow_type === 'vote'){
-      make_quezeshow_query_type_vote(uuid,content_title,explain_text,result_roomnum);
+      make_quezeshow_query_type_vote(uuid,content_title,explain_text,result_roomnum,img_tinyint);
     }
     else if(quezeshow_type === 'queze'){// queze type 문제 생성 
       const value1 = req.body.value1;
@@ -783,7 +783,7 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
       const value4 = req.body.value4;
       const answer = req.body.answer;
       
-      make_quezeshow_query_type_queze(uuid,content_title,explain_text,result_roomnum,value1,value2,value3,value4,answer);
+      make_quezeshow_query_type_queze(uuid,content_title,explain_text,result_roomnum,value1,value2,value3,value4,answer,img_tinyint);
     }
 
   });
