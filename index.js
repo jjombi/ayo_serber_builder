@@ -130,12 +130,12 @@ connection.connect((err)=>{
 
 
 app.get('/',(req,res)=>{
-   
-  connection.query('show tables', function (error, results, fields) {
-    if (error) throw error;
-    console.log('show tables ', results);
-    return res.send('success');
-  })
+  return res.send('connexted with server');
+  // connection.query('show tables', function (error, results, fields) {
+  //   if (error) throw error;
+  //   console.log('show tables ', results);
+  //   return res.send('success');
+  // })
   
 })
 
@@ -751,7 +751,7 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
   const content_title = req.body.content_title;
 
   let result_roomnum;
-  console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'date',date,'representativeimg',representativeimg, 'modify_password',modify_password);
+  console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'date',date,'representativeimg',representativeimg, typeof(representativeimg), 'modify_password',modify_password);
   connection.query(`select roomnum from quezeshowqueze order by roomnum desc limit 1`,(err,result)=>{
     console.log(result);
     if(result.length === 0){
@@ -760,7 +760,7 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
     else{
       result_roomnum = result[0].roomnum;
     }
-    if(representativeimg === -1){ // 섬내일 없을 때
+    if(representativeimg == -1){ // 섬내일 없을 때
       connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}')`,(err,result)=>{
         if(err){
           throw err
