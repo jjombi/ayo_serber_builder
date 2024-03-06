@@ -886,7 +886,8 @@ app.get('/quezeshow_main',(req,res)=>{
               likes : e.likes,
               title : e.title,
               uuid : e.uuid,
-              roomnum : e.roomnum
+              roomnum : e.roomnum,
+              quezeshow_type : e.quezeshow_type
             }
             console.log('send message 만들어 자는 중 ');
           }
@@ -897,7 +898,8 @@ app.get('/quezeshow_main',(req,res)=>{
               likes : e.likes,
               title : e.title,
               uuid : e.uuid,
-              roomnum : e.roomnum
+              roomnum : e.roomnum,
+              quezeshow_type : e.quezeshow_type
             }
           }
         })).then(()=>{
