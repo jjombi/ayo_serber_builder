@@ -749,7 +749,12 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
   const queze_title = req.body.queze_title;
   const explain_text = req.body.explain_text;
   const content_title = req.body.content_title;
-
+  let quezeshow_type_;
+  if(quezeshow_type === 'vote'){
+    quezeshow_type_ = 1
+  }else if(quezeshow_type === 'queze'){
+    quezeshow_type_ = 0
+  }
   let result_roomnum;
   console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'date',date,'representativeimg',representativeimg, typeof(representativeimg), 'modify_password',modify_password);
   connection.query(`select roomnum from quezeshowqueze order by roomnum desc limit 1`,(err,result)=>{
@@ -761,13 +766,13 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
       result_roomnum = result[0].roomnum;
     }
     if(representativeimg == -1){ // 섬내일 없을 때
-      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}')`,(err,result)=>{
+      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', ${Number(quezeshow_type_)})`,(err,result)=>{
         if(err){
           throw err
         }
       })
     }else{
-      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${representativeimg}.jpg', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}')`,(err,result)=>{
+      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${representativeimg}.jpg', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', ${Number(quezeshow_type_)})`,(err,result)=>{
         if(err){
           throw err
         }
@@ -934,6 +939,13 @@ app.get('/quezeshowtitle',(req,res)=>{
     return res.send(result);
   })
 })
+app.get('/quezeshow_checking_existence',(req,res)=>{
+  const roomnum = req.query.roomnum;
+  const uuid = req.query.uuid;
+  connection.query(`select * from quezeshowqueze where roomnum = ${roomnum} && uuid = '${uuid}'`,(err,result)=>{
+    return res.send(result);
+  })
+})
 // app.get('/spacequezeshowtitle',(req,res)=>{
 //   const roomnum = req.query.roomnum;
 //   const uuid = req.query.uuid;
@@ -941,6 +953,56 @@ app.get('/quezeshowtitle',(req,res)=>{
 //     return res.send(result);
 //   })
 // })
+app.get('/quezeshowqueze_type_queze',(req,res)=>{
+  const roomnum = req.query.roomnum;
+  let send_ = [];
+  console.log(roomnum);
+  connection.query(`select * from quezeshowcontent_queze where roomnum = '${roomnum}' && existence = 1`,(err,result)=>{
+    Promise.all(  .map(async(e,i)=>{
+      if(e.img === ''){
+        send_[i] ={
+          uuid : e.uuid,
+          uuid2 : e.uuid2,
+          roomnum : e.roomnum,
+          title : e.title,
+          text : e.text,
+          value1 : e.value1,
+          value2 : e.value2,
+          value3 : e.value3,
+          value4 : e.value4,
+          answer : e.answer,
+          img : ''
+        }
+      }
+      else{
+        const  command = new GetObjectCommand({
+          Bucket: "dlworjs",
+          Key: e.uuid+'/'+e.img,
+        });
+        const response = await client.send(command);
+        const response_body = await response.Body.transformToByteArray();
+        const img_src = (Buffer.from(response_body).toString('base64'));
+        send_[i] ={
+          uuid : e.uuid,
+          uuid2 : e.uuid2,
+          roomnum : e.roomnum,
+          title : e.title,
+          text : e.text,
+          value1 : e.value1,
+          value2 : e.value2,
+          value3 : e.value3,
+          value4 : e.value4,
+          answer : e.answer,
+          img : img_src
+        }
+      }
+      console.log('send message 만들어 자는 중 ');
+    })).then(()=>{
+      console.log('res send',send_);
+      return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+    })
+  })
+})
 app.get('/quezeshowqueze',(req,res)=>{
   const roomnum = req.query.roomnum;
   let send_ = [];
