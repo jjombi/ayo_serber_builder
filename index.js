@@ -958,7 +958,7 @@ app.get('/quezeshowqueze_type_queze',(req,res)=>{
   let send_ = [];
   console.log(roomnum);
   connection.query(`select * from quezeshowcontent_queze where roomnum = '${roomnum}' && existence = 1`,(err,result)=>{
-    Promise.all(  .map(async(e,i)=>{
+    Promise.all(result.map(async(e,i)=>{
       if(e.img === ''){
         send_[i] ={
           uuid : e.uuid,
