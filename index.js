@@ -991,6 +991,26 @@ app.get('/quezeshow_checking_existence',(req,res)=>{
 //     return res.send(result);
 //   })
 // })
+app.get('/quezeshowqueze_type_text',(req,res)=>{
+  const roomnum = req.query.roomnum;
+  let send_ = [];
+  console.log(roomnum);
+  connection.query(`select * from quezeshowcontent_text where roomnum = '${roomnum}' && existence = 1`,(err,result)=>{
+    Promise.all(result.map(async(e,i)=>{
+      send_[i] ={
+        uuid     : e.uuid,
+        uuid2    : e.uuid2,
+        roomnum  : e.roomnum,
+        title    : e.title,
+        answer   : e.answer,
+      }
+      console.log('send message 만들어 자는 중 ');
+    })).then(()=>{
+      console.log('res send',send_);
+      return res.send(send_);
+    })
+  })
+})
 app.get('/quezeshowqueze_type_queze',(req,res)=>{
   const roomnum = req.query.roomnum;
   let send_ = [];
