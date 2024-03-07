@@ -823,7 +823,8 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
       make_quezeshow_query_type_queze(uuid,content_title,explain_text,result_roomnum,value1,value2,value3,value4,answer,img_tinyint);
     }
     else if(quezeshow_type === 'text'){
-      make_quezeshow_query_type_text();
+      const answer = req.body.answer;
+      make_quezeshow_query_type_text(uuid,content_title,result_roomnum,answer);
     }
 
   });
