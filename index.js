@@ -738,6 +738,27 @@ const make_quezeshow_query_type_vote = (uuid,content_title,explain_text,result_r
     })
   }
 }
+const make_quezeshow_query_type_text = (uuid,content_title,result_roomnum,answer) => {
+  if(typeof(content_title) === 'string'){ // content 하나 일때
+    console.log('make quezeshow type text 선택지 하나만 들어옴');
+    connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer) value('${uuid}', '${content_title}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer}')`,(err,result)=>{
+      if(err){
+        throw err
+      }
+    })    
+  }
+  else{
+    console.log('make quezeshow 선택지 여러개');
+    content_title.map((e,i)=>{
+      connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer) value('${uuid}', '${content_title[i]}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer[i]}')`,(err,result)=>{
+        if(err){
+          throw err
+        }
+      })
+      
+    })
+  }
+}
 app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
   const quezeshow_type = req.body.quezeshow_type;
   const quezeshowqueze_explain_text = req.body.quezeshowqueze_explain_text;
@@ -749,11 +770,22 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
   const queze_title = req.body.queze_title;
   const explain_text = req.body.explain_text;
   const content_title = req.body.content_title;
-  let quezeshow_type_;
-  if(quezeshow_type === 'vote'){
-    quezeshow_type_ = 1
-  }else if(quezeshow_type === 'queze'){
-    quezeshow_type_ = 0
+  const queze_type = req.body.queze_type;
+
+  let queze_type_ = null;
+  // let quezeshow_type_;
+  // if(quezeshow_type === 'vote'){
+  //   quezeshow_type_ = 1
+  // }else if(quezeshow_type === 'queze'){
+  //   quezeshow_type_ = 0
+  // }
+  if(queze_type === 'multiple_choice'){
+    queze_type_ = 1;
+  }else if(queze_type === 'descriptive'){
+    queze_type_ = 0;
+  }
+  else {
+    console.log('queze_type err queze_type :',queze_type);
   }
   let result_roomnum;
   console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'date',date,'representativeimg',representativeimg, typeof(representativeimg), 'modify_password',modify_password);
@@ -766,13 +798,13 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
       result_roomnum = result[0].roomnum;
     }
     if(representativeimg == -1){ // 섬내일 없을 때
-      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', ${Number(quezeshow_type_)})`,(err,result)=>{
+      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', ${quezeshow_type}, ${queze_type_})`,(err,result)=>{
         if(err){
           throw err
         }
       })
     }else{
-      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${representativeimg}.jpg', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', ${Number(quezeshow_type_)})`,(err,result)=>{
+      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${representativeimg}.jpg', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', ${quezeshow_type}, ${queze_type_})`,(err,result)=>{
         if(err){
           throw err
         }
@@ -789,6 +821,9 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
       const answer = req.body.answer;
       
       make_quezeshow_query_type_queze(uuid,content_title,explain_text,result_roomnum,value1,value2,value3,value4,answer,img_tinyint);
+    }
+    else if(quezeshow_type === 'text'){
+      make_quezeshow_query_type_text();
     }
 
   });
