@@ -351,10 +351,20 @@ app.post('/modify_change_text',(req,res)=>{
   res.send('success');
 })
 app.post('/modify_change_quezeshowqueze',(req,res)=>{
-  req.body.changed_data.map((e,i)=>{
-    connection.query(`update quezeshowcontent set title = '${e.title}' where uuid2 = '${e.uuid}';`);
-    connection.query(`update quezeshowcontent set text = '${e.text}' where uuid2 = '${e.uuid}';`);
-  })
+  const quezeshow_type = req.body.quezeshow_type;
+  console.log(req.body);
+  if(quezeshow_type === 'vote'){
+    req.body.changed_data.map((e,i)=>{
+      connection.query(`update quezeshowcontent set title = '${e.title}' where uuid2 = '${e.uuid}';`);
+      connection.query(`update quezeshowcontent set text = '${e.text}' where uuid2 = '${e.uuid}';`);
+    })
+  }else if(quezeshow_type === 'text'){
+    connection.query(`update quezeshowcontent_text set title = '${e.title}' where uuid2 = '${e.uuid}';`);
+    connection.query(`update quezeshowcontent_text set answer = '${e.answer}' where uuid2 = '${e.uuid}';`);
+  }else if(quezeshow_type === 'queze'){
+
+  }
+
   return res.send('success');
 })
 const upload_query = async (req, roomName_arr) =>{
