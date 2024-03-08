@@ -361,7 +361,7 @@ app.post('/modify_change_quezeshowqueze',(req,res)=>{
   }else if(quezeshow_type === 'text'){
     req.body.changed_data.map((e,i)=>{
       connection.query(`update quezeshowcontent_text set title = '${e.title}' where uuid2 = '${e.uuid}';`);
-      connection.query(`update quezeshowcontent_text set answer = '${e.text}' where uuid2 = '${e.uuid}';`);
+      connection.query(`update quezeshowcontent_text set answer = '${e.answer}' where uuid2 = '${e.uuid}';`);
     })
   }else if(quezeshow_type === 'queze'){
 
