@@ -1002,7 +1002,8 @@ app.get('/quezeshow_main',(req,res)=>{
               title : e.title,
               uuid : e.uuid,
               roomnum : e.roomnum,
-              quezeshow_type : e.quezeshow_type
+              quezeshow_type : e.quezeshow_type,
+              explain_text : e.explainText
             }
           }
         })).then(()=>{
