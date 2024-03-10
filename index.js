@@ -657,6 +657,7 @@ app.post('/likes_plus',(req,res)=>{
   console.log('comment likes plus');
   const type = req.body.type;
   const uuid = req.body.uuid;
+  console.log('likes_plus',uuid,type)
 
   if(type === 'comments')   connection.query(`update comments set likes = likes + 1 where parentsKey = '${uuid}' `);
   else if(type === 'Main_queze') connection.query(`update queze set likes = likes + 1 where uuid = '${uuid}' `);
@@ -667,7 +668,7 @@ app.post('/likes_minus',(req,res)=>{
   console.log('comment likes minus');
   const uuid = req.body.uuid;
   const type = req.body.type;
-
+  console.log('likes_minus',uuid,type)
   if(type === 'comments')   connection.query(`update comments set likes = likes - 1 where parentsKey = '${uuid}' `);
   else if(type === 'Main_queze')  connection.query(`update queze set likes = likes - 1 where uuid = '${uuid}' `);
   else if(type === 'queze')   connection.query(`update quezeshowqueze set likes = likes - 1 where uuid = '${uuid}' `);
