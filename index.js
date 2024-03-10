@@ -976,7 +976,7 @@ app.get('/quezeshow_main',(req,res)=>{
   // }
   // else {
     if(type === 'likes'){
-      connection.query(`select * from quezeshowqueze where existence = 1 order by likes asc limit 20`,(err,result)=>{
+      connection.query(`select * from quezeshowqueze where existence = 1 order by likes desc limit 20`,(err,result)=>{
         Promise.all(result.map(async(e,i)=>{
           if(e.img !== ''){
             const  command = new GetObjectCommand({
