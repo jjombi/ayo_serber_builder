@@ -904,9 +904,10 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
 app.get('/quezeshow_main',(req,res)=>{
   const type = req.query.type;
   const space_uuid = req.query.space_uuid; //undefind or uuid
-
+  const quezeshow_type = req.query.quezeshow_type;
   console.log(type,req.query,space_uuid);
   let send_ = [];
+
   // if(space_uuid !== undefined){
   //   if(type === 'likes'){
   //     connection.query(`select * from spacequezeshowqueze where uuid = '${space_uuid}' && existence = 1 order by likes asc limit 20`,(err,result)=>{
@@ -976,7 +977,7 @@ app.get('/quezeshow_main',(req,res)=>{
   // }
   // else {
     if(type === 'likes'){
-      connection.query(`select * from quezeshowqueze where existence = 1 order by likes desc limit 20`,(err,result)=>{
+      connection.query(`select * from quezeshowqueze where existence = 1 ${quezeshow_type} order by likes desc limit 20`,(err,result)=>{
         Promise.all(result.map(async(e,i)=>{
           if(e.img !== ''){
             const  command = new GetObjectCommand({
