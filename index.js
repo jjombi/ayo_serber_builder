@@ -867,18 +867,48 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
     else{
       result_roomnum = result[0].roomnum;
     }
-    if(representativeimg == -1){ // 섬내일 없을 때
-      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
-        if(err){
-          throw err
+    c
+    // if(Number(representativeimg) === -1){ // 섬내일 없을 때
+    //   connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
+    //     if(err){
+    //       throw err
+    //     }
+    //   })
+    // }else{
+      if(typeof(img_tinyint) === 'string'){
+        if(img_tinyint === true){
+          connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '0.jpg', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
+            if(err){
+              throw err
+            }
+          })
+        }else {
+          connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
+            if(err){
+              throw err
+            }
+          })
         }
-      })
-    }else{
-      connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${representativeimg}.jpg', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
-        if(err){
-          throw err
+      }else {
+        for(let i = 0 ; i <= img_tinyint.length; i++){
+          if(img_tinyint[i] === true){
+            connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${i}.img', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
+              if(err){
+                throw err
+              }
+            })
+          }else{
+            if(i === img_tinyint.length){
+              connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
+                if(err){
+                  throw err
+                }
+              })
+            }
+          }     
         }
-      })
+      // }
+      
     }
     if(quezeshow_type === 'vote'){
       make_quezeshow_query_type_vote(uuid,content_title,explain_text,result_roomnum,img_tinyint);
