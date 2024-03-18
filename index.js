@@ -897,6 +897,7 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
                 throw err
               }
             })
+            i=img_tinyint.length+1;
           }else{
             if(i === img_tinyint.length){
               connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
