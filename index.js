@@ -876,13 +876,16 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
     //   })
     // }else{
       if(typeof(img_tinyint) === 'string'){
+        console.log('img_tinyint === str');
         if(img_tinyint === true){
+          console.log(img_tinyint,'img_tinyint === true');
           connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '0.jpg', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
             if(err){
               throw err
             }
           })
         }else {
+          console.log(img_tinyint,'img_tinyint === flase');
           connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
             if(err){
               throw err
@@ -890,8 +893,10 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
           })
         }
       }else {
+        console.log('img_tinyint is arr',img_tinyint);
         for(let i = 0 ; i <= img_tinyint.length; i++){
           if(img_tinyint[i] === true){
+            console.log('img_tinyint i === true',img_tinyint,i);
             connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${i}.img', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
               if(err){
                 throw err
@@ -899,6 +904,7 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
             })
             i=img_tinyint.length+1;
           }else{
+            console.log('전부다 false',img_tinyint,i);
             if(i === img_tinyint.length){
               connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
                 if(err){
