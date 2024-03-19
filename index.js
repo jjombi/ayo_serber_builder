@@ -897,7 +897,7 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
         for(let i = 0 ; i <= img_tinyint.length; i++){
           if(img_tinyint[i] === 'true'){
             console.log('img_tinyint i === true',img_tinyint,i);
-            connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${i}.img', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
+            connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${i}.jpg', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
               if(err){
                 throw err
               }
@@ -1031,7 +1031,9 @@ app.get('/quezeshow_main',(req,res)=>{
               title : e.title,
               uuid : e.uuid,
               roomnum : e.roomnum,
-              quezeshow_type : e.quezeshow_type
+              quezeshow_type : e.quezeshow_type,
+              explain_text : e.explainText
+
             }
             console.log('send message 만들어 자는 중 ');
           }
