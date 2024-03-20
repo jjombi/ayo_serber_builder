@@ -808,23 +808,40 @@ const make_quezeshow_query_type_vote = (uuid,content_title,explain_text,result_r
     })
   }
 }
-const make_quezeshow_query_type_text = (uuid,content_title,result_roomnum,answer) => {
+const make_quezeshow_query_type_continue_speaking = (uuid,content_title,result_roomnum,answer,img_tinyint) => {
   if(typeof(content_title) === 'string'){ // content 하나 일때
-    console.log('make quezeshow type text 선택지 하나만 들어옴');
-    connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer) value('${uuid}', '${content_title}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer}')`,(err,result)=>{
-      if(err){
-        throw err
-      }
-    })    
-  }
-  else{
-    console.log('make quezeshow 선택지 여러개');
-    content_title.map((e,i)=>{
-      connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer) value('${uuid}', '${content_title[i]}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer[i]}')`,(err,result)=>{
+    console.log('make quezeshow type continue speaking 선택지 하나만 들어옴');
+    if(img_tinyint === 'true'){
+      connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer}', '0.jpg')`,(err,result)=>{
         if(err){
           throw err
         }
-      })
+      })  
+    }else{
+      connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer}', '')`,(err,result)=>{
+        if(err){
+          throw err
+        }
+      })  
+    }
+  }
+  else{
+    console.log('make quezeshow continue speaking 선택지 여러개');
+    content_title.map((e,i)=>{
+      if(img_tinyint === 'true'){
+        connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title[i]}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer[i]}', '${i}'.jpg)`,(err,result)=>{
+          if(err){
+            throw err
+          }
+        })
+      }else {
+        connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title[i]}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer[i]}', '')`,(err,result)=>{
+          if(err){
+            throw err
+          }
+        })
+      }
+      
       
     })
   }
@@ -929,9 +946,12 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
       
       make_quezeshow_query_type_queze(uuid,content_title,explain_text,result_roomnum,value1,value2,value3,value4,answer,img_tinyint);
     }
-    else if(quezeshow_type === 'text'){
+    else if(quezeshow_type === 'Continue_speaking'){
       const answer = req.body.answer;
-      make_quezeshow_query_type_text(uuid,content_title,result_roomnum,answer);
+      make_quezeshow_query_type_continue_speaking(uuid,content_title,result_roomnum,answer);
+    }else if(quezeshow_type === 'New_word_queze'){
+      const answer = req.body.answer;
+      make_quezeshow_query_type_continue_speaking(uuid,content_title,result_roomnum,answer);
     }
 
   });
