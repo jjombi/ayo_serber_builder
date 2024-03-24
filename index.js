@@ -329,10 +329,45 @@ app.post('/modify_quezeshow',(req,res)=>{ // 나락퀴즈 수정 전 데이터 �
         })
       }
     })
-  }else if(quezeshow_type === 'text'){
+  }else if(quezeshow_type === 'Continue_speak' || quezeshow_type === 'New_word_queze'){
     connection.query(`select * from quezeshowcontent_text where uuid = '${uuid}' && existence = 1;`,(err,result)=>{
-      return res.send(result);
+      Promise.all(result.map(async(e,i)=>{
+        if(e.img === ''){
+          send_[i] ={
+            img : '',
+            img_num : '',
+            title : e.title,
+            uuid : e.uuid,
+            uuid2 : e.uuid2,
+            roomnum : e.roomnum,
+            answer : e.answer
+          }
+        }
+        else{
+          const  command = new GetObjectCommand({
+            Bucket: "dlworjs",
+            Key: e.uuid+'/'+e.img,
+          });
+          const response = await client.send(command);
+          const response_body = await response.Body.transformToByteArray();
+          const img_src = (Buffer.from(response_body).toString('base64'));
+          send_[i] ={
+            img : img_src,
+            img_num : e.img,
+            title : e.title,
+            uuid : e.uuid,
+            uuid2 : e.uuid2,
+            roomnum : e.roomnum,
+            answer : e.answer
+          }
+        }
+      })).then(()=>{
+        console.log('res send',send_);
+        return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+      })
     })
+  }else {
+    throw 'quezeshow type err, modify'
   }
 })
 app.post('/modify_change_text',(req,res)=>{
@@ -623,7 +658,7 @@ app.post('/oneandonequeze',(req,res)=>{
   })
 })
 app.post('/main_a_queze_comments',(req,res)=>{ // url 파라미터로 roomName 가져오게 바꾸기
-  
+
     connection.query(`select * from comments where type = 1 && roomName = '${req.body.roomName}'`,(err,result)=>{
       console.log('queze 안에 comments all',result);
       // if()
@@ -669,6 +704,7 @@ app.post('/likes_minus',(req,res)=>{
   const uuid = req.body.uuid;
   const type = req.body.type;
   console.log('likes_minus',uuid,type)
+
   if(type === 'comments')   connection.query(`update comments set likes = likes - 1 where parentsKey = '${uuid}' `);
   else if(type === 'Main_queze')  connection.query(`update queze set likes = likes - 1 where uuid = '${uuid}' `);
   else if(type === 'quezeshow')   connection.query(`update quezeshowqueze set likes = likes - 1 where uuid = '${uuid}' `);
@@ -1104,8 +1140,47 @@ app.get('/quezeshow_main',(req,res)=>{
 })
 app.get('/quezeshowtitle',(req,res)=>{
   const roomnum = req.query.roomnum;
+  let send_ = [];
   connection.query(`select * from quezeshowqueze where roomnum = ${roomnum}`,(err,result)=>{
-    return res.send(result);
+    
+    Promise.all(result.map(async(e,i)=>{
+      if(e.img !== ''){
+        const  command = new GetObjectCommand({
+          Bucket: "dlworjs",
+          Key: e.uuid+'/'+e.img,
+        });
+        const response = await client.send(command);
+        const response_body = await response.Body.transformToByteArray();
+        const img_src = (Buffer.from(response_body).toString('base64'));
+        send_[i] ={
+          img : img_src,
+          date : e.date,
+          likes : e.likes,
+          title : e.title,
+          uuid : e.uuid,
+          roomnum : e.roomnum,
+          quezeshow_type : e.quezeshow_type,
+          explain_text : e.explainText
+
+        }
+        console.log('send message 만들어 자는 중 ');
+      }
+      else{
+        send_[i] ={
+          img : '',
+          date : e.date,
+          likes : e.likes,
+          title : e.title,
+          uuid : e.uuid,
+          roomnum : e.roomnum,
+          quezeshow_type : e.quezeshow_type,
+          explain_text : e.explainText
+        }
+      }
+    })).then(()=>{
+      console.log('res send',send_);
+      return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+    })
   })
 })
 app.get('/quezeshow_checking_existence',(req,res)=>{
