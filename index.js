@@ -393,7 +393,7 @@ app.post('/modify_change_quezeshowqueze',(req,res)=>{
       connection.query(`update quezeshowcontent set title = '${e.title}' where uuid2 = '${e.uuid}';`);
       connection.query(`update quezeshowcontent set text = '${e.text}' where uuid2 = '${e.uuid}';`);
     })
-  }else if(quezeshow_type === 'text'){
+  }else if(quezeshow_type === 'Continue_speak' || quezeshow_type === 'New_word_queze'){
     req.body.changed_data.map((e,i)=>{
       connection.query(`update quezeshowcontent_text set title = '${e.title}' where uuid2 = '${e.uuid}';`);
       connection.query(`update quezeshowcontent_text set answer = '${e.answer}' where uuid2 = '${e.uuid}';`);
@@ -467,27 +467,70 @@ app.post('/modify_change_quezeshow',(req,res)=>{
   const explain_text = req.body.explain_text;
   const last_num = req.body.last_num;
   const uuid = req.body.uuid;
+  const quezeshow_type = req.body.quezeshow_type;
   const room_num = req.body.room_num;
-  console.log(img_tinyint,content_title,explain_text,last_num,uuid,room_num);
-  if(typeof(content_title) === 'string'){// 수정 콘텐츠 하나
-    if(img_tinyint){
-      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '${Number(last_num)+1}.jpg', '${explain_text}', '${uuidv4()}',0, ${Number(room_num)})`);
-    }
-    else{
-      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '', '${explain_text}', '${uuidv4()}',0, ${Number(room_num)})`);
-    }
-  }else{
-    content_title.map((e,i)=>{
+  console.log(img_tinyint,content_title,explain_text,last_num,uuid,room_num,quezeshow_type);
+  if(quezeshow_type === 'vote'){
+    if(typeof(content_title) === 'string'){// 수정 콘텐츠 하나
       if(img_tinyint){
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '${Number(last_num)+i+1}.jpg', '${explain_text[i]}', '${uuidv4()}',0, ${Number(room_num)})`);
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '${Number(last_num)+1}.jpg', '${explain_text}', '${uuidv4()}',0, ${Number(room_num)})`);
       }
       else{
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuidv4()}',0, ${Number(room_num)})`);
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '', '${explain_text}', '${uuidv4()}',0, ${Number(room_num)})`);
       }
-    })
+    }else{
+      content_title.map((e,i)=>{
+        if(img_tinyint){
+          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '${Number(last_num)+i+1}.jpg', '${explain_text[i]}', '${uuidv4()}',0, ${Number(room_num)})`);
+        }
+        else{
+          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuidv4()}',0, ${Number(room_num)})`);
+        }
+      })
+    }
+  }else if(quezeshow_type === 'queze'){
+    const value1 = req.body.value1;
+    const value2 = req.body.value2;
+    const value3 = req.body.value3;
+    const value4 = req.body.value4;
+    const answer = req.body.answer;
+    if(typeof(content_title) === 'string'){// 수정 콘텐츠 하나
+      if(img_tinyint){
+        connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, value1, value2, value3, value4, answer, roomnum) value('${uuid}', '${content_title}', 1, '${Number(last_num)+1}.jpg', '${explain_text}', '${uuidv4()}', '${value1}', '${value2}', '${value3}', '${value4}', '${answer}', ${room_num})`);
+      }
+      else{
+        connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, value1, value2, value3, value4, answer, roomnum) value('${uuid}', '${content_title}', 1, '', '${explain_text}', '${uuidv4()}', '${value1}', '${value2}', '${value3}', '${value4}', '${answer}', ${room_num})`);      }
+    }else{
+      content_title.map((e,i)=>{
+        if(img_tinyint){
+          connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, value1, value2, value3, value4, answer, roomnum) value('${uuid}', '${content_title[i]}', 1, '${Number(last_num)+1+i}.jpg', '${explain_text[i]}', '${uuidv4()}', '${value1[i]}', '${value2[i]}', '${value3[i]}', '${value4[i]}', '${answer[i]}', ${room_num})`);        }
+        else{
+          connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, value1, value2, value3, value4, answer, roomnum) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuidv4()}', '${value1[i]}', '${value2[i]}', '${value3[i]}', '${value4[i]}', '${answer[i]}', ${room_num})`);        }
+      })
+    }
+  }else if(quezeshow_type === 'Continue_speak' || quezeshow_type === 'New_word_queze'){
+    const answer = req.body.answer;
+    if(typeof(content_title) === 'string'){// 수정 콘텐츠 하나
+      if(img_tinyint){
+        connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title}', 1, '${uuidv4()}', ${room_num}, '${answer}', '${Number(last_num)+1}.jpg')`);
+        }
+      else{
+        connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title}', 1, '${uuidv4()}', ${room_num}, '${answer}', '')`);
+      }
+    }else{
+      content_title.map((e,i)=>{
+        if(img_tinyint){
+          connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title[i]}', 1, '${uuidv4()}', ${room_num}, '${answer[i]}', '${Number(last_num)+1+i}.jpg')`);
+        }
+        else{
+          connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title[i]}', 1, '${uuidv4()}', ${room_num}, '${answer[i]}', '')`);
+        }
+      })
+    }
   }
   return res.send('success');
 })
+
 app.post('/upload_img_plus',(req,res)=>{
   const roomName = req.body.roomName;
   const last_num = req.body.last_num;
