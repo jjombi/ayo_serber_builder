@@ -1425,7 +1425,7 @@ app.post('/quezeshowqueze_plus_value',(req,res)=>{
 // })
 app.get('/quezeshowcomment',(req,res)=>{
   const roomnum = req.query.roomnum;
-  connection.query(`select * from quezeshowcomment where roomnum='${roomnum}' order by likes desc`,(err,result)=>{
+  connection.query(`select * from quezeshowcomment where roomnum='${roomnum}' order by likes desc limit 20`,(err,result)=>{
     return res.send(result);
   });
 })
@@ -1479,7 +1479,8 @@ app.post('/quezeshowcomment_upload',(req,res)=>{
   const title = req.body.title;
   const text = req.body.text;
   const roomnum = req.body.roomnum;
-  connection.query(`insert into quezeshowcomment (title, text, likes, uuid, uuid2, roomnum) value('${title}', '${text}', 0, '${uuid}', '${uuidv4()}', ${roomnum})`,(err,result)=>{
+  const date = req.body.date;
+  connection.query(`insert into quezeshowcomment (title, text, likes, uuid, uuid2, roomnum, data) value('${title}', '${text}', 0, '${uuid}', '${uuidv4()}', ${roomnum}, '${date}')`,(err,result)=>{
     return res.send(result);
   });
 })
