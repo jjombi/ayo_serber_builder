@@ -1480,7 +1480,7 @@ app.post('/quezeshowcomment_upload',(req,res)=>{
   const text = req.body.text;
   const roomnum = req.body.roomnum;
   const date = req.body.date;
-  connection.query(`insert into quezeshowcomment (title, text, likes, uuid, uuid2, roomnum, data) value('${title}', '${text}', 0, '${uuid}', '${uuidv4()}', ${roomnum}, '${date}')`,(err,result)=>{
+  connection.query(`insert into quezeshowcomment (title, text, likes, uuid, uuid2, roomnum, date) value('${title}', '${text}', 0, '${uuid}', '${uuidv4()}', ${roomnum}, '${date}')`,(err,result)=>{
     return res.send(result);
   });
 })
