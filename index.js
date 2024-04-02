@@ -1189,6 +1189,7 @@ app.get('/quezeshow_main',(req,res)=>{
 app.get('/quezeshowtitle',(req,res)=>{
   const roomnum = req.query.roomnum;
   let send_ = [];
+  console.log(roomnum,)
   connection.query(`select * from quezeshowqueze where roomnum = ${roomnum}`,(err,result)=>{
     
     Promise.all(result.map(async(e,i)=>{
@@ -1527,6 +1528,9 @@ app.post('/community_likes_change',(req,res)=>{
     });
   }
   return res.send('success');
+})
+app.get('/prerendering',(req,res)=>{
+  
 })
 // app.post('/make_space',(req,res)=>{
 //   const uuid = req.body.uuid;
