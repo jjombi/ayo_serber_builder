@@ -37,7 +37,11 @@ app.use(cors({
   // optionsSuccessStatus: 200, // 응답 상태 200으로 설정
   methods : '*',
 }))
-
+AWS.config.update({
+  accessKeyId: 'process.env.AWS_ACCESS_KEY_ID',
+  secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY',
+  region: 'ap-northeast-2'
+});
 const client = new S3Client(
   {
     region: 'ap-northeast-2',
@@ -1208,6 +1212,7 @@ app.get('/quezeshowtitle',(req,res)=>{
           Bucket: 'dlworjs',
           Key: e.uuid+'/'+e.img, // Replace with the key of your image in S3
       };
+    
       const imageUrl = await s3.getSignedUrlPromise('getObject', params);
       console.log(imageUrl);
         send_[i] ={
