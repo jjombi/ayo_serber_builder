@@ -12,6 +12,7 @@ const { title } = require('process');
 const fileUpload = require('express-fileupload');
 const { v4: uuidv4 } = require('uuid');
 const { GetObjectCommand, S3Client } = require("@aws-sdk/client-s3");
+const AWS = require('aws-sdk');
 const { resolve } = require('path');
 require('dotenv').config()
 
@@ -1194,15 +1195,22 @@ app.get('/quezeshowtitle',(req,res)=>{
     
     Promise.all(result.map(async(e,i)=>{
       if(e.img !== ''){
-        const  command = new GetObjectCommand({
-          Bucket: "dlworjs",
-          Key: e.uuid+'/'+e.img,
-        });
-        const response = await client.send(command);
-        const response_body = await response.Body.transformToByteArray();
-        const img_src = (Buffer.from(response_body).toString('base64'));
+        // const  command = new GetObjectCommand({
+        //   Bucket: "dlworjs",
+        //   Key: e.uuid+'/'+e.img,
+        // });
+        // const response = await client.send(command);
+        // const response_body = await response.Body.transformToByteArray();
+        // const img_src = (Buffer.from(response_body).toString('base64'));
+
+      const s3 = new AWS.S3();
+      const params = {
+          Bucket: 'dlworjs',
+          Key: e.uuid+'/'+e.img, // Replace with the key of your image in S3
+      };
+      const imageUrl = await s3.getSignedUrlPromise('getObject', params);
         send_[i] ={
-          img : img_src,
+          img : imageUrl,
           date : e.date,
           likes : e.likes,
           title : e.title,
@@ -1228,7 +1236,7 @@ app.get('/quezeshowtitle',(req,res)=>{
       }
     })).then(()=>{
       console.log('res send',send_);
-      return res.set({ "Content-Type": 'image/jpeg'}).send(send_);
+      return res.set({ "Content-Type": 'image/jpeg'}).send(send_);  
     })
   })
 })
