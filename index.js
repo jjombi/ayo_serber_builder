@@ -1209,6 +1209,7 @@ app.get('/quezeshowtitle',(req,res)=>{
           Key: e.uuid+'/'+e.img, // Replace with the key of your image in S3
       };
       const imageUrl = await s3.getSignedUrlPromise('getObject', params);
+      console.log(imageUrl);
         send_[i] ={
           img : imageUrl,
           date : e.date,
