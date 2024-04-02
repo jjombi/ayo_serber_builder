@@ -1228,7 +1228,7 @@ app.get('/quezeshowtitle',(req,res)=>{
       }
     })).then(()=>{
       console.log('res send',send_);
-      return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+      return res.set({ "Content-Type": 'image/jpeg'}).send(send_);
     })
   })
 })
