@@ -1047,6 +1047,11 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
   return res.send('success');
   
 })
+app.get('/create_sitemap',(req,res)=>{
+  connection.query(`select * from quezeshowqueze order by asc`,(err,result)=>{
+    return res.send(result);
+  })
+})
 app.get('/quezeshow_main',(req,res)=>{
   const type = req.query.type;
   const space_uuid = req.query.space_uuid; //undefind or uuid
