@@ -813,12 +813,16 @@ app.post('/main_result',(req,res)=>{
   })
   
 })
-const make_quezeshow_query_type_queze = (uuid,content_title,explain_text,result_roomnum,value1,value2,value3,value4,answer,img_tinyint) => {
+{/*
+  choice uuid1(quezeshowcontent_???.uuid) uuid2,text varchar(60)
+    `insert into choice (uuid1, uuid2, answer, text) value('${uuid}','${uuidv4()}',${Number(answer)},'${choice}')`
+*/}
+const make_quezeshow_query_type_queze = (uuid,content_title,explain_text,result_roomnum,choice,answer,img_tinyint) => {
   if(typeof(content_title) === 'string'){ // content 하나 일때
     console.log('make quezeshow 선택지 하나만 들어옴');
     if(img_tinyint === 'true'){
       console.log('이미지 있음');
-      connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, value1, value2, value3, value4, answer, roomnum) value('${uuid}', '${content_title}', 1, '${0}.jpg', '${explain_text}', '${uuidv4()}', '${value1}', '${value2}', '${value3}', '${value4}', '${answer}', ${result_roomnum + 1})`,(err,result)=>{
+      connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, roomnum) value('${uuid}', '${content_title}', 1, '${0}.jpg', '${explain_text}', '${uuidv4()}', '${value1}', '${value2}', '${value3}', '${value4}', '${answer}', ${result_roomnum + 1})`,(err,result)=>{
         if(err){
           throw err
         }
@@ -826,7 +830,7 @@ const make_quezeshow_query_type_queze = (uuid,content_title,explain_text,result_
     }
     else{
       console.log('이미지 없음');
-      connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, value1, value2, value3, value4, answer, roomnum) value('${uuid}', '${content_title}', 1, '', '${explain_text}', '${uuidv4()}', '${value1}', '${value2}', '${value3}', '${value4}', '${answer}', ${result_roomnum + 1})`,(err,result)=>{
+      connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, roomnum) value('${uuid}', '${content_title}', 1, '', '${explain_text}', '${uuidv4()}', '${value1}', '${value2}', '${value3}', '${value4}', '${answer}', ${result_roomnum + 1})`,(err,result)=>{
         if(err){
           throw err
         }
@@ -838,7 +842,7 @@ const make_quezeshow_query_type_queze = (uuid,content_title,explain_text,result_
     content_title.map((e,i)=>{
       if(img_tinyint[i] === 'true'){
         console.log('이미지 있음');
-        connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, value1, value2, value3, value4, answer, roomnum) value('${uuid}', '${content_title[i]}', 1, '${i}.jpg', '${explain_text[i]}', '${uuidv4()}', '${value1[i]}', '${value2[i]}', '${value3[i]}', '${value4[i]}', '${answer[i]}', ${result_roomnum + 1})`,(err,result)=>{
+        connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, roomnum) value('${uuid}', '${content_title[i]}', 1, '${i}.jpg', '${explain_text[i]}', '${uuidv4()}', '${value1[i]}', '${value2[i]}', '${value3[i]}', '${value4[i]}', '${answer[i]}', ${result_roomnum + 1})`,(err,result)=>{
           if(err){
             throw err
           }
@@ -846,7 +850,7 @@ const make_quezeshow_query_type_queze = (uuid,content_title,explain_text,result_
       }
       else{
         console.log('이미지 없음');
-        connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, value1, value2, value3, value4, answer, roomnum) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuidv4()}', '${value1[i]}', '${value2[i]}', '${value3[i]}', '${value4[i]}', '${answer[i]}', ${result_roomnum + 1})`,(err,result)=>{
+        connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, roomnum) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuidv4()}', '${value1[i]}', '${value2[i]}', '${value3[i]}', '${value4[i]}', '${answer[i]}', ${result_roomnum + 1})`,(err,result)=>{
           if(err){
             throw err
           }
@@ -946,23 +950,23 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
   const queze_title = req.body.queze_title;
   const explain_text = req.body.explain_text;
   const content_title = req.body.content_title;
-  const queze_type = req.body.queze_type;
+  // const queze_type = req.body.queze_type;
 
-  let queze_type_ = null;
+  // let queze_type_ = null;
   // let quezeshow_type_;
   // if(quezeshow_type === 'vote'){
   //   quezeshow_type_ = 1
   // }else if(quezeshow_type === 'queze'){
   //   quezeshow_type_ = 0
   // }
-  if(queze_type === 'multiple_choice'){
-    queze_type_ = 1;
-  }else if(queze_type === 'descriptive'){
-    queze_type_ = 0;
-  }
-  else {
-    console.log('queze_type err queze_type :',queze_type);
-  }
+  // if(queze_type === 'multiple_choice'){
+  //   queze_type_ = 1;
+  // }else if(queze_type === 'descriptive'){
+  //   queze_type_ = 0;
+  // }
+  // else {
+  //   console.log('queze_type err queze_type :',queze_type);
+  // }
   let result_roomnum;
   console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'date',date,'representativeimg',representativeimg, typeof(representativeimg), 'modify_password',modify_password);
   connection.query(`select roomnum from quezeshowqueze order by roomnum desc limit 1`,(err,result)=>{
@@ -985,14 +989,14 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
         console.log('img_tinyint === str');
         if(img_tinyint === 'true'){
           console.log(img_tinyint,'img_tinyint === true');
-          connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '0.jpg', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
+          connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '0.jpg', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}')`,(err,result)=>{
             if(err){
               throw err
             }
           })
         }else {
           console.log(img_tinyint,'img_tinyint === flase');
-          connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
+          connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}')`,(err,result)=>{
             if(err){
               throw err
             }
@@ -1003,7 +1007,7 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
         for(let i = 0 ; i <= img_tinyint.length; i++){
           if(img_tinyint[i] === 'true'){
             console.log('img_tinyint i === true',img_tinyint,i);
-            connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${i}.jpg', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
+            connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${i}.jpg', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}')`,(err,result)=>{
               if(err){
                 throw err
               }
@@ -1012,7 +1016,7 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
           }else{
             console.log('전부다 false',img_tinyint,i);
             if(i === img_tinyint.length){
-              connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
+              connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}')`,(err,result)=>{
                 if(err){
                   throw err
                 }
@@ -1026,22 +1030,17 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
     if(quezeshow_type === 'vote'){
       make_quezeshow_query_type_vote(uuid,content_title,explain_text,result_roomnum,img_tinyint);
     }
-    else if(quezeshow_type === 'queze'){// queze type 문제 생성 
-      const value1 = req.body.value1;
-      const value2 = req.body.value2;
-      const value3 = req.body.value3;
-      const value4 = req.body.value4;
+    else if(quezeshow_type === 'multiple'){// queze type 문제 생성 
+      const choice = req.body.choice;
       const answer = req.body.answer;
-      
-      make_quezeshow_query_type_queze(uuid,content_title,explain_text,result_roomnum,value1,value2,value3,value4,answer,img_tinyint);
+      console.log('choice',choice,'answer',answer);
+      // make_quezeshow_query_type_queze(uuid,content_title,explain_text,result_roomnum,choice,answer,img_tinyint);
     }
-    else if(quezeshow_type === 'Continue_speaking'){
-      const answer = req.body.answer;
-      make_quezeshow_query_type_continue_speaking(uuid,content_title,result_roomnum,answer);
-    }else if(quezeshow_type === 'New_word_queze'){
+    else if(quezeshow_type === 'descriptive'){
       const answer = req.body.answer;
       make_quezeshow_query_type_continue_speaking(uuid,content_title,result_roomnum,answer);
     }
+    
 
   });
   return res.send('success');
