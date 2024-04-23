@@ -977,12 +977,12 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
 
     if(main_img_tinyint){
       console.log('섬네일 있음')
-      connection.query(`insert into quezeshowqueze (title, existence, uuid, date, likes, img, roomnum, explainText, quezeshow_type, password, user_id, time) value('${queze_title}', 1, '${uuid}', ${date}, 0, 'main_img.jpg', ${result_roomnum + 1}, '${queze_explain_text}', '${quezeshow_type}', '${password}', '${user_id}',)`,(err,result)=>{
+      connection.query(`insert into quezeshowqueze (title, existence, uuid, date, likes, img, roomnum, explainText, quezeshow_type, password, user_id, time) value('${queze_title}', 1, '${uuid}', ${date}, 0, 'main_img.jpg', ${result_roomnum + 1}, '${queze_explain_text}', '${quezeshow_type}', '${password}', '${user_id}', ${time})`,(err,result)=>{
         console.log('insert quezeshowqueze',err,result);
       })
     }else{
       console.log('섬네일 없음')
-      connection.query(`insert into quezeshowqueze (title, existence, uuid, date, likes, img, roomnum, explainText, quezeshow_type, password, user_id, time) value('${queze_title}', 1, '${uuid}', ${date}, 0, '', ${result_roomnum + 1}, '${queze_explain_text}', '${quezeshow_type}', '${password}', '${user_id}')`,(err,result)=>{
+      connection.query(`insert into quezeshowqueze (title, existence, uuid, date, likes, img, roomnum, explainText, quezeshow_type, password, user_id, time) value('${queze_title}', 1, '${uuid}', ${date}, 0, '', ${result_roomnum + 1}, '${queze_explain_text}', '${quezeshow_type}', '${password}', '${user_id}', ${time})`,(err,result)=>{
         console.log('insert quezeshowqueze',err,result);
       })
     }
