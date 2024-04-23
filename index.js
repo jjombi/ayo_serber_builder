@@ -821,7 +821,7 @@ const make_quezeshow_query_type_multiple = (uuid,content_object,result_roomnum,c
   console.log('make_quezeshow_query_type_multiple',uuid,content_object,result_roomnum,choice,correct_choice);
   content_object.map((e,i)=>{
     const uuid2 = uuidv4();
-    connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${correct_choice}')`)
+    connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${correct_choice[i]}')`)
     choice[i].map((e,i)=>{
       connection.query(`insert into choice (uuid, choice) value('${uuid2}','${e}')`);
     })
@@ -1007,7 +1007,7 @@ app.get('/quezeshow_main',(req,res)=>{
   const type = req.query.type;
   // const space_uuid = req.query.space_uuid; //undefind or uuid
   // const quezeshow_type = req.query.quezeshow_type;
-  console.log(type,req.query,space_uuid);
+  console.log(type,req.query,);
   let send_ = [];
 
 
