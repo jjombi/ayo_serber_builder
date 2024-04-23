@@ -965,7 +965,7 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
   const date = req.body.date;
 
   let result_roomnum;
-  console.log('quezeshow_type',quezeshow_type,'queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'uuid',uuid,'date',date,'modify_password',password);
+  console.log('quezeshow_type',quezeshow_type,'queze_title',queze_title,'uuid',uuid,'date',date,'modify_password',password);
   connection.query(`select roomnum from quezeshowqueze order by roomnum desc limit 1`,(err,result)=>{
     console.log(result);
     if(result.length === 0){
