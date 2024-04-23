@@ -817,158 +817,155 @@ app.post('/main_result',(req,res)=>{
   choice uuid1(quezeshowcontent_???.uuid) uuid2,text varchar(60)
     `insert into choice (uuid1, uuid2, answer, text) value('${uuid}','${uuidv4()}',${Number(answer)},'${choice}')`
 */}
-const make_quezeshow_query_type_queze = (uuid,content_title,explain_text,result_roomnum,choice,answer,img_tinyint) => {
-  if(typeof(content_title) === 'string'){ // content 하나 일때
-    console.log('make quezeshow 선택지 하나만 들어옴');
-    if(img_tinyint === 'true'){
-      console.log('이미지 있음');
-      connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, roomnum) value('${uuid}', '${content_title}', 1, '${0}.jpg', '${explain_text}', '${uuidv4()}', '${value1}', '${value2}', '${value3}', '${value4}', '${answer}', ${result_roomnum + 1})`,(err,result)=>{
-        if(err){
-          throw err
-        }
-      })
-    }
-    else{
-      console.log('이미지 없음');
-      connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, roomnum) value('${uuid}', '${content_title}', 1, '', '${explain_text}', '${uuidv4()}', '${value1}', '${value2}', '${value3}', '${value4}', '${answer}', ${result_roomnum + 1})`,(err,result)=>{
-        if(err){
-          throw err
-        }
-      })
-    }
-  }
-  else{
-    console.log('make quezeshow 선택지 여러개');
-    content_title.map((e,i)=>{
-      if(img_tinyint[i] === 'true'){
-        console.log('이미지 있음');
-        connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, roomnum) value('${uuid}', '${content_title[i]}', 1, '${i}.jpg', '${explain_text[i]}', '${uuidv4()}', '${value1[i]}', '${value2[i]}', '${value3[i]}', '${value4[i]}', '${answer[i]}', ${result_roomnum + 1})`,(err,result)=>{
-          if(err){
-            throw err
-          }
-        })
+const make_quezeshow_query_type_multiple = (uuid,content_object,result_roomnum,choice,correct_choice) => {
+  console.log('make_quezeshow_query_type_multiple',uuid,content_object,result_roomnum,choice,correct_choice);
+  content_object.map((e,i)=>{
+    const uuid2 = uuidv4();
+    connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${correct_choice}')`)
+    choice[i].map((e,i)=>{
+      connection.query(`insert into choice (uuid, choice) value('${uuid2}','${e}')`);
+    })
+    if(e.data_type === 'image'){
+      if(e.img === 'false'){
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${e.title}', 1, '', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{})
+      }else if(e.img = 'true'){
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${e.title}', 1, '${i}.jpg', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{})
       }
-      else{
-        console.log('이미지 없음');
-        connection.query(`insert into quezeshowcontent_queze (uuid, title, existence, img, text, uuid2, roomnum) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuidv4()}', '${value1[i]}', '${value2[i]}', '${value3[i]}', '${value4[i]}', '${answer[i]}', ${result_roomnum + 1})`,(err,result)=>{
-          if(err){
-            throw err
-          }
+    }else if(e.data_type === 'video'){
+      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{
+        connection.query(`insert into yotube (uuid, start, end) value('${uuid2}')`)
+      })
+    }else if(e.data_type === 'audio'){
+      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{
+        connection.query(`insert into yotube (uuid, start, end) value('${uuid2}')`)
+      })
+    }else if(e.data_type === 'text'){
+      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{
+      })
+    }
+  })
+  
+}
+const make_quezeshow_query_type_vote = (uuid,content_object,result_roomnum) => {
+    console.log('make_quezeshow_query_type_vote',uuid,content_object,result_roomnum);
+    content_object.map((e,i)=>{
+      const uuid2 = uuidv4();
+      if(e.data_type === 'image'){
+        if(e.img === 'false'){
+          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${e.title}', 1, '', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{})
+        }else if(e.img = 'true'){
+          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${e.title}', 1, '${i}.jpg', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{})
+        }
+      }else if(e.data_type === 'video'){
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{
+          connection.query(`insert into yotube (uuid, start, end) value('${uuid2}')`)
+        })
+      }else if(e.data_type === 'audio'){
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{
+          connection.query(`insert into yotube (uuid, start, end) value('${uuid2}')`)
+        })
+      }else if(e.data_type === 'text'){
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{
         })
       }
     })
-  }
 }
-const make_quezeshow_query_type_vote = (uuid,content_title,explain_text,result_roomnum,img_tinyint) => {
-  if(typeof(content_title) === 'string'){ // content 하나 일때
-    console.log('make quezeshow 선택지 하나만 들어옴');
-    if(img_tinyint === 'true'){
-      console.log('이미지 있음');
-      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '${0}.jpg', '${explain_text}', '${uuidv4()}',0, ${result_roomnum + 1})`,(err,result)=>{
-        if(err){
-          throw err
-        }
-      })
-    }
-    else{
-      console.log('이미지 없음');
-      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title}', 1, '', '${explain_text}', '${uuidv4()}',0, ${result_roomnum + 1})`,(err,result)=>{
-        if(err){
-          throw err
-        }
-      })
-    }
-  }
-  else{
-    console.log('make quezeshow 선택지 여러개');
-    content_title.map((e,i)=>{
-      if(img_tinyint[i] === 'true'){
-        console.log('이미지 있음');
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '${i}.jpg', '${explain_text[i]}', '${uuidv4()}',0, ${result_roomnum + 1})`,(err,result)=>{
-          if(err){
-            throw err
-          }
-        })
-      }
-      else{
-        console.log('이미지 없음');
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuidv4()}',0, ${result_roomnum + 1})`,(err,result)=>{
-          if(err){
-            throw err
-          }
-        })
-      }
+const make_quezeshow_query_type_descriptive = (uuid,content_object,result_roomnum,correct_choice) => {
+  console.log('make_quezeshow_query_type_descriptive',uuid,content_object,result_roomnum,correct_choice);
+  content_object.map((e,i)=>{
+    const uuid2 = uuidv4();
+    correct_choice[i].map((ev,i)=>{
+      connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid}', '${ev}')`)
     })
-  }
-}
-const make_quezeshow_query_type_continue_speaking = (uuid,content_title,result_roomnum,answer,img_tinyint) => {
-  if(typeof(content_title) === 'string'){ // content 하나 일때
-    console.log('make quezeshow type continue speaking 선택지 하나만 들어옴');
-    if(img_tinyint === 'true'){
-      connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer}', '0.jpg')`,(err,result)=>{
-        if(err){
-          throw err
-        }
-      })  
-    }else{
-      connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer}', '')`,(err,result)=>{
-        if(err){
-          throw err
-        }
-      })  
-    }
-  }
-  else{
-    console.log('make quezeshow continue speaking 선택지 여러개');
-    content_title.map((e,i)=>{
-      if(img_tinyint === 'true'){
-        connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title[i]}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer[i]}', '${i}'.jpg)`,(err,result)=>{
-          if(err){
-            throw err
-          }
-        })
-      }else {
-        connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title[i]}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer[i]}', '')`,(err,result)=>{
-          if(err){
-            throw err
-          }
-        })
+    if(e.data_type === 'image'){
+      if(e.img === 'false'){
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${e.title}', 1, '', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{})
+      }else if(e.img = 'true'){
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${e.title}', 1, '${i}.jpg', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{})
       }
+    }else if(e.data_type === 'video'){
+      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{
+        connection.query(`insert into yotube (uuid, start, end) value('${uuid2}')`)
+      })
+    }else if(e.data_type === 'audio'){
+      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{
+        connection.query(`insert into yotube (uuid, start, end) value('${uuid2}')`)
+      })
+    }else if(e.data_type === 'text'){
+      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{
+      })
+    }
+  })
+}
+// const make_quezeshow_query_type_continue_speaking = (uuid,content_title,result_roomnum,answer,img_tinyint) => {
+//   if(typeof(content_title) === 'string'){ // content 하나 일때
+//     console.log('make quezeshow type continue speaking 선택지 하나만 들어옴');
+//     if(img_tinyint === 'true'){
+//       connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer}', '0.jpg')`,(err,result)=>{
+//         if(err){
+//           throw err
+//         }
+//       })  
+//     }else{
+//       connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer}', '')`,(err,result)=>{
+//         if(err){
+//           throw err
+//         }
+//       })  
+//     }
+//   }
+//   else{
+//     console.log('make quezeshow continue speaking 선택지 여러개');
+//     content_title.map((e,i)=>{
+//       if(img_tinyint === 'true'){
+//         connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title[i]}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer[i]}', '${i}'.jpg)`,(err,result)=>{
+//           if(err){
+//             throw err
+//           }
+//         })
+//       }else {
+//         connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title[i]}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer[i]}', '')`,(err,result)=>{
+//           if(err){
+//             throw err
+//           }
+//         })
+//       }
       
       
-    })
-  }
-}
-app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
-  const quezeshow_type = req.body.quezeshow_type;
-  const quezeshowqueze_explain_text = req.body.quezeshowqueze_explain_text;
-  const img_tinyint = req.body.img_tinyint;
-  const uuid = req.body.uuid;
-  const date = req.body.date;
-  const representativeimg = req.body.representativeimg;
-  const modify_password = req.body.modify_password;
-  const queze_title = req.body.queze_title;
-  const explain_text = req.body.explain_text;
-  const content_title = req.body.content_title;
-  // const queze_type = req.body.queze_type;
+//     })
+//   }
+// }
+app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
+  // quezeshow_type       : quezeshow_type_clicked_btn,
+  // password             : password,
+  // uuid                 : password,
+  // queze_title          : queze_title_ref.current.value,
+  // queze_explain_text   : queze_explain_text_ref.current.value,
+  // content_object       : content_object_, //콘텐츠 제못, 설명, 이미지 판별
+  // choice               : choice,
+  // correct_choice       : correct_choice,
+  // time                 : time_ref.current.value,
+  // main_img_tinyint     : main_img_tinyint,
+  // user_id              : user_id_ref.current.value,
+  // date                 : Date.now(),
+  // return {data_type : e.data_type, src : e.src, title : e.title, text : e.text, answer : e.answer,start : e.start, end : e.end}
+  // return {data_type: e.data_type, title : e.title, text : e.text, img : true}
 
-  // let queze_type_ = null;
-  // let quezeshow_type_;
-  // if(quezeshow_type === 'vote'){
-  //   quezeshow_type_ = 1
-  // }else if(quezeshow_type === 'queze'){
-  //   quezeshow_type_ = 0
-  // }
-  // if(queze_type === 'multiple_choice'){
-  //   queze_type_ = 1;
-  // }else if(queze_type === 'descriptive'){
-  //   queze_type_ = 0;
-  // }
-  // else {
-  //   console.log('queze_type err queze_type :',queze_type);
-  // }
+  const quezeshow_type = req.body.quezeshow_type;
+  const password = req.body.password;
+  const uuid = req.body.uuid;
+  const queze_title = req.body.queze_title;
+  const queze_explain_text = req.body.queze_explain_text;
+  const content_object = req.body.content_object;
+  const choice = req.body.choice;
+  const correct_choice = req.body.correct_choice;
+  const time = req.body.time;
+  const main_img_tinyint = req.body.main_img_tinyint;
+  const user_id = req.body.user_id;
+  const date = req.body.date;
+
   let result_roomnum;
-  console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'date',date,'representativeimg',representativeimg, typeof(representativeimg), 'modify_password',modify_password);
+  console.log('quezeshow_type',quezeshow_type,'queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'uuid',uuid,'date',date,'modify_password',password);
   connection.query(`select roomnum from quezeshowqueze order by roomnum desc limit 1`,(err,result)=>{
     console.log(result);
     if(result.length === 0){
@@ -977,68 +974,21 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
     else{
       result_roomnum = result[0].roomnum;
     }
-    
-    // if(Number(representativeimg) === -1){ // 섬내일 없을 때
-    //   connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type, queze_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}', ${queze_type_})`,(err,result)=>{
-    //     if(err){
-    //       throw err
-    //     }
-    //   })
-    // }else{
-    //   if(typeof(img_tinyint) === 'string'){
-    //     console.log('img_tinyint === str');
-    //     if(img_tinyint === 'true'){
-    //       console.log(img_tinyint,'img_tinyint === true');
-    //       connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '0.jpg', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}')`,(err,result)=>{
-    //         if(err){
-    //           throw err
-    //         }
-    //       })
-    //     }else {
-    //       console.log(img_tinyint,'img_tinyint === flase');
-    //       connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}')`,(err,result)=>{
-    //         if(err){
-    //           throw err
-    //         }
-    //       })
-    //     }
-    //   }else {
-    //     console.log('img_tinyint is arr',img_tinyint);
-    //     for(let i = 0 ; i <= img_tinyint.length; i++){
-    //       if(img_tinyint[i] === 'true'){
-    //         console.log('img_tinyint i === true',img_tinyint,i);
-    //         connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '${i}.jpg', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}')`,(err,result)=>{
-    //           if(err){
-    //             throw err
-    //           }
-    //         })
-    //         i=img_tinyint.length+1;
-    //       }else{
-    //         console.log('전부다 false',img_tinyint,i);
-    //         if(i === img_tinyint.length){
-    //           connection.query(`insert into quezeshowqueze (uuid, title, existence, date, likes, img, roomnum, password, explainText, quezeshow_type) value('${uuid}', '${queze_title}', 1, ${date}, 0, '', ${result_roomnum + 1}, '${modify_password}', '${quezeshowqueze_explain_text}', '${quezeshow_type}')`,(err,result)=>{
-    //             if(err){
-    //               throw err
-    //             }
-    //           })
-    //         }
-    //       }     
-    //     }
-    //   // }
-      
-    // }
+    if(main_img_tinyint==='false'){
+      connection.query(`insert into quezeshowqueze (title, existence, uuid, date, likes, img, roomnum, explainText, quezeshow_type, password, user_id) value('${queze_title}', 1, '${uuid}', ${date}, 0, 'main_img.jpg', ${result_roomnum + 1}, '${queze_explain_text}', '${quezeshow_type}', '${password}', '${user_id}'`,(err,result)=>{
+      })
+    }else{
+      connection.query(`insert into quezeshowqueze (title, existence, uuid, date, likes, img, roomnum, explainText, quezeshow_type, password, user_id) value('${queze_title}', 1, '${uuid}', ${date}, 0, '', ${result_roomnum + 1}, '${queze_explain_text}', '${quezeshow_type}', '${password}', '${user_id}'`,(err,result)=>{
+      })
+    }
     if(quezeshow_type === 'vote'){
-      make_quezeshow_query_type_vote(uuid,content_title,explain_text,result_roomnum,img_tinyint);
+      make_quezeshow_query_type_vote(uuid,content_object,result_roomnum);
     }
     else if(quezeshow_type === 'multiple'){// queze type 문제 생성 
-      const choice = req.body.choice;
-      const answer = req.body.correct_choice;
-      console.log('choice',choice,'answer',answer);
-      // make_quezeshow_query_type_queze(uuid,content_title,explain_text,result_roomnum,choice,answer,img_tinyint);
+      make_quezeshow_query_type_multiple(uuid,content_object,result_roomnum,choice,correct_choice);
     }
     else if(quezeshow_type === 'descriptive'){
-      const answer = req.body.answer;
-      make_quezeshow_query_type_continue_speaking(uuid,content_title,result_roomnum,answer);
+      make_quezeshow_query_type_descriptive(uuid,content_object,result_roomnum,correct_choice);
     }
     
 
@@ -1046,11 +996,7 @@ app.post('/make_quezeshow',(req,res)=>{ //나락퀴즈 문제 만들기
   return res.send('success');
   
 })
-app.get('/create_sitemap',(req,res)=>{
-  connection.query(`select * from quezeshowqueze order by asc`,(err,result)=>{
-    return res.send(result);
-  })
-})
+
 app.get('/quezeshow_main',(req,res)=>{
   const type = req.query.type;
   const space_uuid = req.query.space_uuid; //undefind or uuid
@@ -1058,74 +1004,7 @@ app.get('/quezeshow_main',(req,res)=>{
   console.log(type,req.query,space_uuid);
   let send_ = [];
 
-  // if(space_uuid !== undefined){
-  //   if(type === 'likes'){
-  //     connection.query(`select * from spacequezeshowqueze where uuid = '${space_uuid}' && existence = 1 order by likes asc limit 20`,(err,result)=>{
-  //       Promise.all(result.map(async(e,i)=>{
-  //         if(e.img !== ''){
-  //           const  command = new GetObjectCommand({
-  //             Bucket: "dlworjs",
-  //             Key: `space/${space_uuid}/${e.uuid2}/${e.img}`,
-  //           });
-  //           const response = await client.send(command);
-  //           const response_body = await response.Body.transformToByteArray();
-  //           const img_src = (Buffer.from(response_body).toString('base64'));
-  //           send_[i] ={
-  //             img : img_src,
-  //             date : e.date,
-  //             likes : e.likes,
-  //             title : e.title,
-  //             uuid : e.uuid,
-  //             uuid2 : e.uuid2,
-  //             roomnum : e.roomnum
-  //           }
-  //           console.log('send message 만들어 자는 중 ');
-  //         }else{
-  //           send_[i] ={
-  //             img : '',
-  //             date : e.date,
-  //             likes : e.likes,
-  //             title : e.title,
-  //             uuid : e.uuid,
-  //             uuid2 : e.uuid2,
-  //             roomnum : e.roomnum
-  //           }
-  //           console.log('send message 만들어 자는 중 ');
-  //         }
-  //       })).then(()=>{
-  //         console.log('res send',send_);
-  //         return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
-  //       })
-  //     })
-  //   }
-    // else if(type === 'date'){
-    //   connection.query(`select * from spacequezeshowqueze uuid = '${space_uuid}' && existence = 1 order by likes asc limit 20`,(err,result)=>{
-    //     Promise.all(result.map(async(e,i)=>{
-    //       const  command = new GetObjectCommand({
-    //         Bucket: "dlworjs",
-    //         Key: `space/${e.uuid}/e.img`,
-    //       });
-    //       const response = await client.send(command);
-    //       const response_body = await response.Body.transformToByteArray();
-    //       const img_src = (Buffer.from(response_body).toString('base64'));
-    //       send_[i] ={
-    //         img : img_src,
-    //         date : e.date,
-    //         likes : e.likes,
-    //         title : e.title,
-    //         uuid : e.uuid,
-    //         uuid2 : e.uuid2,
-    //         roomnum : e.roomnum
-    //       }
-    //       console.log('send message 만들어 자는 중 ');
-    //     })).then(()=>{
-    //       console.log('res send',send_);
-    //       return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
-    //     })
-    //   })
-    // }
-  // }
-  // else {
+
     if(type === 'likes'){
       connection.query(`select * from quezeshowqueze where existence = 1 ${quezeshow_type} order by likes desc limit 20`,(err,result)=>{
         Promise.all(result.map(async(e,i)=>{
