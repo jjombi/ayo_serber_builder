@@ -1332,7 +1332,7 @@ app.get('/select_choice_correct',(req,res)=>{
     connection.query(`select * from correct_choice where uuid ='${uuid}'`,(err,correct_result)=>{
       let send_ = [];
       Promise.all(choice_result.map((e,i)=>{
-        console.Console.log(choice_result[i].choice,correct_result[i].correct_choice);
+        console.log(choice_result[i].choice,correct_result[i].correct_choice);
         send_[i] = {choice : choice_result[i].choice, correct_choice : correct_result[i].correct_choice}
       })).then((e)=>{
         return res.set({ "Content-Type": 'image/jpeg'}).send(send_);
