@@ -1149,94 +1149,114 @@ app.get('/quezeshow_checking_existence',(req,res)=>{
 //     return res.send(result);
 //   })
 // })
-app.get('/quezeshowqueze_type_text',(req,res)=>{
-  const roomnum = req.query.roomnum;
-  let send_ = [];
-  console.log(roomnum);
-  connection.query(`select * from quezeshowcontent_text where roomnum = '${roomnum}' && existence = 1`,(err,result)=>{
-    Promise.all(result.map(async(e,i)=>{
-      send_[i] ={
-        uuid     : e.uuid,
-        uuid2    : e.uuid2,
-        roomnum  : e.roomnum,
-        title    : e.title,
-        answer   : e.answer,
-      }
-      console.log('send message 만들어 자는 중 ');
-    })).then(()=>{
-      console.log('res send',send_);
-      return res.send(send_);
-    })
-  })
-})
-app.get('/quezeshowqueze_type_queze',(req,res)=>{
-  const roomnum = req.query.roomnum;
-  let send_ = [];
-  console.log(roomnum);
-  connection.query(`select * from quezeshowcontent_queze where roomnum = '${roomnum}' && existence = 1`,(err,result)=>{
-    Promise.all(result.map(async(e,i)=>{
-      if(e.img === ''){
-        send_[i] ={
-          uuid : e.uuid,
-          uuid2 : e.uuid2,
-          roomnum : e.roomnum,
-          title : e.title,
-          text : e.text,
-          value1 : e.value1,
-          value2 : e.value2,
-          value3 : e.value3,
-          value4 : e.value4,
-          answer : e.answer,
-          img : ''
-        }
-      }
-      else{
-        const  command = new GetObjectCommand({
-          Bucket: "dlworjs",
-          Key: e.uuid+'/'+e.img,
-        });
-        const response = await client.send(command);
-        const response_body = await response.Body.transformToByteArray();
-        const img_src = (Buffer.from(response_body).toString('base64'));
-        send_[i] ={
-          uuid : e.uuid,
-          uuid2 : e.uuid2,
-          roomnum : e.roomnum,
-          title : e.title,
-          text : e.text,
-          value1 : e.value1,
-          value2 : e.value2,
-          value3 : e.value3,
-          value4 : e.value4,
-          answer : e.answer,
-          img : img_src
-        }
-      }
-      console.log('send message 만들어 자는 중 ');
-    })).then(()=>{
-      console.log('res send',send_);
-      return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
-    })
-  })
-})
+// app.get('/quezeshowqueze_type_text',(req,res)=>{
+//   const roomnum = req.query.roomnum;
+//   let send_ = [];
+//   console.log(roomnum);
+//   connection.query(`select * from quezeshowcontent_text where roomnum = '${roomnum}' && existence = 1`,(err,result)=>{
+//     Promise.all(result.map(async(e,i)=>{
+//       send_[i] ={
+//         uuid     : e.uuid,
+//         uuid2    : e.uuid2,
+//         roomnum  : e.roomnum,
+//         title    : e.title,
+//         answer   : e.answer,
+//       }
+//       console.log('send message 만들어 자는 중 ');
+//     })).then(()=>{
+//       console.log('res send',send_);
+//       return res.send(send_);
+//     })
+//   })
+// })
+// app.get('/quezeshowqueze_type_queze',(req,res)=>{
+//   const roomnum = req.query.roomnum;
+//   let send_ = [];
+//   console.log(roomnum);
+//   connection.query(`select * from quezeshowcontent_queze where roomnum = '${roomnum}' && existence = 1`,(err,result)=>{
+//     Promise.all(result.map(async(e,i)=>{
+//       if(e.img === ''){
+//         send_[i] ={
+//           uuid : e.uuid,
+//           uuid2 : e.uuid2,
+//           roomnum : e.roomnum,
+//           title : e.title,
+//           text : e.text,
+//           value1 : e.value1,
+//           value2 : e.value2,
+//           value3 : e.value3,
+//           value4 : e.value4,
+//           answer : e.answer,
+//           img : ''
+//         }
+//       }
+//       else{
+//         const  command = new GetObjectCommand({
+//           Bucket: "dlworjs",
+//           Key: e.uuid+'/'+e.img,
+//         });
+//         const response = await client.send(command);
+//         const response_body = await response.Body.transformToByteArray();
+//         const img_src = (Buffer.from(response_body).toString('base64'));
+//         send_[i] ={
+//           uuid : e.uuid,
+//           uuid2 : e.uuid2,
+//           roomnum : e.roomnum,
+//           title : e.title,
+//           text : e.text,
+//           value1 : e.value1,
+//           value2 : e.value2,
+//           value3 : e.value3,
+//           value4 : e.value4,
+//           answer : e.answer,
+//           img : img_src
+//         }
+//       }
+//       console.log('send message 만들어 자는 중 ');
+//     })).then(()=>{
+//       console.log('res send',send_);
+//       return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+//     })
+//   })
+// })
 app.get('/quezeshowqueze',(req,res)=>{
   const roomnum = req.query.roomnum;
   let send_ = [];
   console.log(roomnum);
   connection.query(`select * from quezeshowcontent where roomnum = '${roomnum}'`,(err,result)=>{
     Promise.all(result.map(async(e,i)=>{
-      if(e.img === ''){
-        send_[i] ={
-          img : '',
-          title : e.title,
-          uuid : e.uuid,
-          text : e.text,
-          uuid2 : e.uuid2,
-          roomnum : e.roomnum,
-          value : e.value
-        }
-      }
-      else{
+
+      if(e.data_type === 'video'){
+        connection.query(`select * from youtube where uuid='${e.uuid2}'`,((err,result)=>{
+          send_[i] ={
+            img : e.img,
+            title : e.title,
+            uuid : e.uuid,
+            text : e.text,
+            uuid2 : e.uuid2,
+            roomnum : e.roomnum,
+            data_type : e.data_type,
+            value : e.value,
+            start : result[0].start,
+            emd : result[0].end
+          }
+        }))
+      }else if(e.data_type === 'audio'){
+        connection.query(`select * from youtube where uuid='${e.uuid2}'`,((err,result)=>{
+          send_[i] ={
+            img : e.img,
+            title : e.title,
+            uuid : e.uuid,
+            text : e.text,
+            uuid2 : e.uuid2,
+            roomnum : e.roomnum,
+            data_type : e.data_type,
+            value : e.value,
+            start : result[0].start,
+            emd : result[0].end
+          }
+        }))
+      }else if(e.data_type === ' image'){
         const  command = new GetObjectCommand({
           Bucket: "dlworjs",
           Key: e.uuid+'/'+e.img,
@@ -1251,15 +1271,74 @@ app.get('/quezeshowqueze',(req,res)=>{
           text : e.text,
           uuid2 : e.uuid2,
           roomnum : e.roomnum,
+          data_type : e.data_type,
           value : e.value
         }
+      }else if(e.data_type === 'text'){
+        send_[i] ={
+          img : '',
+          title : e.title,
+          uuid : e.uuid,
+          text : e.text,
+          uuid2 : e.uuid2,
+          roomnum : e.roomnum,
+          data_type : e.data_type,
+          value : e.value
+        }
+      }else {
+        throw 'quezeshowcontent data_type err';
       }
+      // if(e.img === ''){
+      //   send_[i] ={
+      //     img : '',
+      //     title : e.title,
+      //     uuid : e.uuid,
+      //     text : e.text,
+      //     uuid2 : e.uuid2,
+      //     roomnum : e.roomnum,
+      //     value : e.value
+      //   }
+      // }
+      // else{
+      //   const  command = new GetObjectCommand({
+      //     Bucket: "dlworjs",
+      //     Key: e.uuid+'/'+e.img,
+      //   });
+      //   const response = await client.send(command);
+      //   const response_body = await response.Body.transformToByteArray();
+      //   const img_src = (Buffer.from(response_body).toString('base64'));
+      //   send_[i] ={
+      //     img : img_src,
+      //     title : e.title,
+      //     uuid : e.uuid,
+      //     text : e.text,
+      //     uuid2 : e.uuid2,
+      //     roomnum : e.roomnum,
+      //     value : e.value
+      //   }
+      // }
       console.log('send message 만들어 자는 중 ');
     })).then(()=>{
       console.log('res send',send_);
       return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
     })
   })
+})
+app.get('/select_choice_correct',(req,res)=>{
+  const uuid = req.query.uuid;
+  console.log(uuid);
+  connection.query(`select * from choice where uuid ='${uuid}'`,(err,choice_result)=>{
+    connection.query(`select * from correct_choice where uuid ='${uuid}'`,(err,correct_result)=>{
+      let send_ = [];
+      Promise.all(choice_result.map((e,i)=>{
+        console.Console.log(choice_result[i].choice,correct_result[i].correct_choice);
+        send_[i] = {choice : choice_result[i].choice, correct_choice : correct_result[i].correct_choice}
+      })).then((e)=>{
+        return res.set({ "Content-Type": 'image/jpeg'}).send(send_);
+      })
+    })
+  })
+
 })
 // app.get('/spacequezeshowqueze',(req,res)=>{
 //   const roomnum = req.query.roomnum;
