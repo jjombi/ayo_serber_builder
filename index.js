@@ -1099,7 +1099,7 @@ app.get('/quezeshowtitle',(req,res)=>{
       const s3 = new AWS.S3();
       const params = {
           Bucket: 'dlworjs',
-          Key: 'main_img.jpg', // Replace with the key of your image in S3
+          Key: e.uuid+'/main_img.jpg', // Replace with the key of your image in S3
       };  
     
       const imageUrl = await s3.getSignedUrlPromise('getObject', params);
