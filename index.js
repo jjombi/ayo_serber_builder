@@ -1224,9 +1224,10 @@ app.get('/quezeshowqueze',(req,res)=>{
   let send_ = [];
   console.log(roomnum);
   connection.query(`select * from quezeshowcontent where roomnum = '${roomnum}'`,(err,result)=>{
+    console.log(result);
     Promise.all(result.map(async(e,i)=>{
       console.log(e,e.data_type);
-      if(e.data_type === 'video'){
+      if(e.data_type == 'video'){
         connection.query(`select * from youtube where uuid='${e.uuid2}'`,((err,result)=>{
           send_[i] ={
             img : e.img,
@@ -1241,7 +1242,7 @@ app.get('/quezeshowqueze',(req,res)=>{
             emd : result[0].end
           }
         }))
-      }else if(e.data_type === 'audio'){
+      }else if(e.data_type == 'audio'){
         connection.query(`select * from youtube where uuid='${e.uuid2}'`,((err,result)=>{
           send_[i] ={
             img : e.img,
@@ -1256,7 +1257,7 @@ app.get('/quezeshowqueze',(req,res)=>{
             emd : result[0].end
           }
         }))
-      }else if(e.data_type === ' image'){
+      }else if(e.data_type == 'image'){
         const  command = new GetObjectCommand({
           Bucket: "dlworjs",
           Key: e.uuid+'/'+e.img,
