@@ -1331,12 +1331,13 @@ app.get('/select_choice_correct',(req,res)=>{
   connection.query(`select * from choice where uuid ='${uuid}'`,(err,choice_result)=>{
     connection.query(`select * from correct_choice where uuid ='${uuid}'`,(err,correct_result)=>{
       let send_ = [];
-      Promise.all(choice_result.map((e,i)=>{
-        console.log(choice_result,correct_result);
-        send_[i] = {choice : choice_result[i].choice, correct_choice : correct_result[i].correct_choice}
-      })).then((e)=>{
-        return res.set({ "Content-Type": 'image/jpeg'}).send(send_);
-      })
+      // Promise.all(choice_result.map((e,i)=>{
+      //   console.log(choice_result,correct_result);
+      //   send_[i] = {choice : choice_result[i], correct_choice : correct_result[i].correct_choice}
+      // })).then((e)=>{
+      //   return res.send(send_);
+      // })
+      return res.send({choice : choice_result, correct_choice : correct_result});
     })
   })
 
