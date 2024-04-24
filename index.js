@@ -1225,7 +1225,7 @@ app.get('/quezeshowqueze',(req,res)=>{
   console.log(roomnum);
   connection.query(`select * from quezeshowcontent where roomnum = '${roomnum}'`,(err,result)=>{
     Promise.all(result.map(async(e,i)=>{
-
+      console.log(e);
       if(e.data_type === 'video'){
         connection.query(`select * from youtube where uuid='${e.uuid2}'`,((err,result)=>{
           send_[i] ={
