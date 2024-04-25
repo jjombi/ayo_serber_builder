@@ -697,7 +697,7 @@ app.post('/oneandonequeze',(req,res)=>{
       });
       const response = await client.send(command);
       const response_body = await response.Body.transformToByteArray();
-      const img_src = await (Buffer.from(response_body).toString('base64'));
+      const img_src = (Buffer.from(response_body).toString('base64'));
 
       // sendresult = {text : e.text}];
       console.log('e.text, e.uuid, img_src',e.text, e.uuid, img_src);
@@ -1227,42 +1227,60 @@ app.get('/quezeshowqueze',(req,res)=>{
     console.log(result);
     Promise.all(result.map(async(e,i)=>{
       console.log(e,e.data_type,e.data_type.length);
-      if(e.data_type == 'video'){
-        new Promise(()=>{
-          connection.query(`select * from youtube where uuid='${e.uuid2}'`,(async(err,result)=>{
-            if(err) throw err
-            console.log('data type video send_만들어지는 중');
-            send_[i] ={
-              img : e.img,
-              title : e.title,
-              uuid : e.uuid,
-              text : e.text,
-              uuid2 : e.uuid2,
-              roomnum : e.roomnum,
-              data_type : e.data_type,
-              value : e.value,
-              start : result[0].start,
-              end : result[0].end
-            }
-          }))
-        })
-
-      }else if(e.data_type == 'audio'){
-        connection.query(`select * from youtube where uuid='${e.uuid2}'`,((err,result)=>{
-          if(err) throw err
-          send_[i] ={
-            img : e.img,
-            title : e.title,
-            uuid : e.uuid,
-            text : e.text,
-            uuid2 : e.uuid2,
-            roomnum : e.roomnum,
-            data_type : e.data_type,
-            value : e.value,
-            start : result[0].start,
-            end : result[0].end
-          }
-        }))
+      // if(e.data_type == 'video'){
+      //     connection.query(`select * from youtube where uuid='${e.uuid2}'`, ( (err, result) => {
+      //       if (err) throw err;
+      //       console.log('data type video send_만들어지는 중');
+      //       send_[i] = {
+      //         img: e.img,
+      //         title: e.title,
+      //         uuid: e.uuid,
+      //         text: e.text,
+      //         uuid2: e.uuid2,
+      //         roomnum: e.roomnum,
+      //         data_type: e.data_type,
+      //         value: e.value,
+      //         start: result[0].start,
+      //         end: result[0].end
+      //       };
+      //     }))
+      // }else if(e.data_type == 'audio'){
+      //   connection.query(`select * from youtube where uuid='${e.uuid2}'`,((err,result)=>{
+      //     if(err) throw err
+      //     send_[i] ={
+      //       img : e.img,
+      //       title : e.title,
+      //       uuid : e.uuid,
+      //       text : e.text,
+      //       uuid2 : e.uuid2,
+      //       roomnum : e.roomnum,
+      //       data_type : e.data_type,
+      //       value : e.value,
+      //       start : result[0].start,
+      //       end : result[0].end
+      //     }
+      //   }))
+      if (e.data_type === 'video' || e.data_type === 'audio') {
+        const youtubeResult = await new Promise((resolve, reject) => {
+          connection.query(`select * from youtube where uuid='${e.uuid2}'`, (err, result) => {
+            if (err) reject(err);
+            resolve(result);
+          });
+        });
+        console.log('data type video send_만들어지는 중');
+        send_[i] = {
+          img: e.img,
+          title: e.title,
+          uuid: e.uuid,
+          text: e.text,
+          uuid2: e.uuid2,
+          roomnum: e.roomnum,
+          data_type: e.data_type,
+          value: e.value,
+          start: youtubeResult[0].start,
+          end: youtubeResult[0].end
+        };
+      
       }else if(e.data_type == 'image'){
         const  command = new GetObjectCommand({
           Bucket: "dlworjs",
