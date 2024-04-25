@@ -1229,6 +1229,7 @@ app.get('/quezeshowqueze',(req,res)=>{
       console.log(e,e.data_type);
       if(e.data_type == 'video'){
         connection.query(`select * from youtube where uuid='${e.uuid2}'`,((err,result)=>{
+          if(err) throw err
           send_[i] ={
             img : e.img,
             title : e.title,
@@ -1244,6 +1245,7 @@ app.get('/quezeshowqueze',(req,res)=>{
         }))
       }else if(e.data_type == 'audio'){
         connection.query(`select * from youtube where uuid='${e.uuid2}'`,((err,result)=>{
+          if(err) throw err
           send_[i] ={
             img : e.img,
             title : e.title,
