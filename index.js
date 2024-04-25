@@ -1228,8 +1228,8 @@ app.get('/quezeshowqueze',(req,res)=>{
     Promise.all(result.map(async(e,i)=>{
       console.log(e,e.data_type,e.data_type.length);
       if(e.data_type == 'video'){
-        // new Promise(()=>{
-          await connection.query(`select * from youtube where uuid='${e.uuid2}'`,(async(err,result)=>{
+        new Promise(()=>{
+          connection.query(`select * from youtube where uuid='${e.uuid2}'`,(async(err,result)=>{
             if(err) throw err
             console.log('data type video send_만들어지는 중');
             send_[i] ={
@@ -1245,7 +1245,7 @@ app.get('/quezeshowqueze',(req,res)=>{
               end : result[0].end
             }
           }))
-        // }) 
+        })
 
       }else if(e.data_type == 'audio'){
         connection.query(`select * from youtube where uuid='${e.uuid2}'`,((err,result)=>{
