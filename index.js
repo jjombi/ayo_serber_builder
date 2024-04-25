@@ -1226,7 +1226,7 @@ app.get('/quezeshowqueze',(req,res)=>{
   connection.query(`select * from quezeshowcontent where roomnum = '${roomnum}'`,(err,result)=>{
     console.log(result);
     Promise.all(result.map(async(e,i)=>{
-      console.log(e,e.data_type);
+      console.log(e,e.data_type,e.data_type.length);
       if(e.data_type == 'video'){
         connection.query(`select * from youtube where uuid='${e.uuid2}'`,((err,result)=>{
           if(err) throw err
@@ -1240,7 +1240,7 @@ app.get('/quezeshowqueze',(req,res)=>{
             data_type : e.data_type,
             value : e.value,
             start : result[0].start,
-            emd : result[0].end
+            end : result[0].end
           }
         }))
       }else if(e.data_type == 'audio'){
@@ -1256,7 +1256,7 @@ app.get('/quezeshowqueze',(req,res)=>{
             data_type : e.data_type,
             value : e.value,
             start : result[0].start,
-            emd : result[0].end
+            end : result[0].end
           }
         }))
       }else if(e.data_type == 'image'){
