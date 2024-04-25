@@ -1230,6 +1230,7 @@ app.get('/quezeshowqueze',(req,res)=>{
       if(e.data_type == 'video'){
         connection.query(`select * from youtube where uuid='${e.uuid2}'`,((err,result)=>{
           if(err) throw err
+          console.log('data type video send_만들어지는 중');
           send_[i] ={
             img : e.img,
             title : e.title,
