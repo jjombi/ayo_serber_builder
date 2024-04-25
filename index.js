@@ -1228,22 +1228,25 @@ app.get('/quezeshowqueze',(req,res)=>{
     Promise.all(result.map(async(e,i)=>{
       console.log(e,e.data_type,e.data_type.length);
       if(e.data_type == 'video'){
-        connection.query(`select * from youtube where uuid='${e.uuid2}'`,((err,result)=>{
-          if(err) throw err
-          console.log('data type video send_만들어지는 중');
-          send_[i] ={
-            img : e.img,
-            title : e.title,
-            uuid : e.uuid,
-            text : e.text,
-            uuid2 : e.uuid2,
-            roomnum : e.roomnum,
-            data_type : e.data_type,
-            value : e.value,
-            start : result[0].start,
-            end : result[0].end
-          }
-        }))
+        // new Promise(()=>{
+          await connection.query(`select * from youtube where uuid='${e.uuid2}'`,(async(err,result)=>{
+            if(err) throw err
+            console.log('data type video send_만들어지는 중');
+            send_[i] ={
+              img : e.img,
+              title : e.title,
+              uuid : e.uuid,
+              text : e.text,
+              uuid2 : e.uuid2,
+              roomnum : e.roomnum,
+              data_type : e.data_type,
+              value : e.value,
+              start : result[0].start,
+              end : result[0].end
+            }
+          }))
+        // }) 
+
       }else if(e.data_type == 'audio'){
         connection.query(`select * from youtube where uuid='${e.uuid2}'`,((err,result)=>{
           if(err) throw err
@@ -1292,35 +1295,6 @@ app.get('/quezeshowqueze',(req,res)=>{
       }else {
         throw 'quezeshowcontent data_type err';
       }
-      // if(e.img === ''){
-      //   send_[i] ={
-      //     img : '',
-      //     title : e.title,
-      //     uuid : e.uuid,
-      //     text : e.text,
-      //     uuid2 : e.uuid2,
-      //     roomnum : e.roomnum,
-      //     value : e.value
-      //   }
-      // }
-      // else{
-      //   const  command = new GetObjectCommand({
-      //     Bucket: "dlworjs",
-      //     Key: e.uuid+'/'+e.img,
-      //   });
-      //   const response = await client.send(command);
-      //   const response_body = await response.Body.transformToByteArray();
-      //   const img_src = (Buffer.from(response_body).toString('base64'));
-      //   send_[i] ={
-      //     img : img_src,
-      //     title : e.title,
-      //     uuid : e.uuid,
-      //     text : e.text,
-      //     uuid2 : e.uuid2,
-      //     roomnum : e.roomnum,
-      //     value : e.value
-      //   }
-      // }
       console.log('send message 만들어 자는 중 ');
     })).then(()=>{
       console.log('res send',send_);
