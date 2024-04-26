@@ -948,6 +948,7 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
   // main_img_tinyint     : main_img_tinyint,
   // user_id              : user_id_ref.current.value,
   // date                 : Date.now(),
+  // tag                  : tag
   // return {data_type : e.data_type, src : e.src, title : e.title, text : e.text, answer : e.answer,start : e.start, end : e.end}
   // return {data_type: e.data_type, title : e.title, text : e.text, img : true}
 
@@ -963,7 +964,7 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
   const main_img_tinyint = req.body.main_img_tinyint;
   const user_id = req.body.user_id;
   const date = req.body.date;
-
+  const tag = req.body.tag;
   let result_roomnum;
   console.log('quezeshow_type',quezeshow_type,'queze_title',queze_title,'queze_explain_text',queze_explain_text,'uuid',uuid,'date',date,'modify_password',password,'content_object',content_object,'choice',choice,'correct_choice',correct_choice,'time',time,'main_img_tinyint',main_img_tinyint,typeof(main_img_tinyint),'user_id',user_id,'date',date);
   connection.query(`select roomnum from quezeshowqueze order by roomnum desc limit 1`,(err,result)=>{
@@ -977,12 +978,12 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
 
     if(main_img_tinyint){
       console.log('섬네일 있음')
-      connection.query(`insert into quezeshowqueze (title, existence, uuid, date, likes, img, roomnum, explainText, quezeshow_type, password, user_id, time) value('${queze_title}', 1, '${uuid}', ${date}, 0, 'main_img.jpg', ${result_roomnum + 1}, '${queze_explain_text}', '${quezeshow_type}', '${password}', '${user_id}', ${time})`,(err,result)=>{
+      connection.query(`insert into quezeshowqueze (title, existence, uuid, date, likes, img, roomnum, explainText, quezeshow_type, password, user_id, time) value('${queze_title}${tag}', 1, '${uuid}', ${date}, 0, 'main_img.jpg', ${result_roomnum + 1}, '${queze_explain_text}', '${quezeshow_type}', '${password}', '${user_id}', ${time})`,(err,result)=>{
         console.log('insert quezeshowqueze',err,result);
       })
     }else{
       console.log('섬네일 없음')
-      connection.query(`insert into quezeshowqueze (title, existence, uuid, date, likes, img, roomnum, explainText, quezeshow_type, password, user_id, time) value('${queze_title}', 1, '${uuid}', ${date}, 0, '', ${result_roomnum + 1}, '${queze_explain_text}', '${quezeshow_type}', '${password}', '${user_id}', ${time})`,(err,result)=>{
+      connection.query(`insert into quezeshowqueze (title, existence, uuid, date, likes, img, roomnum, explainText, quezeshow_type, password, user_id, time) value('${queze_title}${tag}', 1, '${uuid}', ${date}, 0, '', ${result_roomnum + 1}, '${queze_explain_text}', '${quezeshow_type}', '${password}', '${user_id}', ${time})`,(err,result)=>{
         console.log('insert quezeshowqueze',err,result);
       })
     }
