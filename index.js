@@ -207,174 +207,180 @@ app.post('/modify_quezeshowqueze_password_checker',(req,res)=>{
     else return res.send('failed');
   })
 })
-app.post('/modify_queze',(req,res)=>{ // queze 수정 전 데이터 받기
-  const roomName = req.body.roomName;
-  let send_ = []; 
-
-  connection.query(`select * from result where roomName = '${roomName}' && existence = 1;`,(err,result)=>{
-    console.log('select * from result modify queze , queze 수정전 데이터 받기 result : ',result);
-    if(result.length !== 0){
-      Promise.all(result.map(async(e,i)=>{
-        const  command = new GetObjectCommand({
-          Bucket: "dlworjs",
-          Key: roomName+'/'+e.originalname,
-        });
-        const response = await client.send(command);
-        const response_body = await response.Body.transformToByteArray();
-        const img_src = (Buffer.from(response_body).toString('base64'));
-        console.log('e',e);
-        send_[i] ={
-          img   : img_src,
-          text  : e.text,
-          value : e.value,
-          uuid  : e.uuid
-        }
-        console.log('send message 만들어 자는 중 ');
-      })).then(()=>{
-        console.log('res send',send_);
-        return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
-      })
-    }
+app.get('/modify_get_img_i',(req,res)=>{// db img에 i 값 구하기
+  const uuid = req.query.uuid;
+  connection.query(`select * from quezeshowcontent where uuid = '${uuid}';`,(err,result)=>{
+    res.send(result.length);
   })
+})
+// app.post('/modify_queze',(req,res)=>{ // queze 수정 전 데이터 받기
+//   const roomName = req.body.roomName;
+//   let send_ = []; 
+
+//   connection.query(`select * from result where roomName = '${roomName}' && existence = 1;`,(err,result)=>{
+//     console.log('select * from result modify queze , queze 수정전 데이터 받기 result : ',result);
+//     if(result.length !== 0){
+//       Promise.all(result.map(async(e,i)=>{
+//         const  command = new GetObjectCommand({
+//           Bucket: "dlworjs",
+//           Key: roomName+'/'+e.originalname,
+//         });
+//         const response = await client.send(command);
+//         const response_body = await response.Body.transformToByteArray();
+//         const img_src = (Buffer.from(response_body).toString('base64'));
+//         console.log('e',e);
+//         send_[i] ={
+//           img   : img_src,
+//           text  : e.text,
+//           value : e.value,
+//           uuid  : e.uuid
+//         }
+//         console.log('send message 만들어 자는 중 ');
+//       })).then(()=>{
+//         console.log('res send',send_);
+//         return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+//       })
+//     }
+//   })
   
-})
-app.post('/modify_quezeshow',(req,res)=>{ // 나락퀴즈 수정 전 데이터 받기
-  const uuid = req.body.uuid;
-  const quezeshow_type = req.body.quezeshow_type;
-  let send_ = []; 
-  if(quezeshow_type === 'vote'){
-    connection.query(`select * from quezeshowcontent where uuid = '${uuid}' && existence = 1;`,(err,result)=>{
-      console.log('select * from quezeshowcontent modify queze , 나락퀴즈 수정전 데이터 받기 result : ',result);
-      if(result.length !== 0){
-        Promise.all(result.map(async(e,i)=>{
-          if(e.img === ''){
-            send_[i] ={
-              img : '',
-              img_num : '',
-              title : e.title,
-              uuid : e.uuid,
-              text : e.text,
-              uuid2 : e.uuid2,
-              roomnum : e.roomnum,
-              value : e.value
-            }
-          }
-          else{
-            const  command = new GetObjectCommand({
-              Bucket: "dlworjs",
-              Key: e.uuid+'/'+e.img,
-            });
-            const response = await client.send(command);
-            const response_body = await response.Body.transformToByteArray();
-            const img_src = (Buffer.from(response_body).toString('base64'));
-            send_[i] ={
-              img : img_src,
-              img_num : e.img,
-              title : e.title,
-              uuid : e.uuid,
-              text : e.text,
-              uuid2 : e.uuid2,
-              roomnum : e.roomnum,
-              value : e.value
-            }
-          }
-        })).then(()=>{
-          console.log('res send',send_);
-          return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
-        })
-      }
-    })
-  }else if(quezeshow_type === 'queze'){
-    connection.query(`select * from quezeshowcontent_queze where uuid = '${uuid}' && existence = 1;`,(err,result)=>{
-      console.log('select * from quezeshowcontent_queze modify queze , 퀴즈 수정전 데이터 받기 result : ',result);
-      if(result.length !== 0){
-        Promise.all(result.map(async(e,i)=>{
-          if(e.img === ''){
-            send_[i] ={
-              img : '',
-              img_num : '',
-              title : e.title,
-              uuid : e.uuid,
-              text : e.text,
-              uuid2 : e.uuid2,
-              roomnum : e.roomnum,
-              value1 : e.value1,
-              value2 : e.value2,
-              value3 : e.value3,
-              value4 : e.value4,
-              answer : e.answer
-            }
-          }
-          else{
-            const  command = new GetObjectCommand({
-              Bucket: "dlworjs",
-              Key: e.uuid+'/'+e.img,
-            });
-            const response = await client.send(command);
-            const response_body = await response.Body.transformToByteArray();
-            const img_src = (Buffer.from(response_body).toString('base64'));
-            send_[i] ={
-              img : img_src,
-              img_num : e.img,
-              title : e.title,
-              uuid : e.uuid,
-              text : e.text,
-              uuid2 : e.uuid2,
-              roomnum : e.roomnum,
-              value1 : e.value1,
-              value2 : e.value2,
-              value3 : e.value3,
-              value4 : e.value4,
-              answer : e.answer
-            }
-          }
-        })).then(()=>{
-          console.log('res send',send_);
-          return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
-        })
-      }
-    })
-  }else if(quezeshow_type === 'Continue_speak' || quezeshow_type === 'New_word_queze'){
-    connection.query(`select * from quezeshowcontent_text where uuid = '${uuid}' && existence = 1;`,(err,result)=>{
-      Promise.all(result.map(async(e,i)=>{
-        if(e.img === ''){
-          send_[i] ={
-            img : '',
-            img_num : '',
-            title : e.title,
-            uuid : e.uuid,
-            uuid2 : e.uuid2,
-            roomnum : e.roomnum,
-            answer : e.answer
-          }
-        }
-        else{
-          const  command = new GetObjectCommand({
-            Bucket: "dlworjs",
-            Key: e.uuid+'/'+e.img,
-          });
-          const response = await client.send(command);
-          const response_body = await response.Body.transformToByteArray();
-          const img_src = (Buffer.from(response_body).toString('base64'));
-          send_[i] ={
-            img : img_src,
-            img_num : e.img,
-            title : e.title,
-            uuid : e.uuid,
-            uuid2 : e.uuid2,
-            roomnum : e.roomnum,
-            answer : e.answer
-          }
-        }
-      })).then(()=>{
-        console.log('res send',send_);
-        return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
-      })
-    })
-  }else {
-    throw 'quezeshow type err, modify'
-  }
-})
+// })
+// app.post('/modify_quezeshow',(req,res)=>{ // 나락퀴즈 수정 전 데이터 받기
+//   const uuid = req.body.uuid;
+//   const quezeshow_type = req.body.quezeshow_type;
+//   let send_ = []; 
+//   if(quezeshow_type === 'vote'){
+//     connection.query(`select * from quezeshowcontent where uuid = '${uuid}' && existence = 1;`,(err,result)=>{
+//       console.log('select * from quezeshowcontent modify queze , 나락퀴즈 수정전 데이터 받기 result : ',result);
+//       if(result.length !== 0){
+//         Promise.all(result.map(async(e,i)=>{
+//           if(e.img === ''){
+//             send_[i] ={
+//               img : '',
+//               img_num : '',
+//               title : e.title,
+//               uuid : e.uuid,
+//               text : e.text,
+//               uuid2 : e.uuid2,
+//               roomnum : e.roomnum,
+//               value : e.value
+//             }
+//           }
+//           else{
+//             const  command = new GetObjectCommand({
+//               Bucket: "dlworjs",
+//               Key: e.uuid+'/'+e.img,
+//             });
+//             const response = await client.send(command);
+//             const response_body = await response.Body.transformToByteArray();
+//             const img_src = (Buffer.from(response_body).toString('base64'));
+//             send_[i] ={
+//               img : img_src,
+//               img_num : e.img,
+//               title : e.title,
+//               uuid : e.uuid,
+//               text : e.text,
+//               uuid2 : e.uuid2,
+//               roomnum : e.roomnum,
+//               value : e.value
+//             }
+//           }
+//         })).then(()=>{
+//           console.log('res send',send_);
+//           return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+//         })
+//       }
+//     })
+//   }else if(quezeshow_type === 'queze'){
+//     connection.query(`select * from quezeshowcontent_queze where uuid = '${uuid}' && existence = 1;`,(err,result)=>{
+//       console.log('select * from quezeshowcontent_queze modify queze , 퀴즈 수정전 데이터 받기 result : ',result);
+//       if(result.length !== 0){
+//         Promise.all(result.map(async(e,i)=>{
+//           if(e.img === ''){
+//             send_[i] ={
+//               img : '',
+//               img_num : '',
+//               title : e.title,
+//               uuid : e.uuid,
+//               text : e.text,
+//               uuid2 : e.uuid2,
+//               roomnum : e.roomnum,
+//               value1 : e.value1,
+//               value2 : e.value2,
+//               value3 : e.value3,
+//               value4 : e.value4,
+//               answer : e.answer
+//             }
+//           }
+//           else{
+//             const  command = new GetObjectCommand({
+//               Bucket: "dlworjs",
+//               Key: e.uuid+'/'+e.img,
+//             });
+//             const response = await client.send(command);
+//             const response_body = await response.Body.transformToByteArray();
+//             const img_src = (Buffer.from(response_body).toString('base64'));
+//             send_[i] ={
+//               img : img_src,
+//               img_num : e.img,
+//               title : e.title,
+//               uuid : e.uuid,
+//               text : e.text,
+//               uuid2 : e.uuid2,
+//               roomnum : e.roomnum,
+//               value1 : e.value1,
+//               value2 : e.value2,
+//               value3 : e.value3,
+//               value4 : e.value4,
+//               answer : e.answer
+//             }
+//           }
+//         })).then(()=>{
+//           console.log('res send',send_);
+//           return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+//         })
+//       }
+//     })
+//   }else if(quezeshow_type === 'Continue_speak' || quezeshow_type === 'New_word_queze'){
+//     connection.query(`select * from quezeshowcontent_text where uuid = '${uuid}' && existence = 1;`,(err,result)=>{
+//       Promise.all(result.map(async(e,i)=>{
+//         if(e.img === ''){
+//           send_[i] ={
+//             img : '',
+//             img_num : '',
+//             title : e.title,
+//             uuid : e.uuid,
+//             uuid2 : e.uuid2,
+//             roomnum : e.roomnum,
+//             answer : e.answer
+//           }
+//         }
+//         else{
+//           const  command = new GetObjectCommand({
+//             Bucket: "dlworjs",
+//             Key: e.uuid+'/'+e.img,
+//           });
+//           const response = await client.send(command);
+//           const response_body = await response.Body.transformToByteArray();
+//           const img_src = (Buffer.from(response_body).toString('base64'));
+//           send_[i] ={
+//             img : img_src,
+//             img_num : e.img,
+//             title : e.title,
+//             uuid : e.uuid,
+//             uuid2 : e.uuid2,
+//             roomnum : e.roomnum,
+//             answer : e.answer
+//           }
+//         }
+//       })).then(()=>{
+//         console.log('res send',send_);
+//         return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+//       })
+//     })
+//   }else {
+//     throw 'quezeshow type err, modify'
+//   }
+// })
 app.post('/modify_change_text',(req,res)=>{
   const changed_text = req.body.changed_text;
   const roomName = req.body.roomName;
@@ -829,7 +835,7 @@ const make_quezeshow_query_type_multiple = (uuid,content_object,result_roomnum,c
       if(e.img === 'false'){
         connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
       }else if(e.img = 'true'){
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${i}.jpg', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${i}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
       }
     }else if(e.data_type === 'video'){
       connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)
@@ -854,7 +860,7 @@ const make_quezeshow_query_type_vote = (uuid,content_object,result_roomnum) => {
         if(e.img === 'false'){
           connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
         }else if(e.img = 'true'){
-          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${i}.jpg', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
+          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${i}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
         }
       }else if(e.data_type === 'video'){
         connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)
@@ -881,7 +887,7 @@ const make_quezeshow_query_type_descriptive = (uuid,content_object,result_roomnu
       if(e.img === 'false'){
         connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
       }else if(e.img = 'true'){
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${i}.jpg', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${i}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
       }
     }else if(e.data_type === 'video'){
       connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)
@@ -988,22 +994,89 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
       })
     }
 
-    if(quezeshow_type === 'vote'){
-      make_quezeshow_query_type_vote(uuid,content_object,result_roomnum);
-    }
-    else if(quezeshow_type === 'multiple'){// queze type 문제 생성 
-      make_quezeshow_query_type_multiple(uuid,content_object,result_roomnum,choice,correct_choice);
-    }
-    else if(quezeshow_type === 'descriptive'){
-      make_quezeshow_query_type_descriptive(uuid,content_object,result_roomnum,correct_choice);
-    }
-    
+    content_object.map((e,i)=>{
+      const uuid2 = uuidv4();
+      if(quezeshow_type === 'multiple'){// queze type 문제 생성 
+        connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${correct_choice[i]}')`)
+        choice[i].map((e,i)=>{
+          connection.query(`insert into choice (uuid, choice) value('${uuid2}','${e}')`);
+        })      }
+      else if(quezeshow_type === 'descriptive'){
+        correct_choice[i].map((ev,i)=>{
+          connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${ev}')`)
+        })
+      }
+      
+      if(e.data_type === 'image'){
+        if(e.img === 'false'){
+          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
+        }else if(e.img = 'true'){
+          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${i}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
+        }
+      }else if(e.data_type === 'video'){
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)
+          connection.query(`insert into youtube (uuid, start, end) value('${uuid2}', ${e.start}, ${e.end})`)
+        })
+      }else if(e.data_type === 'audio'){
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)
+          connection.query(`insert into youtube (uuid, start, end) value('${uuid2}', ${e.start}, ${e.end})`)
+        })
+      }else if(e.data_type === 'text'){
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)
+        })
+      }
+    })    
 
   });
   return res.send('success');
   
 })
-
+app.post('/add_quezeshowcontent',(req,res)=>{
+  // uuid                 : uuid,
+  // content_object       : content_object_, //콘텐츠 제못, 설명, 이미지 판별
+  // choice               : choice,
+  // correct_choice       : correct_choice,
+  // date                 : Date.now(),
+  //modify_last_img_i     : modify_last_img_i
+  const uuid = req.body.uuid;
+  const content_object = req.body.content_object;
+  const choice = req.body.choice;
+  const correct_choice = req.body.correct_choice;
+  const date = req.body.date;
+  const modify_last_img_i = req.body.modify_last_img_i;
+  content_object.map((e,i)=>{
+    const uuid2 = uuidv4();
+    if(quezeshow_type === 'multiple'){// queze type 문제 생성 
+      connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${correct_choice[i]}')`)
+      choice[i].map((e,i)=>{
+        connection.query(`insert into choice (uuid, choice) value('${uuid2}','${e}')`);
+      })      }
+    else if(quezeshow_type === 'descriptive'){
+      correct_choice[i].map((ev,i)=>{
+        connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${ev}')`)
+      })
+    }
+    
+    if(e.data_type === 'image'){
+      if(e.img === 'false'){
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
+      }else if(e.img = 'true'){
+        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${modify_last_img_i+i+1}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
+      }
+    }else if(e.data_type === 'video'){
+      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)
+        connection.query(`insert into youtube (uuid, start, end) value('${uuid2}', ${e.start}, ${e.end})`)
+      })
+    }else if(e.data_type === 'audio'){
+      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)
+        connection.query(`insert into youtube (uuid, start, end) value('${uuid2}', ${e.start}, ${e.end})`)
+      })
+    }else if(e.data_type === 'text'){
+      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}')`,(err,result)=>{console.log(err,result)
+      })
+    }
+  })   
+})
 app.get('/quezeshow_main',(req,res)=>{
   const type = req.query.type;
   // const space_uuid = req.query.space_uuid; //undefind or uuid
