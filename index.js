@@ -1045,6 +1045,7 @@ app.post('/add_quezeshowcontent',(req,res)=>{
   const correct_choice = req.body.correct_choice;
   const date = req.body.date;
   const modify_last_img_i = req.body.modify_last_img_i;
+  const quezeshow_type = req.body.quezeshow_type;
   content_object.map((e,i)=>{
     const uuid2 = uuidv4();
     if(quezeshow_type === 'multiple'){// queze type 문제 생성 
