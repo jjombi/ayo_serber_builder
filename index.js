@@ -210,7 +210,8 @@ app.post('/modify_quezeshowqueze_password_checker',(req,res)=>{
 app.get('/modify_get_img_i',(req,res)=>{// db img에 i 값 구하기
   const uuid = req.query.uuid;
   connection.query(`select * from quezeshowcontent where uuid = '${uuid}';`,(err,result)=>{
-    res.send(result.length);
+    // res.send(result.length);
+    res.status(200).send((results.length).toString());
   })
 })
 // app.post('/modify_queze',(req,res)=>{ // queze 수정 전 데이터 받기
