@@ -1033,12 +1033,14 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
   
 })
 app.post('/add_quezeshowcontent',(req,res)=>{
-  // uuid                 : uuid,
-  // content_object       : content_object_, //콘텐츠 제못, 설명, 이미지 판별
-  // choice               : choice,
-  // correct_choice       : correct_choice,
-  // date                 : Date.now(),
-  //modify_last_img_i     : modify_last_img_i
+//   uuid                 : uuid,
+//   content_object       : content_object_, //콘텐츠 제못, 설명, 이미지 판별
+//   choice               : choice,
+//   correct_choice       : correct_choice,
+//   date                 : Date.now(),
+//   modify_last_img_i    : modify_last_img_i,
+//   quezeshow_type       : quezeshow_type,
+//   room_num             : room_num 
   const uuid = req.body.uuid;
   const content_object = req.body.content_object;
   const choice = req.body.choice;
@@ -1079,6 +1081,7 @@ app.post('/add_quezeshowcontent',(req,res)=>{
       })
     }
   })   
+  return res.send('success');
 })
 app.get('/quezeshow_main',(req,res)=>{
   const type = req.query.type;
