@@ -149,35 +149,35 @@ app.post('/make_queze_modify',(req,res)=>{
     return res.send(result);
   })
 })
-app.post('/search_queze',(req,res)=>{
-  console.log(req.body);
-  let base64_img_arr = [];
-  connection.query(`select * from queze where title like "%${req.body.value}%";`,async (err,result)=>{
-    console.log(result);
-    if(result.length !== 0){
-      await Promise.all(
-        result.map(async(e,i)=>{
-          console.log(e.roomName+"/"+e.title_img_name,i);
-          const  command = new GetObjectCommand({
-            Bucket: "dlworjs",
-            Key: e.roomName+"/"+e.title_img_name,
-          });
-          const response = await client.send(command);
-          const response_body = await response.Body.transformToByteArray();
-          const img_src = (Buffer.from(response_body).toString('base64'));
-          base64_img_arr[i] = [img_src];
-        })
-      ).then(()=>{
-        console.log('res send');
-        return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });
+// app.post('/search_queze',(req,res)=>{
+//   console.log(req.body);
+//   let base64_img_arr = [];
+//   connection.query(`select * from queze where title like "%${req.body.value}%";`,async (err,result)=>{
+//     console.log(result);
+//     if(result.length !== 0){
+//       await Promise.all(
+//         result.map(async(e,i)=>{
+//           console.log(e.roomName+"/"+e.title_img_name,i);
+//           const  command = new GetObjectCommand({
+//             Bucket: "dlworjs",
+//             Key: e.roomName+"/"+e.title_img_name,
+//           });
+//           const response = await client.send(command);
+//           const response_body = await response.Body.transformToByteArray();
+//           const img_src = (Buffer.from(response_body).toString('base64'));
+//           base64_img_arr[i] = [img_src];
+//         })
+//       ).then(()=>{
+//         console.log('res send');
+//         return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });
 
-      })
-    }else {
-      console.log('err');
-      return res.send(false);
-    } 
-  })
-})
+//       })
+//     }else {
+//       console.log('err');
+//       return res.send(false);
+//     } 
+//   })
+// })
 app.post('/password_checker',(req,res)=>{
   console.log('password checker 시행됨');
   connection.query(`select password from queze where uuid = '${req.body.uuid}'`,(err,passHash)=>{
@@ -1082,6 +1082,76 @@ app.post('/add_quezeshowcontent',(req,res)=>{
     }
   })   
   return res.send('success');
+})
+app.get('/search_quezeshow',(req,res)=>{
+  console.log(req);
+  let base64_img_arr = [];
+  connection.query(`select * from quezeshowqueze where existence = 1 && title like "%${req.query.value}%" order by likes desc limit 20`,(err,result)=>{
+    Promise.all(result.map(async(e,i)=>{
+      if(e.img !== ''){
+        const  command = new GetObjectCommand({
+          Bucket: "dlworjs",
+          Key: e.uuid+'/main_img.jpg',
+        });
+        const response = await client.send(command);
+        const response_body = await response.Body.transformToByteArray();
+        const img_src = (Buffer.from(response_body).toString('base64'));
+        send_[i] ={
+          img : img_src,
+          date : e.date,
+          likes : e.likes,
+          title : e.title,
+          uuid : e.uuid,
+          roomnum : e.roomnum,
+          quezeshow_type : e.quezeshow_type,
+          explain_text : e.explainText
+
+        }
+        console.log('send message 만들어 자는 중 ');
+      }
+      else{
+        send_[i] ={
+          img : '',
+          date : e.date,
+          likes : e.likes,
+          title : e.title,
+          uuid : e.uuid,
+          roomnum : e.roomnum,
+          quezeshow_type : e.quezeshow_type,
+          explain_text : e.explainText
+        }
+      }
+    })).then(()=>{
+      console.log('res send',send_);
+      return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
+    })
+  })
+
+  // connection.query(`select * from queze where title like "%${req.body.value}%";`,async (err,result)=>{
+  //   console.log(result);
+  //   if(result.length !== 0){
+  //     await Promise.all(
+  //       result.map(async(e,i)=>{
+  //         console.log(e.roomName+"/"+e.title_img_name,i);
+  //         const  command = new GetObjectCommand({
+  //           Bucket: "dlworjs",
+  //           Key: e.roomName+"/"+e.title_img_name,
+  //         });
+  //         const response = await client.send(command);
+  //         const response_body = await response.Body.transformToByteArray();
+  //         const img_src = (Buffer.from(response_body).toString('base64'));
+  //         base64_img_arr[i] = [img_src];
+  //       })
+  //     ).then(()=>{
+  //       console.log('res send');
+  //       return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });
+
+  //     })
+  //   }else {
+  //     console.log('err');
+  //     return res.send(false);
+  //   } 
+  // })
 })
 app.get('/quezeshow_main',(req,res)=>{
   const type = req.query.type;
