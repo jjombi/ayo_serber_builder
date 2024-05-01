@@ -1085,7 +1085,8 @@ app.post('/add_quezeshowcontent',(req,res)=>{
 })
 app.get('/search_quezeshow',(req,res)=>{
   console.log(req);
-  let base64_img_arr = [];
+  // let base64_img_arr = [];
+  let send_ = [];
   connection.query(`select * from quezeshowqueze where existence = 1 && title like "%${req.query.value}%" order by likes desc limit 20`,(err,result)=>{
     Promise.all(result.map(async(e,i)=>{
       if(e.img !== ''){
