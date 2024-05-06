@@ -1162,8 +1162,8 @@ app.get('/declaration',(req,res)=>{
   const transporter = nodemailer.createTransport({
     service: 'gmail', // gmail을 사용함
     auth: {
-      user: 'sis01066745950@gmail.com', // 나의 (작성자) 이메일 주소
-      pass: 'krzk qumd griv ghcu' // 이메일의 비밀번호
+      user: process.env.MY_MAIL, // 나의 (작성자) 이메일 주소
+      pass: process.env.MY_MAIL_PASSWORD // 이메일의 비밀번호
     },
     host: 'smtp.gmail.com',
     port: 465,
@@ -1171,8 +1171,8 @@ app.get('/declaration',(req,res)=>{
   });
   
   const mailOptions = {
-    from: 'sis01066745950@gmail.com', // 작성자
-    to: 'sis01066745950@gmail.com', // 수신자
+    from: process.env.MY_MAIL, // 작성자
+    to: process.env.MY_MAIL, // 수신자
     subject: `declaration(roomnum:${roomnum})`, // 메일 제목
     text: `
       roomnum : ${roomnum}
