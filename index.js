@@ -1163,7 +1163,7 @@ app.get('/declaration',(req,res)=>{
     service: 'gmail', // gmail을 사용함
     auth: {
       user: 'sis01066745950@gmail.com', // 나의 (작성자) 이메일 주소
-      pass: 'fmrmyzdizkxnnnf' // 이메일의 비밀번호
+      pass: 'krzk qumd griv ghcu' // 이메일의 비밀번호
     },
     host: 'smtp.gmail.com',
     port: 465,
