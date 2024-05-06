@@ -13,6 +13,7 @@ const fileUpload = require('express-fileupload');
 const { v4: uuidv4 } = require('uuid');
 const { GetObjectCommand, S3Client } = require("@aws-sdk/client-s3");
 const AWS = require('aws-sdk');
+const nodemailer = require('nodemailer'); // 모듈 import
 const { resolve } = require('path');
 require('dotenv').config()
 
@@ -1153,6 +1154,38 @@ app.get('/search_quezeshow',(req,res)=>{
   //     return res.send(false);
   //   } 
   // })
+})
+app.get('/declaration',(req,res)=>{
+  const roomnum = req.query.roomnum;
+  const type    = req.query.type;
+  const resaion = req.query.resaion;
+  const transporter = nodemailer.createTransport({
+    service: 'gmail', // gmail을 사용함
+    auth: {
+      user: 'sis01066745950@gmail.com', // 나의 (작성자) 이메일 주소
+      pass: 'dlworjsdmsWkd' // 이메일의 비밀번호
+    }
+  });
+  
+  const mailOptions = {
+    from: 'youremail@gmail.com', // 작성자
+    to: 'myfriend@yahoo.com', // 수신자
+    subject: `declaration(roomnum:${roomnum})`, // 메일 제목
+    text: `
+      roomnum : ${roomnum}
+      type    : ${type}
+      reasion : ${resaion}
+    ` // 메일 내용
+  };
+  
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+  return res.send('success');
 })
 app.get('/quezeshow_main',(req,res)=>{
   const type = req.query.type;
