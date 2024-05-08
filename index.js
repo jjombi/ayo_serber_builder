@@ -215,6 +215,20 @@ app.get('/modify_get_img_i',(req,res)=>{// db img에 i 값 구하기
     res.status(200).send((result.length).toString());
   })
 })
+app.get('/modify_get_content',(req,res)=>{// db 수정 content 가져오기
+  const uuid = req.query.uuid;
+  connection.query(`select * from quezeshowcontent where uuid = '${uuid}';`,(err,result)=>{
+    // res.send(result.length);
+    res.status(200).send((result));
+  })
+})
+app.get('/modify_get_title_text',(req,res)=>{// db 수정 content 가져오기
+  const uuid = req.query.uuid;
+  connection.query(`select * from quezeshowqueze where uuid = '${uuid}';`,(err,result)=>{
+    // res.send(result.length);
+    res.status(200).send((result));
+  })
+})
 // app.post('/modify_queze',(req,res)=>{ // queze 수정 전 데이터 받기
 //   const roomName = req.body.roomName;
 //   let send_ = []; 
