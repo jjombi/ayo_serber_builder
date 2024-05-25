@@ -31,9 +31,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(fileUpload());
 app.use(cors({
   // origin : "https://ay0.netlify.app",
-  origin : "https://ay0.site",
+  origin : ["https://ay0.site","http://localhost:8080"],
   // origin: "https://jjombi.github.io",
-  origin : "http://localhost:8080", // 접근 권한을 부여하는 도메인 "http://localhost:3000"
+  // origin : "http://localhost:8080", // 접근 권한을 부여하는 도메인 "http://localhost:3000"
   credentials : true, // 응답 헤더에 Access-Control-Allow-Credentials 추가
   // optionsSuccessStatus: 200, // 응답 상태 200으로 설정
   methods : '*',
