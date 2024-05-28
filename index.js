@@ -1479,7 +1479,8 @@ app.get('/quezeshowqueze',(req,res)=>{
           data_type: e.data_type,
           value: e.value,
           start: youtubeResult[0].start,
-          end: youtubeResult[0].end
+          end: youtubeResult[0].end,
+          hint: e.hint
         };
       
       }else if(e.data_type == 'image'){
@@ -1498,7 +1499,8 @@ app.get('/quezeshowqueze',(req,res)=>{
           uuid2 : e.uuid2,
           roomnum : e.roomnum,
           data_type : e.data_type,
-          value : e.value
+          value : e.value,
+          hint: e.hint
         }
       }else if(e.data_type === 'text'){
         send_[i] ={
@@ -1509,7 +1511,8 @@ app.get('/quezeshowqueze',(req,res)=>{
           uuid2 : e.uuid2,
           roomnum : e.roomnum,
           data_type : e.data_type,
-          value : e.value
+          value : e.value,
+          hint: e.hint
         }
       }else {
         throw 'quezeshowcontent data_type err';
