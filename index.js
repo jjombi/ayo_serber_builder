@@ -117,7 +117,7 @@ app.post('/signup',(req,res)=>{
             connection.query(`insert into user (id, email, password) value('${id}','${email}','${hash}');`,((err,result)=>{
               if(err) return res.send('insert into user (id, email, password) 회원가입 err : ');
               else{
-                const email_ = email.replace('@','').split('.').join('');
+                const email_ = email.replace('@','')  .split('.').join('');
                 connection.query(`create table ${email_} (likes_queze varchar(36));`,(err,result)=>{
                   if(err) throw err;
                   else return res.send('회원가입 성공');
@@ -130,7 +130,7 @@ app.post('/signup',(req,res)=>{
   })
 })
 
-app.post('./login',(req,res)=>{
+app.post('/login',(req,res)=>{
   const password = req.body.password;
   const email = req.body.email;
 
