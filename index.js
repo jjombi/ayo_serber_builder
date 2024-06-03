@@ -114,7 +114,7 @@ app.post('/signup',(req,res)=>{
         if(err) console.log('genSalt err : ',err);
         bcrypt.hash(password, salt, function(err, hash) {
           console.log('hash password',id,email,hash);
-            connection.query(`insert into user (id, email, password) value('${id}','${email}','${hash}');`((err,result)=>{
+            connection.query(`insert into user (id, email, password) value('${id}','${email}','${hash}');`,((err,result)=>{
               if(err) return res.send('insert into user (id, email, password) 회원가입 err : ');
               else{
                 connection.query(`create table ${email} (likes_queze varchar(36));`,(err,result)=>{
