@@ -113,7 +113,7 @@ app.post('/signup',(req,res)=>{
       bcrypt.genSalt(saltRounds, function(err, salt) {
         if(err) console.log('genSalt err : ',err);
         bcrypt.hash(password, salt, function(err, hash) {
-          console.log('hash password',hash);
+          console.log('hash password',id,email,hash);
             connection.query(`insert into user (id, email, password) value('${id}','${email}','${hash}');`((err,result)=>{
               if(err) return res.send('insert into user (id, email, password) 회원가입 err : ');
               else{
