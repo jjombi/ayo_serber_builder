@@ -66,6 +66,41 @@ app.get('/',(req,res)=>{
   
 })
 
+app.get('/signup/email_ckeck',(req,res)=>{
+  
+  const getter = req.query.email;
+  const code = Math.random().toString(36).substr(2,5);
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail', // gmail을 사용함
+    auth: {
+      user: process.env.MY_MAIL, // 나의 (작성자) 이메일 주소
+      pass: process.env.MY_MAIL_PASSWORD // 이메일의 비밀번호
+    },
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+  });
+  
+  const mailOptions = {
+    from: process.env.MY_MAIL, // 작성자
+    to: getter, // 수신자
+    subject: `예능 게임 이메일 확인 문자`, // 메일 제목
+    text: `
+      코드는 ${code} 입니다
+    ` // 메일 내용
+  };
+  
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+      return res.send(code)
+    }
+  });
+})
+
 app.post('/signup',(req,res)=>{
   const password = req.body.password;
   const email = req.body.email;
