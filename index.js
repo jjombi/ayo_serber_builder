@@ -108,7 +108,7 @@ app.post('/signup',(req,res)=>{
   connection.query(`select * from user where email = '${email}'`,(err,result)=>{
     if(err) return res.send('select * from user where email 아이디 중복 채크 err : ');
     if(result.length !== 0){// 사용중인 이메일
-      return req.send('사용중인 아이디입니다');
+      return res.send('사용중인 아이디입니다');
     }else{
       bcrypt.genSalt(saltRounds, function(err, salt) {
         if(err) console.log('genSalt err : ',err);
@@ -117,7 +117,8 @@ app.post('/signup',(req,res)=>{
             connection.query(`insert into user (id, email, password) value('${id}','${email}','${hash}');`,((err,result)=>{
               if(err) return res.send('insert into user (id, email, password) 회원가입 err : ');
               else{
-                connection.query(`create table ${email} (likes_queze varchar(36));`,(err,result)=>{
+                const email_ = email.replace('@','').replace('.','');
+                connection.query(`create table ${email_} (likes_queze varchar(36));`,(err,result)=>{
                   if(err) throw err;
                   else return res.send('회원가입 성공');
                 })
