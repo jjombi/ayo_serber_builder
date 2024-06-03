@@ -140,7 +140,7 @@ app.post('/login',(req,res)=>{
       return res.send('email not exist');
     }else{
       bcrypt.compare(password, result[0].password, function(err, password_result) {
-        if(password_result) return(res.send('password not same'));
+        if(!password_result) return(res.send('password not same'));
         else {
           const payload = {email};
           const res_data = get_login(payload);
