@@ -118,7 +118,7 @@ app.post('/signup',(req,res)=>{
               if(err) return res.send('insert into user (id, email, password) 회원가입 err : ');
               else{
                 connection.query(`create table ${email} (likes_queze varchar(36));`,(err,result)=>{
-                  if(err) return res.send('create table ${email} (likes_queze varchar(36)) 회원가입 유저 테이블 생성 err : ');
+                  if(err) throw err;
                   else return res.send('회원가입 성공');
                 })
               };
