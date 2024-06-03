@@ -114,15 +114,15 @@ app.post('/signup',(req,res)=>{
         if(err) console.log('genSalt err : ',err);
         bcrypt.hash(password, salt, function(err, hash) {
           console.log('hash password',hash);
-            connection.query(`insert into user (id, email, password) value('${id}','${email}','${hash}')`((err,result)=>{
-              if(err) return res.send('insert into user (id, email, password) 회원가입 err : ');
-              else{
-                connection.query(`create table ${email} (likes_queze varchar(36))`,(err,result)=>{
-                  if(err) return res.send('create table ${email} (likes_queze varchar(36)) 회원가입 유저 테이블 생성 err : ');
-                  else return res.send('회원가입 성공');
-                })
-              };
-            }));
+            // connection.query(`insert into user (id, email, password) value('${id}','${email}','${hash}')`((err,result)=>{
+            //   if(err) return res.send('insert into user (id, email, password) 회원가입 err : ');
+            //   else{
+            //     connection.query(`create table ${email} (likes_queze varchar(36))`,(err,result)=>{
+            //       if(err) return res.send('create table ${email} (likes_queze varchar(36)) 회원가입 유저 테이블 생성 err : ');
+            //       else return res.send('회원가입 성공');
+            //     })
+            //   };
+            // }));
         });
       })
     }
