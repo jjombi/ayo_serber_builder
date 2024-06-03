@@ -16,6 +16,7 @@ const AWS = require('aws-sdk');
 const nodemailer = require('nodemailer'); // 모듈 import
 const { resolve } = require('path');
 require('dotenv').config()
+const {generateToken, refreshToken, getRefrshToken, get_login} = require('./Jwt/Jwt');
 
 const port = 45509;
 const url = process.env.FRONT_REDIRECT_URL_SERVICE;
@@ -57,147 +58,81 @@ const client = new S3Client(
 
 
 // /*-------------------------mysql 연결--------------------------*/// rds 
-const connection = mysql.createConnection({
-  host     : 'database-1.cz0opmzpwiht.ap-northeast-2.rds.amazonaws.com',//svc.sel5.cloudtype.app:32325
-  user     : 'admin',
-  password : process.env.AWS_MYSQL_PASSWORD,
-  database : 'ayo_db'
-});
-console.log('connection');
-connection.connect((err)=>{
-  if (err) {
-    console.error('error connecting: ' + err.stack);
-    return;
-  }
-  console.log('connected as id ' + connection.threadId);
-
-})
-///////////////////////////////////////////////////////////////////////  local
-// const connection = mysql.createConnection({
-//   host     : 'localhost',//svc.sel5.cloudtype.app:32325
-//   user     : 'root',
-//   password : 'sis01066745950@',
-//   database : 'ayo_mysql_local'
-// });
-// console.log('connection');
-// connection.connect((err)=>{
-//   if (err) {
-//     console.error('error connecting: ' + err.stack);
-//     return;
-//   }
-//   console.log('connected as id ' + connection.threadId);
-
-// })
-
-// function handleDisconnect() {
-//   connection.connect(function(err) {            
-//     if(err) {                            
-//       console.log('error when connecting to db:', err);
-//       setTimeout(handleDisconnect, 2000); 
-//     }                                   
-//   });                                 
-                                         
-//   connection.on('error', function(err) {
-//     console.log('db error', err);
-//     if(err.code === 'PROTOCOL_CONNECTION_LOST') { 
-//       return handleDisconnect();                      
-//     } else {                                    
-//       throw err;                              
-//     }
-//   });
-// }
-
-// handleDisconnect();
-
-// const pool = mariadb.createPool({host: 'svc.sel5.cloudtype.app:32325', user: 'root', connectionLimit: 5});
-// const pool = mariadb.createPool({ 
-//   host   : 'svc.sel5.cloudtype.app',
-//   user: 'root', 
-//   password: 'sis01066745950@', 
-//   port: 32325,
-//   database: 'ayodb',
-// });
-// const pool_main = mariadb.createPool({  // main2 db
-//   host   : 'database-1.cz0opmzpwiht.ap-northeast-2.rds.amazonaws.com',
-//   user   : 'admin', 
-//   password: 'Dlworjs@', 
-//   port: 3306,
-//   database: 'ayo_db',
-// });
-// const pool_main = mariadb.createPool({  // main2 db local>
-//   host   : 'localhost',
-//   user   : 'root', 
-//   password: 'sis01066745950@', 
-//   port: 3306,
-//   database: 'ayo_main_local',
-// });
-
-// /*--------------------------------------------------------------*/
-
+const {connection} = require('./Mysql/Mysql');
+/////////////////////////////////////////////////////////////////////////
 
 app.get('/',(req,res)=>{
   return res.send('connexted with server');
-  // connection.query('show tables', function (error, results, fields) {
-  //   if (error) throw error;
-  //   console.log('show tables ', results);
-  //   return res.send('success');
-  // })
   
 })
 
-app.post('/make_queze_modify',(req,res)=>{
-  connection.query(`select originalname from result where roomName = '${req.body.roomName}'`,(err,result)=>{
-    return res.send(result);
+app.post('/signup',(req,res)=>{
+  const password = req.body.password;
+  const email = req.body.email;
+  const id = req.body.id;
+  connection.query(`select * from user where email = '${email}'`,(err,result)=>{
+    if(err) return res.send('select * from user where email 아이디 중복 채크 err : ',err);
+    if(result.length !== 0){// 사용중인 이메일
+      return req.send('사용중인 아이디입니다');
+    }else{
+      bcrypt.genSalt(saltRounds, function(err, salt) {
+        if(err) throw err;
+        bcrypt.hash(password, salt, function(err, hash) {
+          console.log('hash password',hash);
+            connection.query(`insert into user (id, email, password) value('${id}','${email}','${hash}')`((err,result)=>{
+              if(err) return res.send('insert into user (id, email, password) 회원가입 err : '+err);
+              else{
+                connection.query(`create table ${email} (likes_queze varchar(36))`,(err,result)=>{
+                  if(err) return res.send('create table ${email} (likes_queze varchar(36)) 회원가입 유저 테이블 생성 err : '+err);
+                  else return res.send('회원가입 성공');
+                })
+              };
+            }));
+        });
+      })
+    }
   })
 })
-// app.post('/search_queze',(req,res)=>{
-//   console.log(req.body);
-//   let base64_img_arr = [];
-//   connection.query(`select * from queze where title like "%${req.body.value}%";`,async (err,result)=>{
-//     console.log(result);
-//     if(result.length !== 0){
-//       await Promise.all(
-//         result.map(async(e,i)=>{
-//           console.log(e.roomName+"/"+e.title_img_name,i);
-//           const  command = new GetObjectCommand({
-//             Bucket: "dlworjs",
-//             Key: e.roomName+"/"+e.title_img_name,
-//           });
-//           const response = await client.send(command);
-//           const response_body = await response.Body.transformToByteArray();
-//           const img_src = (Buffer.from(response_body).toString('base64'));
-//           base64_img_arr[i] = [img_src];
-//         })
-//       ).then(()=>{
-//         console.log('res send');
-//         return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });
 
-//       })
-//     }else {
-//       console.log('err');
-//       return res.send(false);
-//     } 
+app.post('./login',(req,res)=>{
+  const password = req.body.password;
+  const email = req.body.email;
+
+  connection.query(`select * from user where email = '${email}'`,(err,result)=>{
+    if(err) return res.send('select user err');
+    else if(result.length === 0){
+      return res.send('email not exist');
+    }else{
+      bcrypt.compare(password, result[0].password, function(err, password_result) {
+        if(password_result) return(res.send('password not same'));
+        else {
+          const payload = {email};
+          const res_data = get_login(payload);
+          return(res.send(res_data));
+        };
+      });
+    }
+  })
+})
+// app.post('/password_checker',(req,res)=>{
+//   console.log('password checker 시행됨');
+//   connection.query(`select password from queze where uuid = '${req.body.uuid}'`,(err,passHash)=>{
+//     bcrypt.compare(req.body.password, passHash[0].password, function(err, result) {
+//       console.log('pass, 원본, 결과',req.body.password, passHash, passHash[0].password, result);
+//       if(result) return(res.send(true))
+//       else return(res.send(false))
+//     });
 //   })
 // })
-app.post('/password_checker',(req,res)=>{
-  console.log('password checker 시행됨');
-  connection.query(`select password from queze where uuid = '${req.body.uuid}'`,(err,passHash)=>{
-    bcrypt.compare(req.body.password, passHash[0].password, function(err, result) {
-      console.log('pass, 원본, 결과',req.body.password, passHash, passHash[0].password, result);
-      if(result) return(res.send(true))
-      else return(res.send(false))
-    });
-  })
-})
-app.post('/modify_password_checker',(req,res)=>{
-  console.log('modify_password_checker 시행됨');
-  connection.query(`select modifyPassword from queze where roomName = '${req.body.roomName}' && modifyPassword = '${req.body.password}'`,(err,result)=>{
-    if(result.length !== 0){
-      return res.send('success');
-    }
-    else return res.send('failed');
-  })
-})
+// app.post('/modify_password_checker',(req,res)=>{
+//   console.log('modify_password_checker 시행됨');
+//   connection.query(`select modifyPassword from queze where roomName = '${req.body.roomName}' && modifyPassword = '${req.body.password}'`,(err,result)=>{
+//     if(result.length !== 0){
+//       return res.send('success');
+//     }
+//     else return res.send('failed');
+//   })
+// })
 app.post('/modify_quezeshowqueze_password_checker',(req,res)=>{
   console.log('modify_quezeshowqueze_password_checker 시행됨');
   connection.query(`select password from quezeshowqueze where uuid = '${req.body.uuid}' && password = '${req.body.password}'`,(err,result)=>{
@@ -229,189 +164,22 @@ app.get('/modify_get_title_text',(req,res)=>{// db 수정 content 가져오기
     res.status(200).send((result));
   })
 })
-// app.post('/modify_queze',(req,res)=>{ // queze 수정 전 데이터 받기
-//   const roomName = req.body.roomName;
-//   let send_ = []; 
 
-//   connection.query(`select * from result where roomName = '${roomName}' && existence = 1;`,(err,result)=>{
-//     console.log('select * from result modify queze , queze 수정전 데이터 받기 result : ',result);
-//     if(result.length !== 0){
-//       Promise.all(result.map(async(e,i)=>{
-//         const  command = new GetObjectCommand({
-//           Bucket: "dlworjs",
-//           Key: roomName+'/'+e.originalname,
-//         });
-//         const response = await client.send(command);
-//         const response_body = await response.Body.transformToByteArray();
-//         const img_src = (Buffer.from(response_body).toString('base64'));
-//         console.log('e',e);
-//         send_[i] ={
-//           img   : img_src,
-//           text  : e.text,
-//           value : e.value,
-//           uuid  : e.uuid
-//         }
-//         console.log('send message 만들어 자는 중 ');
-//       })).then(()=>{
-//         console.log('res send',send_);
-//         return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
-//       })
-//     }
+// app.post('/modify_change_text',(req,res)=>{
+//   const changed_text = req.body.changed_text;
+//   const roomName = req.body.roomName;
+//   console.log('modify_change_text req :',req);
+//   changed_text.map((e,i)=>{
+//     connection.query(`update result set text = '${changed_text.changed_text}' where uuid = '${changed_text.uuid}'`);
 //   })
-  
-// })
-// app.post('/modify_quezeshow',(req,res)=>{ // 나락퀴즈 수정 전 데이터 받기
-//   const uuid = req.body.uuid;
-//   const quezeshow_type = req.body.quezeshow_type;
-//   let send_ = []; 
-//   if(quezeshow_type === 'vote'){
-//     connection.query(`select * from quezeshowcontent where uuid = '${uuid}' && existence = 1;`,(err,result)=>{
-//       console.log('select * from quezeshowcontent modify queze , 나락퀴즈 수정전 데이터 받기 result : ',result);
-//       if(result.length !== 0){
-//         Promise.all(result.map(async(e,i)=>{
-//           if(e.img === ''){
-//             send_[i] ={
-//               img : '',
-//               img_num : '',
-//               title : e.title,
-//               uuid : e.uuid,
-//               text : e.text,
-//               uuid2 : e.uuid2,
-//               roomnum : e.roomnum,
-//               value : e.value
-//             }
-//           }
-//           else{
-//             const  command = new GetObjectCommand({
-//               Bucket: "dlworjs",
-//               Key: e.uuid+'/'+e.img,
-//             });
-//             const response = await client.send(command);
-//             const response_body = await response.Body.transformToByteArray();
-//             const img_src = (Buffer.from(response_body).toString('base64'));
-//             send_[i] ={
-//               img : img_src,
-//               img_num : e.img,
-//               title : e.title,
-//               uuid : e.uuid,
-//               text : e.text,
-//               uuid2 : e.uuid2,
-//               roomnum : e.roomnum,
-//               value : e.value
-//             }
-//           }
-//         })).then(()=>{
-//           console.log('res send',send_);
-//           return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
-//         })
-//       }
-//     })
-//   }else if(quezeshow_type === 'queze'){
-//     connection.query(`select * from quezeshowcontent_queze where uuid = '${uuid}' && existence = 1;`,(err,result)=>{
-//       console.log('select * from quezeshowcontent_queze modify queze , 퀴즈 수정전 데이터 받기 result : ',result);
-//       if(result.length !== 0){
-//         Promise.all(result.map(async(e,i)=>{
-//           if(e.img === ''){
-//             send_[i] ={
-//               img : '',
-//               img_num : '',
-//               title : e.title,
-//               uuid : e.uuid,
-//               text : e.text,
-//               uuid2 : e.uuid2,
-//               roomnum : e.roomnum,
-//               value1 : e.value1,
-//               value2 : e.value2,
-//               value3 : e.value3,
-//               value4 : e.value4,
-//               answer : e.answer
-//             }
-//           }
-//           else{
-//             const  command = new GetObjectCommand({
-//               Bucket: "dlworjs",
-//               Key: e.uuid+'/'+e.img,
-//             });
-//             const response = await client.send(command);
-//             const response_body = await response.Body.transformToByteArray();
-//             const img_src = (Buffer.from(response_body).toString('base64'));
-//             send_[i] ={
-//               img : img_src,
-//               img_num : e.img,
-//               title : e.title,
-//               uuid : e.uuid,
-//               text : e.text,
-//               uuid2 : e.uuid2,
-//               roomnum : e.roomnum,
-//               value1 : e.value1,
-//               value2 : e.value2,
-//               value3 : e.value3,
-//               value4 : e.value4,
-//               answer : e.answer
-//             }
-//           }
-//         })).then(()=>{
-//           console.log('res send',send_);
-//           return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
-//         })
-//       }
-//     })
-//   }else if(quezeshow_type === 'Continue_speak' || quezeshow_type === 'New_word_queze'){
-//     connection.query(`select * from quezeshowcontent_text where uuid = '${uuid}' && existence = 1;`,(err,result)=>{
-//       Promise.all(result.map(async(e,i)=>{
-//         if(e.img === ''){
-//           send_[i] ={
-//             img : '',
-//             img_num : '',
-//             title : e.title,
-//             uuid : e.uuid,
-//             uuid2 : e.uuid2,
-//             roomnum : e.roomnum,
-//             answer : e.answer
-//           }
-//         }
-//         else{
-//           const  command = new GetObjectCommand({
-//             Bucket: "dlworjs",
-//             Key: e.uuid+'/'+e.img,
-//           });
-//           const response = await client.send(command);
-//           const response_body = await response.Body.transformToByteArray();
-//           const img_src = (Buffer.from(response_body).toString('base64'));
-//           send_[i] ={
-//             img : img_src,
-//             img_num : e.img,
-//             title : e.title,
-//             uuid : e.uuid,
-//             uuid2 : e.uuid2,
-//             roomnum : e.roomnum,
-//             answer : e.answer
-//           }
-//         }
-//       })).then(()=>{
-//         console.log('res send',send_);
-//         return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
-//       })
-//     })
-//   }else {
-//     throw 'quezeshow type err, modify'
+//   if(req.body.changed_title.type === true){
+//     connection.query(`update queze set title = '${req.body.changed_title.data}' where roomName = '${roomName}'`)
 //   }
+//   if(req.body.changed_explain_text.type === true){
+//     connection.query(`update queze set explainText = '${req.body.changed_explain_text.data}' where roomName = '${roomName}'`)
+//   }
+//   res.send('success');
 // })
-app.post('/modify_change_text',(req,res)=>{
-  const changed_text = req.body.changed_text;
-  const roomName = req.body.roomName;
-  console.log('modify_change_text req :',req);
-  changed_text.map((e,i)=>{
-    connection.query(`update result set text = '${changed_text.changed_text}' where uuid = '${changed_text.uuid}'`);
-  })
-  if(req.body.changed_title.type === true){
-    connection.query(`update queze set title = '${req.body.changed_title.data}' where roomName = '${roomName}'`)
-  }
-  if(req.body.changed_explain_text.type === true){
-    connection.query(`update queze set explainText = '${req.body.changed_explain_text.data}' where roomName = '${roomName}'`)
-  }
-  res.send('success');
-})
 app.post('/modify_change_quezeshowqueze',(req,res)=>{
   const quezeshow_type = req.body.quezeshow_type;
   console.log(req.body);
@@ -434,63 +202,63 @@ app.post('/modify_change_quezeshowqueze',(req,res)=>{
 
   return res.send('success');
 })
-const upload_query = async (req, roomName_arr) =>{
-  console.log('upload query 시작 req : ',req.body,roomName_arr); //upload query 시작 req :  { title: '제목', publicAccess: '수정가능', img[...] text[...] } [ 'C' ] or { title: '제목', img[...] text[...] } -> publicAccess is undefind
-  const explain_text = req.body.queze_explain_text;
-  connection.query(`select * from queze where roomName = '${roomName_arr}';`,(err,result) => {
-    if(result.length === 0){
-      if(password === '' || password === undefined || password === null){
-        connection.query(`insert into queze (roomName, existence, title, title_img_name, uuid, likes, password, modifyPassword, explainText) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg', '${uuidv4()}',0, '', '${req.body.modify_password}', '${explain_text}');`);
-      }
-      else{
-        bcrypt.genSalt(saltRounds, function(err, salt) {
-          bcrypt.hash(password, salt, function(err, hash) {
-            console.log('hash password',hash);
-              connection.query(`insert into queze (roomName, existence, title, title_img_name, uuid, likes, password, modifyPassword, explainText) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg', '${uuidv4()}',0,'${hash}', '${req.body.modify_password}', '${explain_text}');`);
-          });
-        })
-      }
-      if(typeof(req.body.img_name) === 'string'){ // 이미지가 하나 일때
-        connection.query(`insert into result (text, value, originalname, roomName, uuid, existence) value('${req.body.text}', 0, 'img0.jpg','${roomName_arr}', 1, '${uuidv4()}')`);
-      }
-      else{                                       //이미지가 여러개 일때
-        for(i=0 ; i < req.body.img_name.length ;i++){// text에 값이 없을 때
-          if(req.body.text[i] === undefined || req.body.text[i] === '') connection.query(`insert into result (text, value, uuid, originalname, roomName, existence) value('', 0, '${uuidv4()}', 'img${i}.jpg','${roomName_arr}', 1)`);
-          else connection.query(`insert into result (text, value, uuid, originalname, roomName, existence) value('${req.body.text[i]}', 0, '${uuidv4()}', 'img${i}.jpg','${roomName_arr}', 1)`);
-        }
-      }
-    }
-  })    
-}
+// const upload_query = async (req, roomName_arr) =>{
+//   console.log('upload query 시작 req : ',req.body,roomName_arr); //upload query 시작 req :  { title: '제목', publicAccess: '수정가능', img[...] text[...] } [ 'C' ] or { title: '제목', img[...] text[...] } -> publicAccess is undefind
+//   const explain_text = req.body.queze_explain_text;
+//   connection.query(`select * from queze where roomName = '${roomName_arr}';`,(err,result) => {
+//     if(result.length === 0){
+//       if(password === '' || password === undefined || password === null){
+//         connection.query(`insert into queze (roomName, existence, title, title_img_name, uuid, likes, password, modifyPassword, explainText) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg', '${uuidv4()}',0, '', '${req.body.modify_password}', '${explain_text}');`);
+//       }
+//       else{
+//         bcrypt.genSalt(saltRounds, function(err, salt) {
+//           bcrypt.hash(password, salt, function(err, hash) {
+//             console.log('hash password',hash);
+//               connection.query(`insert into queze (roomName, existence, title, title_img_name, uuid, likes, password, modifyPassword, explainText) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg', '${uuidv4()}',0,'${hash}', '${req.body.modify_password}', '${explain_text}');`);
+//           });
+//         })
+//       }
+//       if(typeof(req.body.img_name) === 'string'){ // 이미지가 하나 일때
+//         connection.query(`insert into result (text, value, originalname, roomName, uuid, existence) value('${req.body.text}', 0, 'img0.jpg','${roomName_arr}', 1, '${uuidv4()}')`);
+//       }
+//       else{                                       //이미지가 여러개 일때
+//         for(i=0 ; i < req.body.img_name.length ;i++){// text에 값이 없을 때
+//           if(req.body.text[i] === undefined || req.body.text[i] === '') connection.query(`insert into result (text, value, uuid, originalname, roomName, existence) value('', 0, '${uuidv4()}', 'img${i}.jpg','${roomName_arr}', 1)`);
+//           else connection.query(`insert into result (text, value, uuid, originalname, roomName, existence) value('${req.body.text[i]}', 0, '${uuidv4()}', 'img${i}.jpg','${roomName_arr}', 1)`);
+//         }
+//       }
+//     }
+//   })    
+// }
 
 
 app.use(body_parser.urlencoded({ extended: true }));
 
-app.post('/upload_img',(req,res)=>{
-  console.log('upload img 시작',req.body,req.file); //req.files.img[0].name or data(type BUffer)
-  connection.query(`select roomName from queze ORDER BY roomName DESC LIMIT 1;`,(err,result)=>{
-    if(result.length != 0){
-      let roomName_arr = Array.from(result[0].roomName);// ['A','B','C']; 
-      if(roomName_arr[roomName_arr.length - 1].charCodeAt() >= 90)
-      { 
-        roomName_arr.push(String.fromCharCode(65));
-        upload_query(req,roomName_arr);
-      }
-      else
-      { 
-        roomName_arr[roomName_arr.length - 1] =  String.fromCharCode(roomName_arr[roomName_arr.length - 1].charCodeAt() + 1);
-        upload_query(req,roomName_arr);     
+// app.post('/upload_img',(req,res)=>{
+//   console.log('upload img 시작',req.body,req.file); //req.files.img[0].name or data(type BUffer)
+//   connection.query(`select roomName from queze ORDER BY roomName DESC LIMIT 1;`,(err,result)=>{
+//     if(result.length != 0){
+//       let roomName_arr = Array.from(result[0].roomName);// ['A','B','C']; 
+//       if(roomName_arr[roomName_arr.length - 1].charCodeAt() >= 90)
+//       { 
+//         roomName_arr.push(String.fromCharCode(65));
+//         upload_query(req,roomName_arr);
+//       }
+//       else
+//       { 
+//         roomName_arr[roomName_arr.length - 1] =  String.fromCharCode(roomName_arr[roomName_arr.length - 1].charCodeAt() + 1);
+//         upload_query(req,roomName_arr);     
 
-      }
-    }
-    else {
-      upload_query(req,'A');     
-    }     
+//       }
+//     }
+//     else {
+//       upload_query(req,'A');     
+//     }     
 
-  })
-  return res.send('success');
+//   })
+//   return res.send('success');
   
-})
+// })
 app.post('/modify_change_quezeshow',(req,res)=>{
   const img_tinyint = req.body.img_tinyint;
   const content_title = req.body.content_title;
@@ -1499,7 +1267,7 @@ app.get('/quezeshowqueze',(req,res)=>{
           uuid2 : e.uuid2,
           roomnum : e.roomnum,
           data_type : e.data_type,
-          value : e.value,
+          value : e.value, 
           hint: e.hint
         }
       }else if(e.data_type === 'text'){
