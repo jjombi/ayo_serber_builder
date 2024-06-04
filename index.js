@@ -1468,7 +1468,8 @@ app.post('/quezeshowcomment_upload',(req,res)=>{
   const text = req.body.text;
   const roomnum = req.body.roomnum;
   const date = req.body.date;
-  connection.query(`insert into quezeshowcomment (title, text, likes, uuid, uuid2, roomnum, date) value('${title}', '${text}', 0, '${uuid}', '${uuidv4()}', ${roomnum}, '${date}')`,(err,result)=>{
+  const usertype = req.body.usertype;
+  connection.query(`insert into quezeshowcomment (title, text, likes, uuid, uuid2, roomnum, date, usertype) value('${title}', '${text}', 0, '${uuid}', '${uuidv4()}', ${roomnum}, '${date}', ${usertype})`,(err,result)=>{
     return res.send(result);
   });
 })
@@ -1487,7 +1488,8 @@ app.post('/community_plus',(req,res)=>{
   console.log(req.body);
   const text = req.body.text;
   const date = req.body.date;
-  connection.query(`insert into community (text,date,uuid,likes) value('${text}', ${date}, '${uuidv4()}', 0)`,(err,result)=>{
+  const usertype = req.body.usertype;
+  connection.query(`insert into community (text,date,uuid,likes,usertype) value('${text}', ${date}, '${uuidv4()}', 0, ${usertype})`,(err,result)=>{
     if(err) throw err
     else return res.send('success');
   });
