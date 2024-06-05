@@ -908,7 +908,7 @@ app.post('/add_quezeshowcontent',(req,res)=>{
   return res.send('success');
 })
 app.get('/search_quezeshow',(req,res)=>{
-  console.log(req);
+  // console.log(req);
   // let base64_img_arr = [];
   let send_ = [];
   const type = req.query.type; // 0 = 최신, 1 = 인기, 2 = 테그, 3 = 이메일
@@ -916,6 +916,7 @@ app.get('/search_quezeshow',(req,res)=>{
   const email = req.query.email;
   const tag = req.body.tag;
   let query = '';
+
   if(search_value !== ''){
     query = `&& title like "%${search_value}%"`;
   }
@@ -930,6 +931,7 @@ app.get('/search_quezeshow',(req,res)=>{
   }else{
     console.log('search err');
   }
+  console.log(`select * from quezeshowqueze where existence = 1 ${query} limit 20`);
   connection.query(`select * from quezeshowqueze where existence = 1 ${query} limit 20`,(err,result)=>{
     Promise.all(result.map(async(e,i)=>{
       if(e.img !== ''){
