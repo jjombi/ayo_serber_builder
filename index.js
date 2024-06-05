@@ -576,22 +576,33 @@ app.post('/likes_plus',(req,res)=>{
   console.log('comment likes plus');
   const type = req.body.type;
   const uuid = req.body.uuid;
+  const user_email = req.body.user_email;
   console.log('likes_plus',uuid,type)
-
   if(type === 'comments')   connection.query(`update comments set likes = likes + 1 where parentsKey = '${uuid}' `);
   else if(type === 'Main_queze') connection.query(`update queze set likes = likes + 1 where uuid = '${uuid}' `);
-  else if(type === 'quezeshow') connection.query(`update quezeshowqueze set likes = likes + 1 where uuid = '${uuid}' `);
+  else if(type === 'quezeshow') {
+    connection.query(`update quezeshowqueze set likes = likes + 1 where uuid = '${uuid}' `);
+    if(user_email !== null || user_email !== ''){
+      connection.query(`insert into ${user_email} (likes_queze) value ('${uuid}')`);
+    }
+  }
   return res.send('success');
 })
 app.post('/likes_minus',(req,res)=>{
   console.log('comment likes minus');
   const uuid = req.body.uuid;
   const type = req.body.type;
-  console.log('likes_minus',uuid,type)
+  const user_email = req.body.user_email;
 
+  console.log('likes_minus',uuid,type)
   if(type === 'comments')   connection.query(`update comments set likes = likes - 1 where parentsKey = '${uuid}' `);
   else if(type === 'Main_queze')  connection.query(`update queze set likes = likes - 1 where uuid = '${uuid}' `);
-  else if(type === 'quezeshow')   connection.query(`update quezeshowqueze set likes = likes - 1 where uuid = '${uuid}' `);
+  else if(type === 'quezeshow') {
+    if(user_email !== null || user_email !== ''){
+      connection.query(`delete from ${user_email} where likes_queze = '${uuid}'`);
+    }
+    connection.query(`update quezeshowqueze set likes = likes - 1 where uuid = '${uuid}' `);
+  }
   return res.send('success');
 })
 app.post('/result_plus',(req,res)=>{
@@ -914,7 +925,7 @@ app.get('/search_quezeshow',(req,res)=>{
   const type = req.query.type; // 0 = 최신, 1 = 인기, 2 = 테그, 3 = 이메일
   const search_value = req.query.value;
   const email = req.query.email;
-  const tag = req.body.tag;
+  const tag = req.query.tag;
   let query = '';
 
   if(search_value !== ''){
