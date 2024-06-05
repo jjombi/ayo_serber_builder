@@ -911,10 +911,26 @@ app.get('/search_quezeshow',(req,res)=>{
   console.log(req);
   // let base64_img_arr = [];
   let send_ = [];
-  const type = req.body.type; // 0 = 최신, 1 = 인기, 특정 이메일 = 해당 이메일 유저의 퀴즈
-  let order_by = `order by`;
-  if(order_by )
-  connection.query(`select * from quezeshowqueze where existence = 1 && title like "%${req.query.value}%" order by likes desc limit 20`,(err,result)=>{
+  const type = req.query.type; // 0 = 최신, 1 = 인기, 2 = 테그, 3 = 이메일
+  const search_value = req.query.value;
+  const email = req.query.email;
+  const tag = req.body.tag;
+  let query = '';
+  if(search_value !== ''){
+    query = `&& title like "%${search_value}%"`;
+  }
+  else if(type === 0){
+    query = `order by date desc`;
+  }else if(type === 1){
+    query = `order by likes desc`;
+  }else if(type === 2){
+    query = `&& tag like "%${tag}%"`;
+  }else if(type === 3){
+    query = `&& user_id = "${email}"`;
+  }else{
+    console.log('search err');
+  }
+  connection.query(`select * from quezeshowqueze where existence = 1 ${query} limit 20`,(err,result)=>{
     Promise.all(result.map(async(e,i)=>{
       if(e.img !== ''){
         const  command = new GetObjectCommand({
