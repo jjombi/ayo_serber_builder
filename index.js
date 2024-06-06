@@ -929,7 +929,7 @@ app.get('/search_quezeshow',(req,res)=>{
   const user_email = req.query.user_email;
   let query = '';
 
-  if(user_email !== '' && user_email !== null && user_email !== undefined){
+  if(typeof(user_email) === 'string'){
     if(search_value !== ''){
       query = `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.title like "%${search_value}%" limit 20`;
     }
