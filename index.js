@@ -918,59 +918,7 @@ app.post('/add_quezeshowcontent',(req,res)=>{
   })   
   return res.send('success');
 })
-const check_type = (user_email,search_value,tag,email,type) => {
-  let return_result = '';
-  if(typeof(user_email) === 'string'){
-    console.log('로그인 유저',type);
-    if(type === 4){
-      return_result = `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.title like "%${search_value}%" limit 20`;
-    }
-    else if(type === 0){
-      return_result = `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 order by quezeshowqueze.date desc limit 20`;
-    }else if(type === 1){
-      return_result = `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 order by quezeshowqueze.likes desc limit 20`;
-    }else if(type === 2){
-      return_result = `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.tag like "%${tag}%" limit 20`;
-    }else if(type === 3){
-      return_result = `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.user_id = "${email}" limit 20`;
-    }else{
-      console.log('search err');
-    }
-  }else{
-    console.log('비로그인 유저',type);
-    if(type === 4){
-      return_result = `select * from quezeshowqueze where existence = 1 && title like "%${search_value}%" limit 20`;
-    }
-    else if(type === 0){
-      return_result = `select * from quezeshowqueze where existence = 1 order by date desc limit 20`;
-    }else if(type === 1){
-      return_result = `select * from quezeshowqueze where existence = 1 order by likes desc limit 20`;
-    }else if(type === 2){
-      return_result = `select * from quezeshowqueze where existence = 1 && tag like "%${tag}%" limit 20`;
-    }else if(type === 3){
-      return_result = `select * from quezeshowqueze where existence = 1 && user_id = "${email}" limit 20`;
-    }
-  }
-  return return_result;
-}
-app.get('/search_quezeshow',async (req,res)=>{
-  // console.log(req);
-  // let base64_img_arr = [];
-  let send_ = [];
-  const type = req.query.type; // 0 = 최신, 1 = 인기, 2 = 테그, 3 = 이메일
-  const search_value = req.query.value;
-  const email = req.query.email;
-  const tag = req.query.tag;
-  const user_email = req.query.user_email;
-  let query = '';
-  const promise = await new Promise((res,rej)=>{
-    const return_result = check_type(user_email,search_value,tag,email,type);
-    console.log('return_result',return_result);
-    res(return_result);
-  })
-  query = promise;
-  
-  console.log('quweerty',query);
+const search_query_func = (query,res) => {
   connection.query(query,(err,result)=>{
     Promise.all(result.map(async(e,i)=>{
       if(e.img !== ''){
@@ -1012,32 +960,47 @@ app.get('/search_quezeshow',async (req,res)=>{
       return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
     })
   })
-
-  // connection.query(`select * from queze where title like "%${req.body.value}%";`,async (err,result)=>{
-  //   console.log(result);
-  //   if(result.length !== 0){
-  //     await Promise.all(
-  //       result.map(async(e,i)=>{
-  //         console.log(e.roomName+"/"+e.title_img_name,i);
-  //         const  command = new GetObjectCommand({
-  //           Bucket: "dlworjs",
-  //           Key: e.roomName+"/"+e.title_img_name,
-  //         });
-  //         const response = await client.send(command);
-  //         const response_body = await response.Body.transformToByteArray();
-  //         const img_src = (Buffer.from(response_body).toString('base64'));
-  //         base64_img_arr[i] = [img_src];
-  //       })
-  //     ).then(()=>{
-  //       console.log('res send');
-  //       return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });
-
-  //     })
-  //   }else {
-  //     console.log('err');
-  //     return res.send(false);
-  //   } 
-  // })
+}
+app.get('/search_quezeshow',async (req,res)=>{
+  // console.log(req);
+  // let base64_img_arr = [];
+  let send_ = [];
+  const type = req.query.type; // 0 = 최신, 1 = 인기, 2 = 테그, 3 = 이메일
+  const search_value = req.query.value;
+  const email = req.query.email;
+  const tag = req.query.tag;
+  const user_email = req.query.user_email;
+  if(typeof(user_email) === 'string'){
+    console.log('로그인 유저',type);
+    if(type === 4){
+      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.title like "%${search_value}%" limit 20`,res);
+    }
+    else if(type === 0){
+      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 order by quezeshowqueze.date desc limit 20`,res);
+    }else if(type === 1){
+      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 order by quezeshowqueze.likes desc limit 20`,res);
+    }else if(type === 2){
+      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.tag like "%${tag}%" limit 20`,res);
+    }else if(type === 3){
+      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.user_id = "${email}" limit 20`,res);
+    }else{
+      console.log('search err');
+    }
+  }else{
+    console.log('비로그인 유저',type);
+    if(type === 4){
+      search_query_func(`select * from quezeshowqueze where existence = 1 && title like "%${search_value}%" limit 20`,res);
+    }
+    else if(type === 0){
+      search_query_func(`select * from quezeshowqueze where existence = 1 order by date desc limit 20`,res);
+    }else if(type === 1){
+      search_query_func(`select * from quezeshowqueze where existence = 1 order by likes desc limit 20`,res);
+    }else if(type === 2){
+      search_query_func(`select * from quezeshowqueze where existence = 1 && tag like "%${tag}%" limit 20`,res);
+    }else if(type === 3){
+      search_query_func(`select * from quezeshowqueze where existence = 1 && user_id = "${email}" limit 20`,res);
+    }
+  }
 })
 app.get('/declaration',(req,res)=>{
   const roomnum = req.query.roomnum;
