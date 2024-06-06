@@ -963,7 +963,7 @@ app.get('/search_quezeshow',async (req,res)=>{
     const return_result = check_type(user_email,search_value,tag,email,type);
     res(return_result);
   })
-  await promise.then((return_result)=>{
+  promise.then((return_result)=>{
     query = return_result;
   })
   
