@@ -920,6 +920,7 @@ app.post('/add_quezeshowcontent',(req,res)=>{
 })
 const search_query_func = (query,res) => {
   console.log('query',query);
+  let send_ = [];
   connection.query(query,(err,result)=>{
     console.log('result',result);
     Promise.all(result.map(async(e,i)=>{
@@ -966,7 +967,6 @@ const search_query_func = (query,res) => {
 app.get('/search_quezeshow',async (req,res)=>{
   // console.log(req);
   // let base64_img_arr = [];
-  let send_ = [];
   const type = req.query.type; // 0 = 최신, 1 = 인기, 2 = 테그, 3 = 이메일
   const search_value = req.query.value;
   const email = req.query.email;
