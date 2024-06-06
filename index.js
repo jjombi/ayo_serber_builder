@@ -920,6 +920,7 @@ app.post('/add_quezeshowcontent',(req,res)=>{
 })
 const check_type = (user_email,search_value,tag,email,type) => {
   if(typeof(user_email) === 'string'){
+    console.log('로그인 유저',type);
     if(type === 4){
       return `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.title like "%${search_value}%" limit 20`;
     }
@@ -935,6 +936,7 @@ const check_type = (user_email,search_value,tag,email,type) => {
       console.log('search err');
     }
   }else{
+    console.log('비로그인 유저',type);
     if(type === 4){
       return `select * from quezeshowqueze where existence = 1 && title like "%${search_value}%" limit 20`;
     }
@@ -961,6 +963,7 @@ app.get('/search_quezeshow',async (req,res)=>{
   let query = '';
   const promise = await new Promise((res,rej)=>{
     const return_result = check_type(user_email,search_value,tag,email,type);
+    console.log('return_result',return_result);
     res(return_result);
   })
   query = promise;
