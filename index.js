@@ -930,7 +930,7 @@ app.get('/search_quezeshow',(req,res)=>{
   let query = '';
 
   if(typeof(user_email) === 'string'){
-    if(search_value !== ''){
+    if(type === 4){
       query = `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.title like "%${search_value}%" limit 20`;
     }
     else if(type === 0){
@@ -945,7 +945,7 @@ app.get('/search_quezeshow',(req,res)=>{
       console.log('search err');
     }
   }else{
-    if(search_value !== ''){
+    if(type === 4){
       query = `select * from quezeshowqueze where existence = 1 && title like "%${search_value}%" limit 20`;
     }
     else if(type === 0){
