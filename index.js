@@ -919,37 +919,39 @@ app.post('/add_quezeshowcontent',(req,res)=>{
   return res.send('success');
 })
 const check_type = (user_email,search_value,tag,email,type) => {
+  let return_result = '';
   if(typeof(user_email) === 'string'){
     console.log('로그인 유저',type);
     if(type === 4){
-      return `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.title like "%${search_value}%" limit 20`;
+      return_result = `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.title like "%${search_value}%" limit 20`;
     }
     else if(type === 0){
-      return `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 order by quezeshowqueze.date desc limit 20`;
+      return_result = `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 order by quezeshowqueze.date desc limit 20`;
     }else if(type === 1){
-      return `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 order by quezeshowqueze.likes desc limit 20`;
+      return_result = `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 order by quezeshowqueze.likes desc limit 20`;
     }else if(type === 2){
-      return `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.tag like "%${tag}%" limit 20`;
+      return_result = `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.tag like "%${tag}%" limit 20`;
     }else if(type === 3){
-      return `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.user_id = "${email}" limit 20`;
+      return_result = `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.user_id = "${email}" limit 20`;
     }else{
       console.log('search err');
     }
   }else{
     console.log('비로그인 유저',type);
     if(type === 4){
-      return `select * from quezeshowqueze where existence = 1 && title like "%${search_value}%" limit 20`;
+      return_result = `select * from quezeshowqueze where existence = 1 && title like "%${search_value}%" limit 20`;
     }
     else if(type === 0){
-      return `select * from quezeshowqueze where existence = 1 order by date desc limit 20`;
+      return_result = `select * from quezeshowqueze where existence = 1 order by date desc limit 20`;
     }else if(type === 1){
-      return `select * from quezeshowqueze where existence = 1 order by likes desc limit 20`;
+      return_result = `select * from quezeshowqueze where existence = 1 order by likes desc limit 20`;
     }else if(type === 2){
-      return `select * from quezeshowqueze where existence = 1 && tag like "%${tag}%" limit 20`;
+      return_result = `select * from quezeshowqueze where existence = 1 && tag like "%${tag}%" limit 20`;
     }else if(type === 3){
-      return `select * from quezeshowqueze where existence = 1 && user_id = "${email}" limit 20`;
+      return_result = `select * from quezeshowqueze where existence = 1 && user_id = "${email}" limit 20`;
     }
   }
+  return return_result;
 }
 app.get('/search_quezeshow',async (req,res)=>{
   // console.log(req);
