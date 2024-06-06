@@ -1001,6 +1001,8 @@ app.get('/search_quezeshow',async (req,res)=>{
       search_query_func(`select * from quezeshowqueze where existence = 1 && tag like "%${tag}%" limit 20`,res);
     }else if(type === 3){
       search_query_func(`select * from quezeshowqueze where existence = 1 && user_id = "${email}" limit 20`,res);
+    }else{
+      console.log('search err');
     }
   }
 })
