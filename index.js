@@ -992,7 +992,7 @@ app.get('/search_quezeshow',(req,res)=>{
           roomnum : e.roomnum,
           quezeshow_type : e.quezeshow_type,
           explain_text : e.explainText,
-          likes_queze : e.likes_queze || null
+          likes_queze : e.likes_queze !== null && e.likes_queze !== undefined ? true : false
         }
       }
     })).then(()=>{
