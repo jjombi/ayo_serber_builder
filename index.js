@@ -975,16 +975,16 @@ app.get('/search_quezeshow',async (req,res)=>{
   if(typeof(user_email) === 'string'){
     console.log('로그인 유저',type);
     if(type == 4){
-      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.title like "%${search_value}%" limit 20`,res);
+      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1  && quezeshowqueze.uuid = ${user_email}.likes_queze && quezeshowqueze.title like "%${search_value}%" limit 20`,res);
     }
     else if(type == 0){
-      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 order by quezeshowqueze.date desc limit 20`,res);
+      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze order by quezeshowqueze.date desc limit 20`,res);
     }else if(type == 1){
-      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 order by quezeshowqueze.likes desc limit 20`,res);
+      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze order by quezeshowqueze.likes desc limit 20`,res);
     }else if(type == 2){
-      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.tag like "%${tag}%" limit 20`,res);
+      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze && quezeshowqueze.tag like "%${tag}%" limit 20`,res);
     }else if(type == 3){
-      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.user_id = "${email}" limit 20`,res);
+      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze && quezeshowqueze.user_id = "${email}" limit 20`,res);
     }else{
       console.log('search err');
     }
