@@ -959,7 +959,7 @@ app.get('/search_quezeshow',async (req,res)=>{
   const tag = req.query.tag;
   const user_email = req.query.user_email;
   let query = '';
-  const promise = new Promise((res,rej)=>{
+  const promise = await new Promise((res,rej)=>{
     const return_result = check_type(user_email,search_value,tag,email,type);
     res(return_result);
   })
