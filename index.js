@@ -963,10 +963,7 @@ app.get('/search_quezeshow',async (req,res)=>{
     const return_result = check_type(user_email,search_value,tag,email,type);
     res(return_result);
   })
-  promise.then((return_result)=>{
-    console.log('return_result',return_result);
-    query = return_result;
-  })
+  query = promise;
   
   console.log('quweerty',query);
   connection.query(query,(err,result)=>{
