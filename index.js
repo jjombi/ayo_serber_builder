@@ -919,7 +919,9 @@ app.post('/add_quezeshowcontent',(req,res)=>{
   return res.send('success');
 })
 const search_query_func = (query,res) => {
+  console.log('query',query);
   connection.query(query,(err,result)=>{
+    console.log('result',result);
     Promise.all(result.map(async(e,i)=>{
       if(e.img !== ''){
         const  command = new GetObjectCommand({
