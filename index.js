@@ -958,7 +958,7 @@ app.get('/search_quezeshow',(req,res)=>{
       query = `select * from quezeshowqueze where existence = 1 && user_id = "${email}" limit 20`;
     }
   }
-  console.log(query);
+  console.log('quweerty',query);
   connection.query(query,(err,result)=>{
     Promise.all(result.map(async(e,i)=>{
       if(e.img !== ''){
