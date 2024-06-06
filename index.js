@@ -926,24 +926,40 @@ app.get('/search_quezeshow',(req,res)=>{
   const search_value = req.query.value;
   const email = req.query.email;
   const tag = req.query.tag;
+  const user_email = req.query.user_email;
   let query = '';
 
-  if(search_value !== ''){
-    query = `&& title like "%${search_value}%"`;
-  }
-  else if(type === 0){
-    query = `order by date desc`;
-  }else if(type === 1){
-    query = `order by likes desc`;
-  }else if(type === 2){
-    query = `&& tag like "%${tag}%"`;
-  }else if(type === 3){
-    query = `&& user_id = "${email}"`;
+  if(user_email !== '' && user_email !== null){
+    if(search_value !== ''){
+      query = `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.title like "%${search_value}%" limit 20`;
+    }
+    else if(type === 0){
+      query = `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 order by quezeshowqueze.date desc limit 20`;
+    }else if(type === 1){
+      query = `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 order by quezeshowqueze.likes desc limit 20`;
+    }else if(type === 2){
+      query = `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.tag like "%${tag}%" limit 20`;
+    }else if(type === 3){
+      query = `select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.user_id = "${email}" limit 20`;
+    }else{
+      console.log('search err');
+    }
   }else{
-    console.log('search err');
+    if(search_value !== ''){
+      query = `select * from quezeshowqueze where existence = 1 && title like "%${search_value}%" limit 20`;
+    }
+    else if(type === 0){
+      query = `select * from quezeshowqueze where existence = 1 order by date desc limit 20`;
+    }else if(type === 1){
+      query = `select * from quezeshowqueze where existence = 1 order by likes desc limit 20`;
+    }else if(type === 2){
+      query = `select * from quezeshowqueze where existence = 1 && tag like "%${tag}%" limit 20`;
+    }else if(type === 3){
+      query = `select * from quezeshowqueze where existence = 1 && user_id = "${email}" limit 20`;
+    }
   }
-  console.log(`select * from quezeshowqueze where existence = 1 ${query} limit 20`);
-  connection.query(`select * from quezeshowqueze where existence = 1 ${query} limit 20`,(err,result)=>{
+  console.log(query);
+  connection.query(query,(err,result)=>{
     Promise.all(result.map(async(e,i)=>{
       if(e.img !== ''){
         const  command = new GetObjectCommand({
@@ -961,8 +977,8 @@ app.get('/search_quezeshow',(req,res)=>{
           uuid : e.uuid,
           roomnum : e.roomnum,
           quezeshow_type : e.quezeshow_type,
-          explain_text : e.explainText
-
+          explain_text : e.explainText,
+          likes_queze : e.likes_queze || null
         }
         console.log('send message 만들어 자는 중 ');
       }
@@ -975,7 +991,8 @@ app.get('/search_quezeshow',(req,res)=>{
           uuid : e.uuid,
           roomnum : e.roomnum,
           quezeshow_type : e.quezeshow_type,
-          explain_text : e.explainText
+          explain_text : e.explainText,
+          likes_queze : e.likes_queze || null
         }
       }
     })).then(()=>{
