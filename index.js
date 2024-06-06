@@ -941,7 +941,7 @@ const search_query_func = (query,res) => {
           roomnum : e.roomnum,
           quezeshow_type : e.quezeshow_type,
           explain_text : e.explainText,
-          likes_queze : e.likes_queze !== null && e.likes_queze !== undefined ? true : false
+          likes_queze : e.likes_queze !== null && e.likes_queze !== undefined && e.uuid === e.likes_queze ? true : false
         }
         console.log('send message 만들어 자는 중 ');
       }
@@ -955,7 +955,7 @@ const search_query_func = (query,res) => {
           roomnum : e.roomnum,
           quezeshow_type : e.quezeshow_type,
           explain_text : e.explainText,
-          likes_queze : e.likes_queze !== null && e.likes_queze !== undefined ? true : false
+          likes_queze : e.likes_queze !== null && e.likes_queze !== undefined && e.uuid === e.likes_queze ? true : false
         }
       }
     })).then(()=>{
