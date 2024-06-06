@@ -964,6 +964,7 @@ app.get('/search_quezeshow',async (req,res)=>{
     res(return_result);
   })
   promise.then((return_result)=>{
+    console.log('return_result',return_result);
     query = return_result;
   })
   
