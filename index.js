@@ -974,17 +974,17 @@ app.get('/search_quezeshow',async (req,res)=>{
   const user_email = req.query.user_email;
   if(typeof(user_email) === 'string'){
     console.log('로그인 유저',type);
-    if(type == 4){
-      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1  && quezeshowqueze.uuid = ${user_email}.likes_queze && quezeshowqueze.title like "%${search_value}%" limit 20`,res);
+    if(type == 4){ //검색
+      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1  && quezeshowqueze.uuid = ${user_email}.likes_queze where quezeshowqueze.title like "%${search_value}%" limit 20`,res);
     }
-    else if(type == 0){
+    else if(type == 0){ // 최신
       search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze order by quezeshowqueze.date desc limit 20`,res);
-    }else if(type == 1){
+    }else if(type == 1){ // 인기
       search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze order by quezeshowqueze.likes desc limit 20`,res);
-    }else if(type == 2){
+    }else if(type == 2){ // 테그
       search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze && quezeshowqueze.tag like "%${tag}%" limit 20`,res);
-    }else if(type == 3){
-      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze && quezeshowqueze.user_id = "${email}" limit 20`,res);
+    }else if(type == 3){ // 특정 유저 이메일 퀴즈
+      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze where quezeshowqueze.user_id = "${email}" limit 20`,res);
     }else{
       console.log('search err');
     }
