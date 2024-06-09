@@ -1006,6 +1006,15 @@ app.get('/search_quezeshow',async (req,res)=>{
     }
   }
 })
+app.get('/search_likes_queze',(req,res)=>{
+  const user_email = req.query.user_email;
+  connection.query(`select * from ${user_email} left join quezeshowqueze on ${user_email}.likes_queze = quezeshowqueze.uuid;`,(err,result)=>{
+    if(err) console(err);
+    else{
+      return res.send(result);
+    }
+  })
+})
 app.get('/declaration',(req,res)=>{
   const roomnum = req.query.roomnum;
   const type    = req.query.type;
