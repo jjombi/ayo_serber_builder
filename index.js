@@ -1233,100 +1233,105 @@ const get_choice_correct_choice = async (uuid) => {
   return data;
 }
 const get_quezeshowcontent_data = async (roomnum) => {
-  let quezeshowcontent_result = [];
-  console.log(roomnum);
-  const promise = new Promise((res,rej)=>{
-    connection.query(`select * from quezeshowcontent where roomnum = '${roomnum}'`,(err,quezeshowcontent_result)=>{
-      console.log(quezeshowcontent_result);
-      Promise.all(quezeshowcontent_result.map(async(e,i)=>{
-        if (e.data_type === 'video' || e.data_type === 'audio') {
-          const youtubeResult = await new Promise((resolve, reject) => {
-            connection.query(`select * from youtube where uuid='${e.uuid2}'`, (err, youtube_result) => {
-              if (err) reject(err);
-              resolve(youtube_result);
+  let send_ = [];
+  console.log('roomnum',roomnum);
+  try{
+    const promise = new Promise((res,rej)=>{
+      connection.query(`select * from quezeshowcontent where roomnum = '${roomnum}'`,(err,quezeshowcontent_result)=>{
+        console.log('quezeshowcontent_result',quezeshowcontent_result);
+        Promise.all(quezeshowcontent_result.map(async(e,i)=>{
+          if (e.data_type === 'video' || e.data_type === 'audio') {
+            const youtubeResult = await new Promise((resolve, reject) => {
+              connection.query(`select * from youtube where uuid='${e.uuid2}'`, (err, youtube_result) => {
+                if (err) reject(err);
+                resolve(youtube_result);
+              });
             });
-          });
-          console.log('data type video send_만들어지는 중');
-          send_[i] = {
-            img: e.img,
-            title: e.title,
-            uuid: e.uuid,
-            text: e.text,
-            uuid2: e.uuid2,
-            roomnum: e.roomnum,
-            data_type: e.data_type,
-            value: e.value,
-            start: youtubeResult[0].start,
-            end: youtubeResult[0].end,
-            hint: e.hint
-          };
-        
-        }else if(e.data_type == 'image'){
-          const  command = new GetObjectCommand({
-            Bucket: "dlworjs",
-            Key: e.uuid+'/'+e.img + '.jpg',
-          });
-          const response = await client.send(command);
-          const response_body = await response.Body.transformToByteArray();
-          const img_src = (Buffer.from(response_body).toString('base64'));
-          send_[i] ={
-            img : img_src,
-            title : e.title,
-            uuid : e.uuid,
-            text : e.text,
-            uuid2 : e.uuid2,
-            roomnum : e.roomnum,
-            data_type : e.data_type,
-            value : e.value, 
-            hint: e.hint
+            send_[i] = {
+              img: e.img,
+              title: e.title,
+              uuid: e.uuid,
+              text: e.text,
+              uuid2: e.uuid2,
+              roomnum: e.roomnum,
+              data_type: e.data_type,
+              value: e.value,
+              start: youtubeResult[0].start,
+              end: youtubeResult[0].end,
+              hint: e.hint
+            };
+          
+          }else if(e.data_type == 'image'){
+            const  command = new GetObjectCommand({
+              Bucket: "dlworjs",
+              Key: e.uuid+'/'+e.img + '.jpg',
+            });
+            const response = await client.send(command);
+            const response_body = await response.Body.transformToByteArray();
+            const img_src = (Buffer.from(response_body).toString('base64'));
+            send_[i] ={
+              img : img_src,
+              title : e.title,
+              uuid : e.uuid,
+              text : e.text,
+              uuid2 : e.uuid2,
+              roomnum : e.roomnum,
+              data_type : e.data_type,
+              value : e.value, 
+              hint: e.hint
+            }
+          }else if(e.data_type === 'text'){
+            send_[i] ={
+              img : '',
+              title : e.title,
+              uuid : e.uuid,
+              text : e.text,
+              uuid2 : e.uuid2,
+              roomnum : e.roomnum,
+              data_type : e.data_type,
+              value : e.value,
+              hint: e.hint
+            }
+          }else {
+            throw 'quezeshowcontent data_type err';
           }
-        }else if(e.data_type === 'text'){
-          send_[i] ={
-            img : '',
-            title : e.title,
-            uuid : e.uuid,
-            text : e.text,
-            uuid2 : e.uuid2,
-            roomnum : e.roomnum,
-            data_type : e.data_type,
-            value : e.value,
-            hint: e.hint
+    
+          if(e.data_type === 'multiple'){
+            const data = await get_choice_correct_choice(e.uuid2);
+            send_[i] = {
+              ...send_[i],
+              data
+            }
+          }else if(e.data_type === 'description'){
+            const data = await get_choice_correct_choice(e.uuid2);
+            send_[i] = {
+              ...send_[i],
+              data
+            }
+          }else if(e.data_type === 'vote'){
+    
+          }else {
+            throw 'quezeshowcontent data_type err'
           }
-        }else {
-          throw 'quezeshowcontent data_type err';
-        }
-  
-        if(e.data_type === 'multiple'){
-          const data = await get_choice_correct_choice(e.uuid2);
-          send_[i] = {
-            ...send_[i],
-            data
-          }
-        }else if(e.data_type === 'description'){
-          const data = await get_choice_correct_choice(e.uuid2);
-          send_[i] = {
-            ...send_[i],
-            data
-          }
-        }else if(e.data_type === 'vote'){
-  
-        }else {
-          throw 'quezeshowcontent data_type err'
-        }
-        console.log('send message 만들어 자는 중 ');
-      })).then(()=>{
-        res(send_);
+          console.log('send message 만들어 자는 중 ');
+        })).then(()=>{
+          res(send_);
+        })
       })
     })
-  })
-  await promise.then(send_ => {
-    send_ = send_;
-  })
-  return send_;
+    await promise.then(send_ => {
+      send_ = send_;
+    })
+    return send_;
+  }catch(err){
+    console.log('get_quezeshowcontent_data err : ',err);
+    throw err
+  }
 }
 app.get('/modify_quezeshow_get_all_data',(req,res)=>{
   const roomnum = req.query.roomnum;
   const quezesh_content = get_quezeshowcontent_data(roomnum);
+  console.log('modify_quezeshow_get_all_data res data :',quezesh_content);
   return res.set({ "Content-Type": 'mulipart/form-data'}).send(quezesh_content);
 })
 app.get('/quezeshowqueze',(req,res)=>{
