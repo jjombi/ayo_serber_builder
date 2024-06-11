@@ -1210,6 +1210,7 @@ app.post('/check_queze_is_mine',(req,res)=>{
   const user_email = req.body.email;
   const uuid = req.body.uuid;
   connection.query(`select * quezeshowqueze where uuid = '${uuid}' && user_id = '${user_email}'`,(err,result)=>{
+    console.log(`select * quezeshowqueze where uuid = '${uuid}' && user_id = '${user_email}'`,result);
     if(result.length > 0){
       return res.send(true);
     }else{
