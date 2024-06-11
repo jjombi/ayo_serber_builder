@@ -1233,6 +1233,7 @@ const get_choice_correct_choice = async (uuid) => {
   return data;
 }
 const get_quezeshowcontent_data = async (roomnum) => {
+  let data;
   let send_ = [];
   let quezeshowqueze;
   console.log('roomnum',roomnum);
@@ -1319,6 +1320,10 @@ const get_quezeshowcontent_data = async (roomnum) => {
             }
             console.log('send message 만들어 자는 중 ');
           })).then(()=>{
+            console.log({
+              quezeshowqueze : quezeshowqueze,
+              quezeshowcontent : send_
+            })
             res({
               quezeshowqueze : quezeshowqueze,
               quezeshowcontent : send_
@@ -1328,9 +1333,9 @@ const get_quezeshowcontent_data = async (roomnum) => {
       })
     })
     await promise.then(send_ => {
-      send_ = send_;
+      data = send_;
     })
-    return send_;
+    return data;
   }catch(err){
     console.log('get_quezeshowcontent_data err : ',err);
     throw err
