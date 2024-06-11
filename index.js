@@ -1240,6 +1240,7 @@ const get_quezeshowcontent_data = async (roomnum) => {
     const promise = new Promise((res,rej)=>{
       connection.query(`select * from quezeshowqueze where roomnum = '${roomnum}'`,(err,quezeshowqueze_result)=>{
         quezeshowqueze = quezeshowqueze_result[0];
+        console.log('quezeshowqueze_result',quezeshowqueze_result);
         connection.query(`select * from quezeshowcontent where roomnum = '${roomnum}'`,(err,quezeshowcontent_result)=>{
           console.log('quezeshowcontent_result',quezeshowcontent_result);
           Promise.all(quezeshowcontent_result.map(async(e,i)=>{
