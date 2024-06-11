@@ -1240,8 +1240,10 @@ const get_choice_correct_choice = async (uuid) => {
     })
   })
   await promise.then(data => {
+    console.log('data',data);
     data = data
   })
+  console.log('return data',data);
   return data;
 }
 const get_quezeshowcontent_data = async (roomnum) => {
