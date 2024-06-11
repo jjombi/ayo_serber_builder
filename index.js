@@ -1234,6 +1234,7 @@ const get_choice_correct_choice = async (uuid) => {
   const promise = new Promise((res,rej)=>{
     connection.query(`select * from choice where uuid = '${uuid}'`,(err,choice_result)=>{
       connection.query(`select * from correct_choice where uuid ='${uuid}'`,(err,correct_result)=>{
+        console.log('get_choice_correct_choice',{choice : choice_result, correct_choice : correct_result});
         res({choice : choice_result, correct_choice : correct_result});
       })
     })
