@@ -1306,7 +1306,7 @@ const get_quezeshowcontent_data = async (roomnum) => {
                 ...send_[i],
                 data
               }
-            }else if(quezeshowqueze.quezeshow_type === 'description'){
+            }else if(quezeshowqueze.quezeshow_type === 'descriptive'){
               const data = await get_choice_correct_choice(e.uuid2);
               send_[i] = {
                 ...send_[i],
