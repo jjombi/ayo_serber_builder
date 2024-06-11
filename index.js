@@ -1234,88 +1234,95 @@ const get_choice_correct_choice = async (uuid) => {
 }
 const get_quezeshowcontent_data = async (roomnum) => {
   let send_ = [];
+  let quezeshowqueze;
   console.log('roomnum',roomnum);
   try{
     const promise = new Promise((res,rej)=>{
-      connection.query(`select * from quezeshowcontent where roomnum = '${roomnum}'`,(err,quezeshowcontent_result)=>{
-        console.log('quezeshowcontent_result',quezeshowcontent_result);
-        Promise.all(quezeshowcontent_result.map(async(e,i)=>{
-          if (e.data_type === 'video' || e.data_type === 'audio') {
-            const youtubeResult = await new Promise((resolve, reject) => {
-              connection.query(`select * from youtube where uuid='${e.uuid2}'`, (err, youtube_result) => {
-                if (err) reject(err);
-                resolve(youtube_result);
+      connection.query(`select * from quezeshowqueze where roomnum = '${roomnum}'`,(err,quezeshowqueze_result)=>{
+        quezeshowqueze = quezeshowqueze_result[0];
+        connection.query(`select * from quezeshowcontent where roomnum = '${roomnum}'`,(err,quezeshowcontent_result)=>{
+          console.log('quezeshowcontent_result',quezeshowcontent_result);
+          Promise.all(quezeshowcontent_result.map(async(e,i)=>{
+            if (e.data_type === 'video' || e.data_type === 'audio') {
+              const youtubeResult = await new Promise((resolve, reject) => {
+                connection.query(`select * from youtube where uuid='${e.uuid2}'`, (err, youtube_result) => {
+                  if (err) reject(err);
+                  resolve(youtube_result);
+                });
               });
+              send_[i] = {
+                img: e.img,
+                title: e.title,
+                uuid: e.uuid,
+                text: e.text,
+                uuid2: e.uuid2,
+                roomnum: e.roomnum,
+                data_type: e.data_type,
+                value: e.value,
+                start: youtubeResult[0].start,
+                end: youtubeResult[0].end,
+                hint: e.hint
+              };
+            
+            }else if(e.data_type == 'image'){
+              const  command = new GetObjectCommand({
+                Bucket: "dlworjs",
+                Key: e.uuid+'/'+e.img + '.jpg',
+              });
+              const response = await client.send(command);
+              const response_body = await response.Body.transformToByteArray();
+              const img_src = (Buffer.from(response_body).toString('base64'));
+              send_[i] ={
+                img : img_src,
+                title : e.title,
+                uuid : e.uuid,
+                text : e.text,
+                uuid2 : e.uuid2,
+                roomnum : e.roomnum,
+                data_type : e.data_type,
+                value : e.value, 
+                hint: e.hint
+              }
+            }else if(e.data_type === 'text'){
+              send_[i] ={
+                img : '',
+                title : e.title,
+                uuid : e.uuid,
+                text : e.text,
+                uuid2 : e.uuid2,
+                roomnum : e.roomnum,
+                data_type : e.data_type,
+                value : e.value,
+                hint: e.hint
+              }
+            }else {
+              throw 'quezeshowcontent data_type err';
+            }
+      
+            if(quezeshowqueze_result[0].quezeshow_type === 'multiple'){
+              const data = await get_choice_correct_choice(e.uuid2);
+              send_[i] = {
+                ...send_[i],
+                data
+              }
+            }else if(quezeshowqueze_result[0].quezeshow_type === 'description'){
+              const data = await get_choice_correct_choice(e.uuid2);
+              send_[i] = {
+                ...send_[i],
+                data
+              }
+            }else if(quezeshowqueze_result[0].quezeshow_type === 'vote'){
+      
+            }else {
+              throw 'quezeshowcontent data_type err'
+            }
+            console.log('send message 만들어 자는 중 ');
+          })).then(()=>{
+            res({
+              quezeshowqueze : quezeshowqueze,
+              quezeshowcontent : send_
             });
-            send_[i] = {
-              img: e.img,
-              title: e.title,
-              uuid: e.uuid,
-              text: e.text,
-              uuid2: e.uuid2,
-              roomnum: e.roomnum,
-              data_type: e.data_type,
-              value: e.value,
-              start: youtubeResult[0].start,
-              end: youtubeResult[0].end,
-              hint: e.hint
-            };
-          
-          }else if(e.data_type == 'image'){
-            const  command = new GetObjectCommand({
-              Bucket: "dlworjs",
-              Key: e.uuid+'/'+e.img + '.jpg',
-            });
-            const response = await client.send(command);
-            const response_body = await response.Body.transformToByteArray();
-            const img_src = (Buffer.from(response_body).toString('base64'));
-            send_[i] ={
-              img : img_src,
-              title : e.title,
-              uuid : e.uuid,
-              text : e.text,
-              uuid2 : e.uuid2,
-              roomnum : e.roomnum,
-              data_type : e.data_type,
-              value : e.value, 
-              hint: e.hint
-            }
-          }else if(e.data_type === 'text'){
-            send_[i] ={
-              img : '',
-              title : e.title,
-              uuid : e.uuid,
-              text : e.text,
-              uuid2 : e.uuid2,
-              roomnum : e.roomnum,
-              data_type : e.data_type,
-              value : e.value,
-              hint: e.hint
-            }
-          }else {
-            throw 'quezeshowcontent data_type err';
-          }
-    
-          if(e.data_type === 'multiple'){
-            const data = await get_choice_correct_choice(e.uuid2);
-            send_[i] = {
-              ...send_[i],
-              data
-            }
-          }else if(e.data_type === 'description'){
-            const data = await get_choice_correct_choice(e.uuid2);
-            send_[i] = {
-              ...send_[i],
-              data
-            }
-          }else if(e.data_type === 'vote'){
-    
-          }else {
-            throw 'quezeshowcontent data_type err'
-          }
-          console.log('send message 만들어 자는 중 ');
-        })).then(()=>{
-          res(send_);
+          })
         })
       })
     })
