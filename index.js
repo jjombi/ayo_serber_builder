@@ -1230,20 +1230,20 @@ const get_aws_img = async (key) => {
 }
 const get_choice_correct_choice = async (uuid) => {
   let data = [];
-  console.log('uuid',uuid);
+  // console.log('uuid',uuid);
   const promise = new Promise((res,rej)=>{
     connection.query(`select * from choice where uuid = '${uuid}'`,(err,choice_result)=>{
       connection.query(`select * from correct_choice where uuid ='${uuid}'`,(err,correct_result)=>{
-        console.log('get_choice_correct_choice',{choice : choice_result, correct_choice : correct_result});
+        // console.log('get_choice_correct_choice',{choice : choice_result, correct_choice : correct_result});
         res({choice : choice_result, correct_choice : correct_result});
       })
     })
   })
-  await promise.then(data => {
-    console.log('data',data);
-    data = data
+  await promise.then(data_ => {
+    // console.log('data',data_);
+    data = data_;
   })
-  console.log('return data',data);
+  // console.log('return data',data);
   return data;
 }
 const get_quezeshowcontent_data = async (roomnum) => {
