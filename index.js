@@ -1300,19 +1300,19 @@ const get_quezeshowcontent_data = async (roomnum) => {
               throw 'quezeshowcontent data_type err';
             }
       
-            if(quezeshowqueze_result[0].quezeshow_type === 'multiple'){
+            if(quezeshowqueze.quezeshow_type === 'multiple'){
               const data = await get_choice_correct_choice(e.uuid2);
               send_[i] = {
                 ...send_[i],
                 data
               }
-            }else if(quezeshowqueze_result[0].quezeshow_type === 'description'){
+            }else if(quezeshowqueze.quezeshow_type === 'description'){
               const data = await get_choice_correct_choice(e.uuid2);
               send_[i] = {
                 ...send_[i],
                 data
               }
-            }else if(quezeshowqueze_result[0].quezeshow_type === 'vote'){
+            }else if(quezeshowqueze.quezeshow_type === 'vote'){
       
             }else {
               throw 'quezeshowcontent data_type err'
