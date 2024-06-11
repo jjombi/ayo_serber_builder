@@ -1327,6 +1327,7 @@ const get_quezeshowcontent_data = async (roomnum) => {
 app.get('/modify_quezeshow_get_all_data',(req,res)=>{
   const roomnum = req.query.roomnum;
   const quezesh_content = get_quezeshowcontent_data(roomnum);
+  return res.set({ "Content-Type": 'mulipart/form-data'}).send(quezesh_content);
 })
 app.get('/quezeshowqueze',(req,res)=>{
   const roomnum = req.query.roomnum;
