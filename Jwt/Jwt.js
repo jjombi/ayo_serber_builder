@@ -35,7 +35,7 @@ const addDaysToDate = (currentDate, daysToAdd) => {
     futureDate.setDate(futureDate.getDate() + daysToAdd)
   
     return futureDate
-  }
+}
 
 const get_login = (payload) => {
     const accessToken = generateToken(payload);

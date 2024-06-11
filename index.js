@@ -777,6 +777,17 @@ const make_quezeshow_query_type_descriptive = (uuid,content_object,result_roomnu
 //     })
 //   }
 // }
+app.post('/get_accessToken',(req,res)=>{
+  const accessToken  = req.headers.accessToken;
+  const refreshToken = req.headers.refreshToken;
+  jwt.verify(refreshToken, process.env.JWT_SECRET_KEY,(err,decoded)=>{
+    if(err) return res.send('refreshToken 만료');
+    else {
+      const new_accessToken = generateToken();
+      return res.send(new_accessToken);
+    }
+  })
+})
 app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
   // quezeshow_type       : quezeshow_type_clicked_btn,
   // password             : password,
@@ -793,7 +804,7 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
   // tag                  : tag_arr
   // return {data_type : e.data_type, src : e.src, title : e.title, text : e.text, answer : e.answer,start : e.start, end : e.end}
   // return {data_type: e.data_type, title : e.title, text : e.text, img : true}
-
+  const token = req.headers.authorization;
   const quezeshow_type = req.body.quezeshow_type;
   const password = req.body.password;
   const uuid = req.body.uuid;
@@ -808,64 +819,69 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
   const date = req.body.date;
   const tag = req.body.tag.join(',');
   let result_roomnum;
-  console.log('quezeshow_type',quezeshow_type,'queze_title',queze_title,'queze_explain_text',queze_explain_text,'uuid',uuid,'date',date,'modify_password',password,'content_object',content_object,'choice',choice,'correct_choice',correct_choice,'time',time,'main_img_tinyint',main_img_tinyint,typeof(main_img_tinyint),'user_id',user_id,'date',date,'tag',tag);
-  connection.query(`select roomnum from quezeshowqueze order by roomnum desc limit 1`,(err,result)=>{
-    console.log(result);
-    if(result.length === 0){
-      result_roomnum = 0;
-    }
-    else{
-      result_roomnum = result[0].roomnum;
-    }
-
-    if(main_img_tinyint){
-      console.log('섬네일 있음')
-      connection.query(`insert into quezeshowqueze (title, existence, uuid, date, likes, img, roomnum, explainText, quezeshow_type, password, user_id, time, tag) value('${queze_title}', 1, '${uuid}', ${date}, 0, 'main_img.jpg', ${result_roomnum + 1}, '${queze_explain_text}', '${quezeshow_type}', '${password}', '${user_id}', ${time}, '${tag}')`,(err,result)=>{
-        console.log('insert quezeshowqueze',err,result);
-      })
-    }else{
-      console.log('섬네일 없음')
-      connection.query(`insert into quezeshowqueze (title, existence, uuid, date, likes, img, roomnum, explainText, quezeshow_type, password, user_id, time, tag) value('${queze_title}', 1, '${uuid}', ${date}, 0, '', ${result_roomnum + 1}, '${queze_explain_text}', '${quezeshow_type}', '${password}', '${user_id}', ${time}, '${tag}')`,(err,result)=>{
-        console.log('insert quezeshowqueze',err,result);
-      })
-    }
-
-    content_object.map((e,i)=>{
-      const uuid2 = uuidv4();
-      if(quezeshow_type === 'multiple'){// queze type 문제 생성 
-        connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${correct_choice[i]}')`)
-        choice[i].map((e,i)=>{
-          connection.query(`insert into choice (uuid, choice) value('${uuid2}','${e}')`);
-        })      }
-      else if(quezeshow_type === 'descriptive'){
-        correct_choice[i].map((ev,i)=>{
-          connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${ev}')`)
-        })
-      }
-      
-      if(e.data_type === 'image'){
-        if(e.img === 'false'){
-          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)})
-        }else if(e.img = 'true'){
-          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '${i}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)})
-        }
-      }else if(e.data_type === 'video'){
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)
-          connection.query(`insert into youtube (uuid, start, end) value('${uuid2}', ${e.start}, ${e.end})`)
-        })
-      }else if(e.data_type === 'audio'){
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)
-          connection.query(`insert into youtube (uuid, start, end) value('${uuid2}', ${e.start}, ${e.end})`)
-        })
-      }else if(e.data_type === 'text'){
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)
-        }) 
-      }
-    })    
-
-  });
-  return res.send('success');
+  console.log('token',token,'quezeshow_type',quezeshow_type,'queze_title',queze_title,'queze_explain_text',queze_explain_text,'uuid',uuid,'date',date,'modify_password',password,'content_object',content_object,'choice',choice,'correct_choice',correct_choice,'time',time,'main_img_tinyint',main_img_tinyint,typeof(main_img_tinyint),'user_id',user_id,'date',date,'tag',tag);
   
+  jwt.verify(token, process.env.JWT_SECRET_KEY,(err,decoded)=>{
+    if (err) return res.send('토큰 만료');
+    else {
+      connection.query(`select roomnum from quezeshowqueze order by roomnum desc limit 1`,(err,result)=>{
+        console.log(result);
+        if(result.length === 0){
+          result_roomnum = 0;
+        }
+        else{
+          result_roomnum = result[0].roomnum;
+        }
+    
+        if(main_img_tinyint){
+          console.log('섬네일 있음')
+          connection.query(`insert into quezeshowqueze (title, existence, uuid, date, likes, img, roomnum, explainText, quezeshow_type, password, user_id, time, tag) value('${queze_title}', 1, '${uuid}', ${date}, 0, 'main_img.jpg', ${result_roomnum + 1}, '${queze_explain_text}', '${quezeshow_type}', '${password}', '${user_id}', ${time}, '${tag}')`,(err,result)=>{
+            console.log('insert quezeshowqueze',err,result);
+          })
+        }else{
+          console.log('섬네일 없음')
+          connection.query(`insert into quezeshowqueze (title, existence, uuid, date, likes, img, roomnum, explainText, quezeshow_type, password, user_id, time, tag) value('${queze_title}', 1, '${uuid}', ${date}, 0, '', ${result_roomnum + 1}, '${queze_explain_text}', '${quezeshow_type}', '${password}', '${user_id}', ${time}, '${tag}')`,(err,result)=>{
+            console.log('insert quezeshowqueze',err,result);
+          })
+        }
+    
+        content_object.map((e,i)=>{
+          const uuid2 = uuidv4();
+          if(quezeshow_type === 'multiple'){// queze type 문제 생성 
+            connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${correct_choice[i]}')`)
+            choice[i].map((e,i)=>{
+              connection.query(`insert into choice (uuid, choice) value('${uuid2}','${e}')`);
+            })      }
+          else if(quezeshow_type === 'descriptive'){
+            correct_choice[i].map((ev,i)=>{
+              connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${ev}')`)
+            })
+          }
+          
+          if(e.data_type === 'image'){
+            if(e.img === 'false'){
+              connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)})
+            }else if(e.img = 'true'){
+              connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '${i}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)})
+            }
+          }else if(e.data_type === 'video'){
+            connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)
+              connection.query(`insert into youtube (uuid, start, end) value('${uuid2}', ${e.start}, ${e.end})`)
+            })
+          }else if(e.data_type === 'audio'){
+            connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)
+              connection.query(`insert into youtube (uuid, start, end) value('${uuid2}', ${e.start}, ${e.end})`)
+            })
+          }else if(e.data_type === 'text'){
+            connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)
+            }) 
+          }
+        })    
+    
+      });
+      return res.send('success');
+    }
+  });
 })
 app.post('/add_quezeshowcontent',(req,res)=>{
 //   uuid                 : uuid,
@@ -1190,83 +1206,116 @@ app.get('/quezeshow_checking_existence',(req,res)=>{
     return res.send(result);
   })
 })
-// app.get('/spacequezeshowtitle',(req,res)=>{
-//   const roomnum = req.query.roomnum;
-//   const uuid = req.query.uuid;
-//   connection.query(`select * from spacequezeshowqueze where roomnum = ${roomnum} && uuid = '${uuid}'`,(err,result)=>{
-//     return res.send(result);
-//   })
-// })
-// app.get('/quezeshowqueze_type_text',(req,res)=>{
-//   const roomnum = req.query.roomnum;
-//   let send_ = [];
-//   console.log(roomnum);
-//   connection.query(`select * from quezeshowcontent_text where roomnum = '${roomnum}' && existence = 1`,(err,result)=>{
-//     Promise.all(result.map(async(e,i)=>{
-//       send_[i] ={
-//         uuid     : e.uuid,
-//         uuid2    : e.uuid2,
-//         roomnum  : e.roomnum,
-//         title    : e.title,
-//         answer   : e.answer,
-//       }
-//       console.log('send message 만들어 자는 중 ');
-//     })).then(()=>{
-//       console.log('res send',send_);
-//       return res.send(send_);
-//     })
-//   })
-// })
-// app.get('/quezeshowqueze_type_queze',(req,res)=>{
-//   const roomnum = req.query.roomnum;
-//   let send_ = [];
-//   console.log(roomnum);
-//   connection.query(`select * from quezeshowcontent_queze where roomnum = '${roomnum}' && existence = 1`,(err,result)=>{
-//     Promise.all(result.map(async(e,i)=>{
-//       if(e.img === ''){
-//         send_[i] ={
-//           uuid : e.uuid,
-//           uuid2 : e.uuid2,
-//           roomnum : e.roomnum,
-//           title : e.title,
-//           text : e.text,
-//           value1 : e.value1,
-//           value2 : e.value2,
-//           value3 : e.value3,
-//           value4 : e.value4,
-//           answer : e.answer,
-//           img : ''
-//         }
-//       }
-//       else{
-//         const  command = new GetObjectCommand({
-//           Bucket: "dlworjs",
-//           Key: e.uuid+'/'+e.img,
-//         });
-//         const response = await client.send(command);
-//         const response_body = await response.Body.transformToByteArray();
-//         const img_src = (Buffer.from(response_body).toString('base64'));
-//         send_[i] ={
-//           uuid : e.uuid,
-//           uuid2 : e.uuid2,
-//           roomnum : e.roomnum,
-//           title : e.title,
-//           text : e.text,
-//           value1 : e.value1,
-//           value2 : e.value2,
-//           value3 : e.value3,
-//           value4 : e.value4,
-//           answer : e.answer,
-//           img : img_src
-//         }
-//       }
-//       console.log('send message 만들어 자는 중 ');
-//     })).then(()=>{
-//       console.log('res send',send_);
-//       return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
-//     })
-//   })
-// })
+const get_choice_correct_choice = async (uuid) => {
+  let data = [];
+  const promise = new Promise((res,rej)=>{
+    connection.query(`select * from choice where uuid ='${uuid}'`,(err,choice_result)=>{
+      connection.query(`select * from correct_choice where uuid ='${uuid}'`,(err,correct_result)=>{
+        res({choice : choice_result, correct_choice : correct_result});
+      })
+    })
+  })
+  await promise.then(data => {
+    data = data
+  })
+  return data;
+}
+const get_quezeshowcontent_data = async (roomnum) => {
+  let quezeshowcontent_result = [];
+  console.log(roomnum);
+  const promise = new Promise((res,rej)=>{
+    connection.query(`select * from quezeshowcontent where roomnum = '${roomnum}'`,(err,quezeshowcontent_result)=>{
+      console.log(quezeshowcontent_result);
+      Promise.all(quezeshowcontent_result.map(async(e,i)=>{
+        if (e.data_type === 'video' || e.data_type === 'audio') {
+          const youtubeResult = await new Promise((resolve, reject) => {
+            connection.query(`select * from youtube where uuid='${e.uuid2}'`, (err, youtube_result) => {
+              if (err) reject(err);
+              resolve(youtube_result);
+            });
+          });
+          console.log('data type video send_만들어지는 중');
+          send_[i] = {
+            img: e.img,
+            title: e.title,
+            uuid: e.uuid,
+            text: e.text,
+            uuid2: e.uuid2,
+            roomnum: e.roomnum,
+            data_type: e.data_type,
+            value: e.value,
+            start: youtubeResult[0].start,
+            end: youtubeResult[0].end,
+            hint: e.hint
+          };
+        
+        }else if(e.data_type == 'image'){
+          const  command = new GetObjectCommand({
+            Bucket: "dlworjs",
+            Key: e.uuid+'/'+e.img + '.jpg',
+          });
+          const response = await client.send(command);
+          const response_body = await response.Body.transformToByteArray();
+          const img_src = (Buffer.from(response_body).toString('base64'));
+          send_[i] ={
+            img : img_src,
+            title : e.title,
+            uuid : e.uuid,
+            text : e.text,
+            uuid2 : e.uuid2,
+            roomnum : e.roomnum,
+            data_type : e.data_type,
+            value : e.value, 
+            hint: e.hint
+          }
+        }else if(e.data_type === 'text'){
+          send_[i] ={
+            img : '',
+            title : e.title,
+            uuid : e.uuid,
+            text : e.text,
+            uuid2 : e.uuid2,
+            roomnum : e.roomnum,
+            data_type : e.data_type,
+            value : e.value,
+            hint: e.hint
+          }
+        }else {
+          throw 'quezeshowcontent data_type err';
+        }
+  
+        if(e.data_type === 'multiple'){
+          const data = await get_choice_correct_choice(e.uuid2);
+          send_[i] = {
+            ...send_[i],
+            data
+          }
+        }else if(e.data_type === 'description'){
+          const data = await get_choice_correct_choice(e.uuid2);
+          send_[i] = {
+            ...send_[i],
+            data
+          }
+        }else if(e.data_type === 'vote'){
+  
+        }else {
+          throw 'quezeshowcontent data_type err'
+        }
+        console.log('send message 만들어 자는 중 ');
+      })).then(()=>{
+        res(send_);
+      })
+    })
+  })
+  await promise.then(send_ => {
+    send_ = send_;
+  })
+  return send_;
+}
+app.get('/modify_quezeshow_get_all_data',(req,res)=>{
+  const roomnum = req.query.roomnum;
+  const quezesh_content = get_quezeshowcontent_data(roomnum);
+})
 app.get('/quezeshowqueze',(req,res)=>{
   const roomnum = req.query.roomnum;
   let send_ = [];
@@ -1275,39 +1324,6 @@ app.get('/quezeshowqueze',(req,res)=>{
     console.log(result);
     Promise.all(result.map(async(e,i)=>{
       console.log(e,e.data_type,e.data_type.length);
-      // if(e.data_type == 'video'){
-      //     connection.query(`select * from youtube where uuid='${e.uuid2}'`, ( (err, result) => {
-      //       if (err) throw err;
-      //       console.log('data type video send_만들어지는 중');
-      //       send_[i] = {
-      //         img: e.img,
-      //         title: e.title,
-      //         uuid: e.uuid,
-      //         text: e.text,
-      //         uuid2: e.uuid2,
-      //         roomnum: e.roomnum,
-      //         data_type: e.data_type,
-      //         value: e.value,
-      //         start: result[0].start,
-      //         end: result[0].end
-      //       };
-      //     }))
-      // }else if(e.data_type == 'audio'){
-      //   connection.query(`select * from youtube where uuid='${e.uuid2}'`,((err,result)=>{
-      //     if(err) throw err
-      //     send_[i] ={
-      //       img : e.img,
-      //       title : e.title,
-      //       uuid : e.uuid,
-      //       text : e.text,
-      //       uuid2 : e.uuid2,
-      //       roomnum : e.roomnum,
-      //       data_type : e.data_type,
-      //       value : e.value,
-      //       start : result[0].start,
-      //       end : result[0].end
-      //     }
-      //   }))
       if (e.data_type === 'video' || e.data_type === 'audio') {
         const youtubeResult = await new Promise((resolve, reject) => {
           connection.query(`select * from youtube where uuid='${e.uuid2}'`, (err, result) => {
