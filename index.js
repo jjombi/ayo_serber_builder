@@ -1218,10 +1218,21 @@ app.post('/check_queze_is_mine',(req,res)=>{
     }
   })
 })
+const get_aws_img = async (key) => {
+  const  command = new GetObjectCommand({
+    Bucket: "dlworjs",
+    Key: key,
+  });
+  const response = await client.send(command);
+  const response_body = await response.Body.transformToByteArray();
+  const img_src = (Buffer.from(response_body).toString('base64'));
+  return img_src;
+}
 const get_choice_correct_choice = async (uuid) => {
   let data = [];
+  console.log('uuid',uuid);
   const promise = new Promise((res,rej)=>{
-    connection.query(`select * from choice where uuid ='${uuid}'`,(err,choice_result)=>{
+    connection.query(`select * from choice where uuid = '${uuid}'`,(err,choice_result)=>{
       connection.query(`select * from correct_choice where uuid ='${uuid}'`,(err,correct_result)=>{
         res({choice : choice_result, correct_choice : correct_result});
       })
@@ -1239,7 +1250,7 @@ const get_quezeshowcontent_data = async (roomnum) => {
   console.log('roomnum',roomnum);
   try{
     const promise = new Promise((res,rej)=>{
-      connection.query(`select * from quezeshowqueze where roomnum = '${roomnum}'`,(err,quezeshowqueze_result)=>{
+      connection.query(`select * from quezeshowqueze where roomnum = '${roomnum}'`,async (err,quezeshowqueze_result)=>{
         quezeshowqueze = quezeshowqueze_result[0];
         console.log('quezeshowqueze_result',quezeshowqueze_result);
         connection.query(`select * from quezeshowcontent where roomnum = '${roomnum}'`,(err,quezeshowcontent_result)=>{
