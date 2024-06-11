@@ -1299,7 +1299,7 @@ const get_quezeshowcontent_data = async (roomnum) => {
             }else {
               throw 'quezeshowcontent data_type err';
             }
-      
+            console.log('quezeshowqueze',quezeshowqueze.quezeshow_type);
             if(quezeshowqueze.quezeshow_type === 'multiple'){
               const data = await get_choice_correct_choice(e.uuid2);
               send_[i] = {
