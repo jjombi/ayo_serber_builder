@@ -1206,6 +1206,17 @@ app.get('/quezeshow_checking_existence',(req,res)=>{
     return res.send(result);
   })
 })
+app.post('/check_queze_is_mine',(req,res)=>{
+  const user_email = req.body.email;
+  const uuid = req.body.uuid;
+  connection.query(`select * quezeshowqueze where uuid = '${uuid}' && user_id = '${user_email}'`,(err,result)=>{
+    if(result.length > 0){
+      return res.send(true);
+    }else{
+      return res.send(false);
+    }
+  })
+})
 const get_choice_correct_choice = async (uuid) => {
   let data = [];
   const promise = new Promise((res,rej)=>{
