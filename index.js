@@ -984,41 +984,89 @@ app.get('/search_quezeshow',async (req,res)=>{
   // console.log(req);
   // let base64_img_arr = [];
   const type = req.query.type; // 0 = 최신, 1 = 인기, 2 = 테그, 3 = 이메일
-  const search_value = req.query.value;
-  const email = req.query.email;
-  const tag = req.query.tag;
-  const user_email = req.query.user_email;
+  const search_value = req.query.value;// null 0r str value
+  const email = req.query.email;// null or stc val
+  const tag = req.query.tag;// null or str val
+  const user_email = req.query.user_email;// null or str val
   if(typeof(user_email) === 'string'){
     console.log('로그인 유저',type);
-    if(type == 4){ //검색
-      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1  && quezeshowqueze.uuid = ${user_email}.likes_queze where quezeshowqueze.title like "%${search_value}%" limit 20`,res);
-    }
-    else if(type == 0){ // 최신
-      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze order by quezeshowqueze.date desc limit 20`,res);
-    }else if(type == 1){ // 인기
-      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze order by quezeshowqueze.likes desc limit 20`,res);
-    }else if(type == 2){ // 테그
-      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze && quezeshowqueze.tag like "%${tag}%" limit 20`,res);
-    }else if(type == 3){ // 특정 유저 이메일 퀴즈
-      search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze where quezeshowqueze.user_id = "${email}" limit 20`,res);
+    if(typeof(search_value) === 'string'){
+      console.log('검색 값있음');
+      if(Number(type) === 0){ 
+        console.log('최신순');
+        search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1  && quezeshowqueze.uuid = ${user_email}.likes_queze where quezeshowqueze.title like "%${search_value}%" order by quezeshowqueze.date desc limit 20`,res);
+      }else if(Number(type) === 1){
+        console.log('인기순');
+        search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1  && quezeshowqueze.uuid = ${user_email}.likes_queze where quezeshowqueze.title like "%${search_value}%" order by quezeshowqueze.likes desc limit 20`,res);
+      }
+    }else if(typeof(email) === 'string'){
+      console.log('특정 유저 퀴즈');
+      if(Number(type) === 0){ 
+        console.log('최신순');
+        search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze where quezeshowqueze.user_id = "${email}" order by quezeshowqueze.date desc limit 20`,res);
+
+      }else if(Number(type) === 1){
+        console.log('인기순');
+        search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze where quezeshowqueze.user_id = "${email}" order by quezeshowqueze.likes desc limit 20`,res);
+      }
+    }else if(typeof(tag) === 'string'){
+      console.log('테그 검색');
+      if(Number(type) === 0){ 
+        console.log('최신순');
+
+      }else if(Number(type) === 1){
+        console.log('인기순');
+      }
     }else{
-      console.log('search err');
+      console.log('옵션없음');
+      if(Number(type) === 0){ 
+        console.log('최신순');
+        search_query_func(`select * from quezeshowqueze order by date desc limit 20`,res);
+
+      }else if(Number(type) === 1){
+        console.log('인기순');
+        search_query_func(`select * from quezeshowqueze order by likes desc limit 20`,res);
+      }
     }
   }else{
     console.log('비로그인 유저',type);
-    if(type == 4){
-      search_query_func(`select * from quezeshowqueze where existence = 1 && title like "%${search_value}%" limit 20`,res);
-    }
-    else if(type == 0){
-      search_query_func(`select * from quezeshowqueze where existence = 1 order by date desc limit 20`,res);
-    }else if(type == 1){
-      search_query_func(`select * from quezeshowqueze where existence = 1 order by likes desc limit 20`,res);
-    }else if(type == 2){
-      search_query_func(`select * from quezeshowqueze where existence = 1 && tag like "%${tag}%" limit 20`,res);
-    }else if(type == 3){
-      search_query_func(`select * from quezeshowqueze where existence = 1 && user_id = "${email}" limit 20`,res);
+    if(typeof(search_value) === 'string'){
+      console.log('검색 값있음');
+      if(Number(type) === 0){ 
+        console.log('최신순');
+        search_query_func(`select * from quezeshowqueze where existence = 1 && title like "%${search_value}%" order by date desc limit 20`,res);
+      }else if(Number(type) === 1){
+        console.log('인기순');
+        search_query_func(`select * from quezeshowqueze where existence = 1 && title like "%${search_value}%" order by likes desc limit 20`,res);
+      }
+    }else if(typeof(email) === 'string'){
+      console.log('특정 유저 퀴즈');
+      if(Number(type) === 0){ 
+        console.log('최신순');
+        search_query_func(`select * from quezeshowqueze where existence = 1 && user_id = "${email}" order by date desc limit 20`,res);
+
+      }else if(Number(type) === 1){
+        console.log('인기순');
+        search_query_func(`select * from quezeshowqueze where existence = 1 && user_id = "${email}" order by likes desc limit 20`,res);
+      }
+    }else if(typeof(tag) === 'string'){
+      console.log('테그 검색');
+      if(Number(type) === 0){ 
+        console.log('최신순');
+
+      }else if(Number(type) === 1){
+        console.log('인기순');
+      }
     }else{
-      console.log('search err');
+      console.log('옵션없음');
+      if(Number(type) === 0){ 
+        console.log('최신순');
+        search_query_func(`select * from quezeshowqueze where existence = 1 order by date desc limit 20`,res);
+
+      }else if(Number(type) === 1){
+        console.log('인기순');
+        search_query_func(`select * from quezeshowqueze where existence = 1 order by likes desc limit 20`,res);
+      }
     }
   }
 })
