@@ -852,7 +852,7 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
             choice[i].map((e,i)=>{
               connection.query(`insert into choice (uuid, choice) value('${uuid2}','${e}')`);
             })      }
-          else if(quezeshow_type === 'descriptive'){
+          else if(quezeshow_type === 'descriptive' || quezeshow_type === 'ox'){
             correct_choice[i].map((ev,i)=>{
               connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${ev}')`)
             })
