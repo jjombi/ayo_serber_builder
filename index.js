@@ -852,10 +852,12 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
             choice[i].map((e,i)=>{
               connection.query(`insert into choice (uuid, choice) value('${uuid2}','${e}')`);
             })      }
-          else if(quezeshow_type === 'descriptive' || quezeshow_type === 'ox'){
+          else if(quezeshow_type === 'descriptive'){
             correct_choice[i].map((ev,i)=>{
               connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${ev}')`)
             })
+          }else if(quezeshow_type === 'ox'){
+            connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${correct_choice[i]}')`)
           }
           
           if(e.data_type === 'image'){
