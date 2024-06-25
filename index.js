@@ -788,6 +788,22 @@ app.post('/get_accessToken',(req,res)=>{
     }
   })
 })
+app.get('/queze_rank_check',(req,res)=>{
+  const user_email = req.query.userEmail;
+  // const correct_count = req.query.correct_count;
+  const uuid = req.query.uuid;
+  connection.query(`select * from queze_rank where uuid = '${uuid}' order by number desc`,(err,result)=>{
+    // const ranker = result.map((e,i)=>{
+    //   return {value : e.value, rank : e.umber};
+    // })
+    // result.map((e,i)=>{
+    //   if(e.value){
+
+    //   }
+    // })
+    return res.send(result);
+  })
+})
 app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
   // quezeshow_type       : quezeshow_type_clicked_btn,
   // password             : password,
@@ -1567,9 +1583,12 @@ app.post('/quezeshowqueze_plus_value',(req,res)=>{
 // })
 app.get('/quezeshowcomment',(req,res)=>{
   const roomnum = req.query.roomnum;
-  connection.query(`select * from quezeshowcomment where roomnum='${roomnum}' order by likes desc limit 20`,(err,result)=>{
-    return res.send(result);
-  });
+  // connection.query(`select * from queze_rank where roomnum = '${roomnum}' order by number asc`,(err,result)=>{
+  //   const comment = result.map((e,i)=>{return(e.comment);});
+    connection.query(`select * from quezeshowcomment where roomnum='${roomnum}' order by likes desc limit 20`,(err,result_)=>{
+      return res.send(result_);
+    });
+  // })
 })
 app.get('/spacequezeshowcomment',(req,res)=>{
   const roomnum = req.query.roomnum;
