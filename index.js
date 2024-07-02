@@ -1267,8 +1267,7 @@ app.get('/quezeshowtitle',(req,res)=>{
 })
 app.get('/quezeshow_checking_existence',(req,res)=>{
   const roomnum = req.query.roomnum;
-  const uuid = req.query.uuid;
-  connection.query(`select * from quezeshowqueze where roomnum = ${roomnum} && uuid = '${uuid}'`,(err,result)=>{
+  connection.query(`select * from quezeshowqueze where roomnum = ${roomnum}`,(err,result)=>{
     return res.send(result);
   })
 })
