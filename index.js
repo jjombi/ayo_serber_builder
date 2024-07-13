@@ -32,7 +32,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(fileUpload());
 app.use(cors({
   // origin : "https://ay0.netlify.app",
-  origin : ["https://ay0.site","http://localhost:8080"],
+  origin : ["https://ay0.site","http://localhost:8080","http://localhost:8080"],
   // origin: "https://jjombi.github.io",
   // origin : "http://localhost:8080", // 접근 권한을 부여하는 도메인 "http://localhost:3000"
   credentials : true, // 응답 헤더에 Access-Control-Allow-Credentials 추가
@@ -1267,7 +1267,8 @@ app.get('/quezeshowtitle',(req,res)=>{
 })
 app.get('/quezeshow_checking_existence',(req,res)=>{
   const roomnum = req.query.roomnum;
-  connection.query(`select * from quezeshowqueze where roomnum = ${roomnum}`,(err,result)=>{
+  console.log('quezeshow_checking_existence',roomnum,typeof roomnum,req.query);
+  connection.query(`select * from quezeshowqueze where roomnum = ${Number(roomnum)}`,(err,result)=>{
     return res.send(result);
   })
 })
