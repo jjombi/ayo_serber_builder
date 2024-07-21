@@ -998,7 +998,7 @@ const search_query_func = (query,res) => {
     })
   })
 }
-app.get('get_all_quezeshow',(req,res)=>{
+app.get('/get_all_quezeshow',(req,res)=>{
   connection.query(`select * from quezeshowqueze where existence = 1`,(err,result)=>{
     return res.send(result);
   })
