@@ -1000,7 +1000,7 @@ const search_query_func = (query,res) => {
 }
 app.get('/get_all_quezeshow',(req,res)=>{
   connection.query(`select * from quezeshowqueze where existence = 1`,(err,result)=>{
-    console.log('ressssss',res);
+    console.log('ressssss',result);
     return res.send(result);
   })
 })
