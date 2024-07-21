@@ -998,6 +998,11 @@ const search_query_func = (query,res) => {
     })
   })
 }
+app.get('get_all_quezeshow',(req,res)=>{
+  connection.query(`select * from quezeshowqueze where existence = 1`,(err,result)=>{
+    return res.send(result);
+  })
+})
 app.get('/search_quezeshow',async (req,res)=>{
   // console.log(req);
   // let base64_img_arr = [];
