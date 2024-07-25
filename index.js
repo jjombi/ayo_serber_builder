@@ -831,7 +831,7 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
   const date = req.body.date;
   const tag = req.body.tag.join(',');
   let result_roomnum;
-  // console.log('token',token,'quezeshow_type',quezeshow_type,'queze_title',queze_title,'queze_explain_text',queze_explain_text,'uuid',uuid,'date',date,'modify_password',password,'content_object',content_object,'time',time,'main_img_tinyint',main_img_tinyint,typeof(main_img_tinyint),'user_id',user_id,'date',date,'tag',tag);
+  console.log('token',token,'quezeshow_type',quezeshow_type,'queze_title',queze_title,'queze_explain_text',queze_explain_text,'uuid',uuid,'date',date,'modify_password',password,'content_object',content_object,'time',time,'main_img_tinyint',main_img_tinyint,typeof(main_img_tinyint),'user_id',user_id,'date',date,'tag',tag);
   
   jwt.verify(token, process.env.JWT_SECRET_KEY,(err,decoded)=>{
     if (err) return res.send('토큰 만료');
@@ -873,9 +873,9 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
           }
           
           if(e.data_type === 'image'){
-            if(e.img === 'false'){
+            if(e.img === '' || e.img === 'data:image/png;base64,'){
               connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)})
-            }else if(e.img = 'true'){
+            }else {
               connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '${i}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)})
             }
           }else if(e.data_type === 'video'){
