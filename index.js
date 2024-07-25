@@ -811,8 +811,6 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
   // queze_title          : queze_title_ref.current.value,
   // queze_explain_text   : queze_explain_text_ref.current.value,
   // content_object       : content_object_, //콘텐츠 제못, 설명, 이미지 판별
-  // choice               : choice,
-  // correct_choice       : correct_choice,
   // time                 : time_ref.current.value,
   // main_img_tinyint     : main_img_tinyint,
   // user_id              : user_id_ref.current.value,
@@ -827,8 +825,6 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
   const queze_title = req.body.queze_title;
   const queze_explain_text = req.body.queze_explain_text;
   const content_object = req.body.content_object;
-  const choice = req.body.choice;
-  const correct_choice = req.body.correct_choice;
   const time = req.body.time;
   const main_img_tinyint = req.body.main_img_tinyint;
   const user_id = req.body.user_id;
@@ -864,16 +860,16 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
         content_object.map((e,i)=>{
           const uuid2 = uuidv4();
           if(quezeshow_type === 'multiple'){// queze type 문제 생성 
-            connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${correct_choice[i]}')`)
-            choice[i].map((e,i)=>{
+            connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${e.correct_choice[i]}')`)
+            e.choice[i].map((e,i)=>{
               connection.query(`insert into choice (uuid, choice) value('${uuid2}','${e}')`);
             })      }
           else if(quezeshow_type === 'descriptive'){
-            correct_choice[i].map((ev,i)=>{
+            e.correct_choice[i].map((ev,i)=>{
               connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${ev}')`)
             })
           }else if(quezeshow_type === 'ox'){
-            connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${correct_choice[i]}')`)
+            connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${e.correct_choice[i]}')`)
           }
           
           if(e.data_type === 'image'){
