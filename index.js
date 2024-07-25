@@ -93,9 +93,9 @@ app.get('/signup/email_ckeck',(req,res)=>{
   
   transporter.sendMail(mailOptions, function(error, info){
     if (error) {
-      console.log(error);
+      // console.log(error);
     } else {
-      console.log('Email sent: ' + info.response);
+      // console.log('Email sent: ' + info.response);
       return res.send(code)
     }
   });
@@ -111,9 +111,9 @@ app.post('/signup',(req,res)=>{
       return res.send('사용중인 아이디입니다');
     }else{
       bcrypt.genSalt(saltRounds, function(err, salt) {
-        if(err) console.log('genSalt err : ',err);
+        // if(err) console.log('genSalt err : ',err);
         bcrypt.hash(password, salt, function(err, hash) {
-          console.log('hash password',id,email,hash);
+          // console.log('hash password',id,email,hash);
             connection.query(`insert into user (id, email, password) value('${id}','${email}','${hash}');`,((err,result)=>{
               if(err) return res.send('insert into user (id, email, password) 회원가입 err : ');
               else{
@@ -156,17 +156,17 @@ app.post('/login',(req,res)=>{
   })
 })
 // app.post('/password_checker',(req,res)=>{
-//   console.log('password checker 시행됨');
+  console.log('password checker 시행됨');
 //   connection.query(`select password from queze where uuid = '${req.body.uuid}'`,(err,passHash)=>{
 //     bcrypt.compare(req.body.password, passHash[0].password, function(err, result) {
-//       console.log('pass, 원본, 결과',req.body.password, passHash, passHash[0].password, result);
+      console.log('pass, 원본, 결과',req.body.password, passHash, passHash[0].password, result);
 //       if(result) return(res.send(true))
 //       else return(res.send(false))
 //     });
 //   })
 // })
 // app.post('/modify_password_checker',(req,res)=>{
-//   console.log('modify_password_checker 시행됨');
+  console.log('modify_password_checker 시행됨');
 //   connection.query(`select modifyPassword from queze where roomName = '${req.body.roomName}' && modifyPassword = '${req.body.password}'`,(err,result)=>{
 //     if(result.length !== 0){
 //       return res.send('success');
@@ -175,9 +175,9 @@ app.post('/login',(req,res)=>{
 //   })
 // })
 app.post('/modify_quezeshowqueze_password_checker',(req,res)=>{
-  console.log('modify_quezeshowqueze_password_checker 시행됨');
+  // console.log('modify_quezeshowqueze_password_checker 시행됨');
   connection.query(`select password from quezeshowqueze where uuid = '${req.body.uuid}' && password = '${req.body.password}'`,(err,result)=>{
-    console.log(result);
+    // console.log(result);
     if(result.length !== 0){
       return res.send('success');
     }
@@ -209,7 +209,7 @@ app.get('/modify_get_title_text',(req,res)=>{// db 수정 content 가져오기
 // app.post('/modify_change_text',(req,res)=>{
 //   const changed_text = req.body.changed_text;
 //   const roomName = req.body.roomName;
-//   console.log('modify_change_text req :',req);
+  console.log('modify_change_text req :',req);
 //   changed_text.map((e,i)=>{
 //     connection.query(`update result set text = '${changed_text.changed_text}' where uuid = '${changed_text.uuid}'`);
 //   })
@@ -223,7 +223,7 @@ app.get('/modify_get_title_text',(req,res)=>{// db 수정 content 가져오기
 // })
 app.post('/modify_change_quezeshowqueze',(req,res)=>{
   const quezeshow_type = req.body.quezeshow_type;
-  console.log(req.body);
+  // console.log(req.body);
   if(quezeshow_type === 'vote'){
     req.body.changed_data.map((e,i)=>{
       connection.query(`update quezeshowcontent set title = '${e.title}' where uuid2 = '${e.uuid}';`);
@@ -244,7 +244,7 @@ app.post('/modify_change_quezeshowqueze',(req,res)=>{
   return res.send('success');
 })
 // const upload_query = async (req, roomName_arr) =>{
-//   console.log('upload query 시작 req : ',req.body,roomName_arr); //upload query 시작 req :  { title: '제목', publicAccess: '수정가능', img[...] text[...] } [ 'C' ] or { title: '제목', img[...] text[...] } -> publicAccess is undefind
+  console.log('upload query 시작 req : ',req.body,roomName_arr); //upload query 시작 req :  { title: '제목', publicAccess: '수정가능', img[...] text[...] } [ 'C' ] or { title: '제목', img[...] text[...] } -> publicAccess is undefind
 //   const explain_text = req.body.queze_explain_text;
 //   connection.query(`select * from queze where roomName = '${roomName_arr}';`,(err,result) => {
 //     if(result.length === 0){
@@ -254,7 +254,7 @@ app.post('/modify_change_quezeshowqueze',(req,res)=>{
 //       else{
 //         bcrypt.genSalt(saltRounds, function(err, salt) {
 //           bcrypt.hash(password, salt, function(err, hash) {
-//             console.log('hash password',hash);
+            console.log('hash password',hash);
 //               connection.query(`insert into queze (roomName, existence, title, title_img_name, uuid, likes, password, modifyPassword, explainText) value('${roomName_arr}', 1, '${req.body.title}', 'img0.jpg', '${uuidv4()}',0,'${hash}', '${req.body.modify_password}', '${explain_text}');`);
 //           });
 //         })
@@ -276,7 +276,7 @@ app.post('/modify_change_quezeshowqueze',(req,res)=>{
 app.use(body_parser.urlencoded({ extended: true }));
 
 // app.post('/upload_img',(req,res)=>{
-//   console.log('upload img 시작',req.body,req.file); //req.files.img[0].name or data(type BUffer)
+  console.log('upload img 시작',req.body,req.file); //req.files.img[0].name or data(type BUffer)
 //   connection.query(`select roomName from queze ORDER BY roomName DESC LIMIT 1;`,(err,result)=>{
 //     if(result.length != 0){
 //       let roomName_arr = Array.from(result[0].roomName);// ['A','B','C']; 
@@ -308,7 +308,7 @@ app.post('/modify_change_quezeshow',(req,res)=>{
   const uuid = req.body.uuid;
   const quezeshow_type = req.body.quezeshow_type;
   const room_num = req.body.room_num;
-  console.log(img_tinyint,content_title,explain_text,last_num,uuid,room_num,'quezeshow_type :',quezeshow_type);
+  // console.log(img_tinyint,content_title,explain_text,last_num,uuid,room_num,'quezeshow_type :',quezeshow_type);
   if(quezeshow_type === 'vote'){
     if(typeof(content_title) === 'string'){// 수정 콘텐츠 하나
       if(img_tinyint){
@@ -367,7 +367,7 @@ app.post('/modify_change_quezeshow',(req,res)=>{
       })
     }
   }else{
-    console.log('quezeshow_type err');
+    // console.log('quezeshow_type err');
   }
   return res.send('success');
 })
@@ -375,16 +375,16 @@ app.post('/modify_change_quezeshow',(req,res)=>{
 app.post('/upload_img_plus',(req,res)=>{
   const roomName = req.body.roomName;
   const last_num = req.body.last_num;
-  console.log('upload img plus 시작',req.body,typeof(req.body.text));
+  // console.log('upload img plus 시작',req.body,typeof(req.body.text));
   if(typeof(req.body.text) !== "string"){ // 배열일 경우 이미지가 여러개 일 때
-    console.log('typeof(req.body.text) !== "string"');
+    // console.log('typeof(req.body.text) !== "string"');
     for(i=0 ; i < req.body.img_name.length ;i++){
-      console.log(i);
+      // console.log(i);
       if(req.body.text[i] === undefined || req.body.text[i] === '') connection.query(`insert into result (text, value, uuid, originalname, roomName) value('', 0, '${uuidv4()}', 'img${last_num+i+1}.jpg','${roomName}')`);
       else connection.query(`insert into result (text, value, uuid, originalname, roomName) value('${req.body.text[i]}', 0, '${uuidv4()}', 'img${Number(last_num)+i+1}.jpg','${roomName}')`);
     }
   }else{
-    console.log('type str');
+    // console.log('type str');
     if(req.body.text === undefined || req.body.text === '') connection.query(`insert into result (text, value, uuid, originalname, roomName) value('', 0, '${uuidv4()}', 'img${last_num+1}.jpg','${roomName}')`);
     else connection.query(`insert into result (text, value, uuid, originalname, roomName) value('${req.body.text}', 0, '${uuidv4()}', 'img${(Number(last_num)+1)}.jpg','${roomName}')`);
   }
@@ -407,7 +407,7 @@ app.get('/selectroomname',(req,res)=>{
         roomName = roomName_arr.join('');
       }
     }else roomName = 'A';
-    console.log('roomName',roomName);
+    // console.log('roomName',roomName);
     // return res.redirect(url+'/ayoworldrank');   
     return res.send(roomName);  
   })  
@@ -415,16 +415,16 @@ app.get('/selectroomname',(req,res)=>{
 })
 //-------------------------------------------------------------------
 app.get('/main_select_queze',async (req,res)=>{ //이상형 월드컵 
-  console.log('main_select_queze 실행 됨');
+  // console.log('main_select_queze 실행 됨');
   let base64_img_arr = [];
 
     connection.query(`select * from queze where existence = 1`,async (err,result)=>{
-      console.log(result);
+      // console.log(result);
       if(result.length !== 0){
-        console.log('????');
+        // console.log('????');
         await Promise.all(
           result.map(async(e,i)=>{
-            console.log(e.roomName+"/"+e.title_img_name,i);
+            // console.log(e.roomName+"/"+e.title_img_name,i);
             const  command = new GetObjectCommand({
               Bucket: "dlworjs",
               Key: e.roomName+"/"+e.title_img_name,
@@ -435,12 +435,12 @@ app.get('/main_select_queze',async (req,res)=>{ //이상형 월드컵
             base64_img_arr[i] = [img_src];
           })
         ).then(()=>{
-          console.log('res send');
+          // console.log('res send');
           return res.set({ "Content-Type": 'mulipart/form-data'}).send({result : result, base64_img_arr : base64_img_arr });
 
         })
       }else {
-        console.log('err');
+        // console.log('err');
         return res.send(false);
       } 
 
@@ -457,9 +457,9 @@ app.post('/main_a_queze',(req,res)=>{
   let   uuid_arr = [];
   // let   sendresult = [];
     connection.query(`select * from result where roomName='${roomName}' && existence = 1`,(err,result)=>{
-      console.log('select from result whee roomName=',roomName,result);
+      // console.log('select from result whee roomName=',roomName,result);
       Promise.all(result.map(async(e,i)=>{
-        console.log('result 이미지 경로',roomName+e.originalname);
+        // console.log('result 이미지 경로',roomName+e.originalname);
         const  command = new GetObjectCommand({
           Bucket: "dlworjs",
           Key: roomName+'/'+e.originalname,
@@ -473,7 +473,7 @@ app.post('/main_a_queze',(req,res)=>{
         uuid_arr[i] = e.uuid;
         img_arr[i] = img_src;
       })).then(()=>{
-        console.log('text_arr',text_arr,img_arr); // text arr [queze_length,text1,text2,text3]
+        // console.log('text_arr',text_arr,img_arr); // text arr [queze_length,text1,text2,text3]
         return res.send({text : text_arr, img : img_arr, uuid : uuid_arr});
       })  
     })
@@ -485,10 +485,10 @@ app.post('/oneandoneresult',(req,res)=>{
   const rank = req.body.result;
   const roomName = req.body.roomName;
   connection.query(`select * from result where roomName = '${roomName}' && existence = 1`,(err,result)=>{
-    console.log('selct uuid from result where roomName',result); //[ {uuid : 'asdadjshblaebgaubg' }, {uuid : 'asdadjshblaebgaubg' }, {uuid : 'asdadjshblaebgaubg' }]
+    // console.log('selct uuid from result where roomName',result); //[ {uuid : 'asdadjshblaebgaubg' }, {uuid : 'asdadjshblaebgaubg' }, {uuid : 'asdadjshblaebgaubg' }]
     result.map(result_e=>{
       rank.map((res_e,i)=>{
-        console.log('result 와 res_e 값 비교',result_e.uuid,res_e);
+        // console.log('result 와 res_e 값 비교',result_e.uuid,res_e);
         if(result_e.uuid === res_e.uuid){
           connection.query(`update result set value = ${Number(result_e.value) + Number(res_e.point)} where uuid = '${[res_e.uuid]}'`);
         }
@@ -517,11 +517,11 @@ app.post('/oneandonequeze',(req,res)=>{
   // const type = req.body.type; // req.body.type이 2,4,8,16,32,64,128,256,512 등이 아니면 가장 가까운 작은수 로 type 바꾸기 ex req.bo.typ = 12 , type = 8
   let   text_arr = [];
   let   img_arr  = [];
-  let   uuid_arr = [];  console.log('one and one; roomName, type',roomName,type);
+  // let   uuid_arr = [];  console.log('one and one; roomName, type',roomName,type);
   connection.query(`select * from result where roomName='${roomName}' && existence = 1 order by value desc limit ${type}`,(err,result)=>{
-    console.log('one and one queze roomName, result',roomName,result);
+    // console.log('one and one queze roomName, result',roomName,result);
     Promise.all(result.map(async(e,i)=>{
-      console.log('result 이미지 경로',roomName+e.originalname);
+      // console.log('result 이미지 경로',roomName+e.originalname);
       const  command = new GetObjectCommand({
         Bucket: "dlworjs",
         Key: roomName+'/'+e.originalname,
@@ -531,12 +531,12 @@ app.post('/oneandonequeze',(req,res)=>{
       const img_src = (Buffer.from(response_body).toString('base64'));
 
       // sendresult = {text : e.text}];
-      console.log('e.text, e.uuid, img_src',e.text, e.uuid, img_src);
+      // console.log('e.text, e.uuid, img_src',e.text, e.uuid, img_src);
       text_arr[i] = e.text;
       uuid_arr[i] = e.uuid;
       img_arr[i] = img_src;
       })).then(()=>{
-      console.log('one and one 다끝난 후   data : ',{text : text_arr, img : img_arr, uuid : uuid_arr}); // text arr [queze_length,text1,text2,text3]
+      // console.log('one and one 다끝난 후   data : ',{text : text_arr, img : img_arr, uuid : uuid_arr}); // text arr [queze_length,text1,text2,text3]
       return res.send({text : text_arr, img : img_arr, uuid : uuid_arr});
     })  
   })
@@ -544,7 +544,7 @@ app.post('/oneandonequeze',(req,res)=>{
 app.post('/main_a_queze_comments',(req,res)=>{ // url 파라미터로 roomName 가져오게 바꾸기
 
     connection.query(`select * from comments where type = 1 && roomName = '${req.body.roomName}'`,(err,result)=>{
-      console.log('queze 안에 comments all',result);
+      // console.log('queze 안에 comments all',result);
       // if()
       return res.send(result);
     })
@@ -558,7 +558,7 @@ app.post('/main_a_queze_children_comments',(req,res)=>{
 })
 app.post('/main_a_queze_plus_comments',(req,res)=>{
     // 부모일때
-    console.log('댓 추가 req.body',req.body);
+    // console.log('댓 추가 req.body',req.body);
     const roomName = req.body.roomName;
     const type = req.body.type;
     const value = req.body.value;
@@ -573,11 +573,11 @@ app.post('/main_a_queze_plus_comments',(req,res)=>{
   
 })
 app.post('/likes_plus',(req,res)=>{
-  console.log('comment likes plus');
+  // console.log('comment likes plus');
   const type = req.body.type;
   const uuid = req.body.uuid;
   const user_email = req.body.user_email;
-  console.log('likes_plus',uuid,type)
+  // console.log('likes_plus',uuid,type)
   if(type === 'comments')   connection.query(`update comments set likes = likes + 1 where parentsKey = '${uuid}' `);
   else if(type === 'Main_queze') connection.query(`update queze set likes = likes + 1 where uuid = '${uuid}' `);
   else if(type === 'quezeshow') {
@@ -589,12 +589,12 @@ app.post('/likes_plus',(req,res)=>{
   return res.send('success');
 })
 app.post('/likes_minus',(req,res)=>{
-  console.log('comment likes minus');
+  // console.log('comment likes minus');
   const uuid = req.body.uuid;
   const type = req.body.type;
   const user_email = req.body.user_email;
 
-  console.log('likes_minus',uuid,type)
+  // console.log('likes_minus',uuid,type)
   if(type === 'comments')   connection.query(`update comments set likes = likes - 1 where parentsKey = '${uuid}' `);
   else if(type === 'Main_queze')  connection.query(`update queze set likes = likes - 1 where uuid = '${uuid}' `);
   else if(type === 'quezeshow') {
@@ -606,16 +606,16 @@ app.post('/likes_minus',(req,res)=>{
   return res.send('success');
 })
 app.post('/result_plus',(req,res)=>{
-  console.log('값 올리기 post req : ',req.body);
+  // console.log('값 올리기 post req : ',req.body);
   const roomName = req.body.roomName;
   const rank = req.body.rank; 
   // [uuid,uuid,uuid]
   // [ 1등, 2등, 3등]
   connection.query(`select * from result where roomName = '${roomName}' && existence = 1`,(err,result)=>{
-    console.log('selct uuid from result where roomName',result); //[ {uuid : 'asdadjshblaebgaubg' }, {uuid : 'asdadjshblaebgaubg' }, {uuid : 'asdadjshblaebgaubg' }]
+    // console.log('selct uuid from result where roomName',result); //[ {uuid : 'asdadjshblaebgaubg' }, {uuid : 'asdadjshblaebgaubg' }, {uuid : 'asdadjshblaebgaubg' }]
     result.map(result_e=>{
       rank.map((res_e,i)=>{
-        console.log('result 와 res_e 값 비교',result_e.uuid,res_e);
+        // console.log('result 와 res_e 값 비교',result_e.uuid,res_e);
         if(result_e.uuid === res_e){
           connection.query(`update result set value = ${Number(result_e.value) + rank.length-i} where uuid = '${[res_e]}'`);
         }
@@ -631,7 +631,7 @@ app.post('/main_result',(req,res)=>{
   let send_ = [];
 
   connection.query(`select * from result where roomName = '${roomName}' && existence = 1 order by value desc;`,(err,result)=>{
-    console.log(result);
+    // console.log(result);
     if(result.length !== 0){
       Promise.all(result.map(async(e,i)=>{
         const  command = new GetObjectCommand({
@@ -646,9 +646,9 @@ app.post('/main_result',(req,res)=>{
           text : e.text,
           value : e.value
         }
-        console.log('send message 만들어 자는 중 ');
+        // console.log('send message 만들어 자는 중 ');
       })).then(()=>{
-        console.log('res send',send_);
+        // console.log('res send',send_);
         return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
       })
     }
@@ -660,7 +660,7 @@ app.post('/main_result',(req,res)=>{
     `insert into choice (uuid1, uuid2, answer, text) value('${uuid}','${uuidv4()}',${Number(answer)},'${choice}')`
 */}
 const make_quezeshow_query_type_multiple = (uuid,content_object,result_roomnum,choice,correct_choice) => {
-  console.log('make_quezeshow_query_type_multiple',uuid,content_object,result_roomnum,choice,correct_choice);
+  // console.log('make_quezeshow_query_type_multiple',uuid,content_object,result_roomnum,choice,correct_choice);
   content_object.map((e,i)=>{
     const uuid2 = uuidv4();
     connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${correct_choice[i]}')`)
@@ -689,7 +689,7 @@ const make_quezeshow_query_type_multiple = (uuid,content_object,result_roomnum,c
   
 }
 const make_quezeshow_query_type_vote = (uuid,content_object,result_roomnum) => {
-    console.log('make_quezeshow_query_type_vote',uuid,content_object,result_roomnum);
+    // console.log('make_quezeshow_query_type_vote',uuid,content_object,result_roomnum);
     content_object.map((e,i)=>{
       const uuid2 = uuidv4();
       if(e.data_type === 'image'){
@@ -713,7 +713,7 @@ const make_quezeshow_query_type_vote = (uuid,content_object,result_roomnum) => {
     })
 }
 const make_quezeshow_query_type_descriptive = (uuid,content_object,result_roomnum,correct_choice) => {
-  console.log('make_quezeshow_query_type_descriptive',uuid,content_object,result_roomnum,correct_choice);
+  // console.log('make_quezeshow_query_type_descriptive',uuid,content_object,result_roomnum,correct_choice);
   content_object.map((e,i)=>{
     const uuid2 = uuidv4();
     correct_choice[i].map((ev,i)=>{
@@ -741,7 +741,7 @@ const make_quezeshow_query_type_descriptive = (uuid,content_object,result_roomnu
 }
 // const make_quezeshow_query_type_continue_speaking = (uuid,content_title,result_roomnum,answer,img_tinyint) => {
 //   if(typeof(content_title) === 'string'){ // content 하나 일때
-//     console.log('make quezeshow type continue speaking 선택지 하나만 들어옴');
+    console.log('make quezeshow type continue speaking 선택지 하나만 들어옴');
 //     if(img_tinyint === 'true'){
 //       connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer}', '0.jpg')`,(err,result)=>{
 //         if(err){
@@ -757,7 +757,7 @@ const make_quezeshow_query_type_descriptive = (uuid,content_object,result_roomnu
 //     }
 //   }
 //   else{
-//     console.log('make quezeshow continue speaking 선택지 여러개');
+    console.log('make quezeshow continue speaking 선택지 여러개');
 //     content_title.map((e,i)=>{
 //       if(img_tinyint === 'true'){
 //         connection.query(`insert into quezeshowcontent_text (uuid, title, existence, uuid2, roomnum, answer, img) value('${uuid}', '${content_title[i]}', 1, '${uuidv4()}', ${result_roomnum + 1}, '${answer[i]}', '${i}'.jpg)`,(err,result)=>{
@@ -831,13 +831,13 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
   const date = req.body.date;
   const tag = req.body.tag.join(',');
   let result_roomnum;
-  console.log('token',token,'quezeshow_type',quezeshow_type,'queze_title',queze_title,'queze_explain_text',queze_explain_text,'uuid',uuid,'date',date,'modify_password',password,'content_object',content_object,'choice',choice,'correct_choice',correct_choice,'time',time,'main_img_tinyint',main_img_tinyint,typeof(main_img_tinyint),'user_id',user_id,'date',date,'tag',tag);
+  // console.log('token',token,'quezeshow_type',quezeshow_type,'queze_title',queze_title,'queze_explain_text',queze_explain_text,'uuid',uuid,'date',date,'modify_password',password,'content_object',content_object,'time',time,'main_img_tinyint',main_img_tinyint,typeof(main_img_tinyint),'user_id',user_id,'date',date,'tag',tag);
   
   jwt.verify(token, process.env.JWT_SECRET_KEY,(err,decoded)=>{
     if (err) return res.send('토큰 만료');
     else {
       connection.query(`select roomnum from quezeshowqueze order by roomnum desc limit 1`,(err,result)=>{
-        console.log(result);
+        // console.log(result);
         if(result.length === 0){
           result_roomnum = 0;
         }
@@ -846,14 +846,14 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
         }
     
         if(main_img_tinyint){
-          console.log('섬네일 있음')
+          // console.log('섬네일 있음')
           connection.query(`insert into quezeshowqueze (title, existence, uuid, date, likes, img, roomnum, explainText, quezeshow_type, password, user_id, time, tag) value('${queze_title}', 1, '${uuid}', ${date}, 0, 'main_img.jpg', ${result_roomnum + 1}, '${queze_explain_text}', '${quezeshow_type}', '${password}', '${user_id}', ${time}, '${tag}')`,(err,result)=>{
-            console.log('insert quezeshowqueze',err,result);
+            // console.log('insert quezeshowqueze',err,result);
           })
         }else{
-          console.log('섬네일 없음')
+          // console.log('섬네일 없음')
           connection.query(`insert into quezeshowqueze (title, existence, uuid, date, likes, img, roomnum, explainText, quezeshow_type, password, user_id, time, tag) value('${queze_title}', 1, '${uuid}', ${date}, 0, '', ${result_roomnum + 1}, '${queze_explain_text}', '${quezeshow_type}', '${password}', '${user_id}', ${time}, '${tag}')`,(err,result)=>{
-            console.log('insert quezeshowqueze',err,result);
+            // console.log('insert quezeshowqueze',err,result);
           })
         }
     
@@ -949,10 +949,10 @@ app.post('/add_quezeshowcontent',(req,res)=>{
   return res.send('success');
 })
 const search_query_func = (query,res) => {
-  console.log('query',query);
+  // console.log('query',query);
   let send_ = [];
   connection.query(query,(err,result)=>{
-    console.log('result',result);
+    // console.log('result',result);
     Promise.all(result.map(async(e,i)=>{
       if(e.img !== ''){
         const  command = new GetObjectCommand({
@@ -973,7 +973,7 @@ const search_query_func = (query,res) => {
           explain_text : e.explainText,
           likes_queze : e.likes_queze !== null && e.likes_queze !== undefined && e.uuid === e.likes_queze ? true : false
         }
-        console.log('send message 만들어 자는 중 ');
+        // console.log('send message 만들어 자는 중 ');
       }
       else{
         send_[i] ={
@@ -989,19 +989,19 @@ const search_query_func = (query,res) => {
         }
       }
     })).then(()=>{
-      console.log('res send',send_);
+      // console.log('res send',send_);
       return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
     })
   })
 }
 app.get('/get_all_quezeshow',(req,res)=>{
   connection.query(`select roomnum from quezeshowqueze where existence = 1`,(err,result)=>{
-    console.log('ressssss',result);
+    // console.log('ressssss',result);
     return res.send(result);
   })
 })
 app.get('/search_quezeshow',async (req,res)=>{
-  // console.log(req);
+  console.log(req);
   // let base64_img_arr = [];
   const type = req.query.type; // 0 = 최신, 1 = 인기, 2 = 테그, 3 = 이메일
   const search_value = req.query.value;// null 0r str value
@@ -1009,82 +1009,82 @@ app.get('/search_quezeshow',async (req,res)=>{
   const tag = req.query.tag;// null or str val
   const user_email = req.query.user_email;// null or str val
   if(typeof(user_email) === 'string'){
-    console.log('로그인 유저',type);
+    // console.log('로그인 유저',type);
     if(typeof(search_value) === 'string'){
-      console.log('검색 값있음');
+      // console.log('검색 값있음');
       if(Number(type) === 0){ 
-        console.log('최신순');
+        // console.log('최신순');
         search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1  && quezeshowqueze.uuid = ${user_email}.likes_queze where quezeshowqueze.title like "%${search_value}%" order by quezeshowqueze.date desc limit 20`,res);
       }else if(Number(type) === 1){
-        console.log('인기순');
+        // console.log('인기순');
         search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1  && quezeshowqueze.uuid = ${user_email}.likes_queze where quezeshowqueze.title like "%${search_value}%" order by quezeshowqueze.likes desc limit 20`,res);
       }
     }else if(typeof(email) === 'string'){
-      console.log('특정 유저 퀴즈');
+      // console.log('특정 유저 퀴즈');
       if(Number(type) === 0){ 
-        console.log('최신순');
+        // console.log('최신순');
         search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze where quezeshowqueze.user_id = "${email}" order by quezeshowqueze.date desc limit 20`,res);
 
       }else if(Number(type) === 1){
-        console.log('인기순');
+        // console.log('인기순');
         search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze where quezeshowqueze.user_id = "${email}" order by quezeshowqueze.likes desc limit 20`,res);
       }
     }else if(typeof(tag) === 'string'){
-      console.log('테그 검색');
+      // console.log('테그 검색');
       if(Number(type) === 0){ 
-        console.log('최신순');
+        // console.log('최신순');
 
       }else if(Number(type) === 1){
-        console.log('인기순');
+        // console.log('인기순');
       }
     }else{
-      console.log('옵션없음');
+      // console.log('옵션없음');
       if(Number(type) === 0){ 
-        console.log('최신순');
+        // console.log('최신순');
         search_query_func(`select * from quezeshowqueze order by date desc limit 20`,res);
 
       }else if(Number(type) === 1){
-        console.log('인기순');
+        // console.log('인기순');
         search_query_func(`select * from quezeshowqueze order by likes desc limit 20`,res);
       }
     }
   }else{
-    console.log('비로그인 유저',type);
+    // console.log('비로그인 유저',type);
     if(typeof(search_value) === 'string'){
-      console.log('검색 값있음');
+      // console.log('검색 값있음');
       if(Number(type) === 0){ 
-        console.log('최신순');
+        // console.log('최신순');
         search_query_func(`select * from quezeshowqueze where existence = 1 && title like "%${search_value}%" order by date desc limit 20`,res);
       }else if(Number(type) === 1){
-        console.log('인기순');
+        // console.log('인기순');
         search_query_func(`select * from quezeshowqueze where existence = 1 && title like "%${search_value}%" order by likes desc limit 20`,res);
       }
     }else if(typeof(email) === 'string'){
-      console.log('특정 유저 퀴즈');
+      // console.log('특정 유저 퀴즈');
       if(Number(type) === 0){ 
-        console.log('최신순');
+        // console.log('최신순');
         search_query_func(`select * from quezeshowqueze where existence = 1 && user_id = "${email}" order by date desc limit 20`,res);
 
       }else if(Number(type) === 1){
-        console.log('인기순');
+        // console.log('인기순');
         search_query_func(`select * from quezeshowqueze where existence = 1 && user_id = "${email}" order by likes desc limit 20`,res);
       }
     }else if(typeof(tag) === 'string'){
-      console.log('테그 검색');
+      // console.log('테그 검색');
       if(Number(type) === 0){ 
-        console.log('최신순');
+        // console.log('최신순');
 
       }else if(Number(type) === 1){
-        console.log('인기순');
+        // console.log('인기순');
       }
     }else{
-      console.log('옵션없음');
+      // console.log('옵션없음');
       if(Number(type) === 0){ 
-        console.log('최신순');
+        // console.log('최신순');
         search_query_func(`select * from quezeshowqueze where existence = 1 order by date desc limit 20`,res);
 
       }else if(Number(type) === 1){
-        console.log('인기순');
+        // console.log('인기순');
         search_query_func(`select * from quezeshowqueze where existence = 1 order by likes desc limit 20`,res);
       }
     }
@@ -1094,7 +1094,7 @@ app.get('/search_likes_queze',(req,res)=>{
   const user_email = req.query.user_email;
   search_query_func(`select * from ${user_email} left join quezeshowqueze on ${user_email}.likes_queze = quezeshowqueze.uuid;`,res);
   // connection.query(`select * from ${user_email} left join quezeshowqueze on ${user_email}.likes_queze = quezeshowqueze.uuid;`,(err,result)=>{
-  //   if(err) console(err);
+    if(err) console(err);
   //   else{
   //     return res.send(result);
   //   }
@@ -1128,9 +1128,9 @@ app.get('/declaration',(req,res)=>{
   
   transporter.sendMail(mailOptions, function(error, info){
     if (error) {
-      console.log(error);
+      // console.log(error);
     } else {
-      console.log('Email sent: ' + info.response);
+      // console.log('Email sent: ' + info.response);
     }
   });
   return res.send('success');
@@ -1139,7 +1139,7 @@ app.get('/quezeshow_main',(req,res)=>{
   const type = req.query.type;
   // const space_uuid = req.query.space_uuid; //undefind or uuid
   // const quezeshow_type = req.query.quezeshow_type;
-  console.log(type,req.query,);
+  // console.log(type,req.query,);
   let send_ = [];
 
 
@@ -1165,7 +1165,7 @@ app.get('/quezeshow_main',(req,res)=>{
               explain_text : e.explainText
 
             }
-            console.log('send message 만들어 자는 중 ');
+            // console.log('send message 만들어 자는 중 ');
           }
           else{
             send_[i] ={
@@ -1180,7 +1180,7 @@ app.get('/quezeshow_main',(req,res)=>{
             }
           }
         })).then(()=>{
-          console.log('res send',send_);
+          // console.log('res send',send_);
           return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
         })
       })
@@ -1203,9 +1203,9 @@ app.get('/quezeshow_main',(req,res)=>{
     //         uuid : e.uuid,
     //         roomnum : e.roomnum
     //       }
-    //       console.log('send message 만들어 자는 중 ');
+          console.log('send message 만들어 자는 중 ');
     //     })).then(()=>{
-    //       console.log('res send',send_);
+          console.log('res send',send_);
     //       return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
     //     })
     //   })
@@ -1215,7 +1215,7 @@ app.get('/quezeshow_main',(req,res)=>{
 app.get('/quezeshowtitle',(req,res)=>{
   const roomnum = req.query.roomnum;
   let send_ = [];
-  console.log(roomnum,)
+  // console.log(roomnum,)
   connection.query(`select * from quezeshowqueze where roomnum = ${roomnum}`,(err,result)=>{
     
     Promise.all(result.map(async(e,i)=>{
@@ -1235,7 +1235,7 @@ app.get('/quezeshowtitle',(req,res)=>{
       };  
     
       const imageUrl = await s3.getSignedUrlPromise('getObject', params);
-      console.log(imageUrl);
+      // console.log(imageUrl);
         send_[i] ={
           img : imageUrl,
           date : e.date,
@@ -1247,7 +1247,7 @@ app.get('/quezeshowtitle',(req,res)=>{
           explain_text : e.explainText
 
         }
-        console.log('send message 만들어 자는 중 ');
+        // console.log('send message 만들어 자는 중 ');
       }
       else{
         send_[i] ={
@@ -1262,14 +1262,14 @@ app.get('/quezeshowtitle',(req,res)=>{
         }
       }
     })).then(()=>{
-      console.log('res send',send_);
+      // console.log('res send',send_);
       return res.set({ "Content-Type": 'image/jpeg'}).send(send_);  
     })
   })
 })
 app.get('/quezeshow_checking_existence',(req,res)=>{
   const roomnum = req.query.roomnum;
-  console.log('quezeshow_checking_existence',roomnum,typeof roomnum,req.query);
+  // console.log('quezeshow_checking_existence',roomnum,typeof roomnum,req.query);
   connection.query(`select * from quezeshowqueze where roomnum = ${Number(roomnum)}`,(err,result)=>{
     return res.send(result);
   })
@@ -1278,7 +1278,7 @@ app.post('/check_queze_is_mine',(req,res)=>{
   const user_email = req.body.email;
   const uuid = req.body.uuid;
   connection.query(`select * from quezeshowqueze where uuid = '${uuid}' && user_id = '${user_email}'`,(err,result)=>{
-    // console.log(`select * from quezeshowqueze where uuid = '${uuid}' && user_id = '${user_email}'`,result);
+    console.log(`select * from quezeshowqueze where uuid = '${uuid}' && user_id = '${user_email}'`,result);
     if(result.length > 0){
       return res.send(true);
     }else{
@@ -1298,34 +1298,34 @@ const get_aws_img = async (key) => {
 }
 const get_choice_correct_choice = async (uuid) => {
   let data = [];
-  // console.log('uuid',uuid);
+  console.log('uuid',uuid);
   const promise = new Promise((res,rej)=>{
     connection.query(`select * from choice where uuid = '${uuid}'`,(err,choice_result)=>{
       connection.query(`select * from correct_choice where uuid ='${uuid}'`,(err,correct_result)=>{
-        // console.log('get_choice_correct_choice',{choice : choice_result, correct_choice : correct_result});
+        console.log('get_choice_correct_choice',{choice : choice_result, correct_choice : correct_result});
         res({choice : choice_result, correct_choice : correct_result});
       })
     })
   })
   await promise.then(data_ => {
-    // console.log('data',data_);
+    console.log('data',data_);
     data = data_;
   })
-  // console.log('return data',data);
+  console.log('return data',data);
   return data;
 }
 const get_quezeshowcontent_data = async (roomnum) => {
   let data;
   let send_ = [];
   let quezeshowqueze;
-  console.log('roomnum',roomnum);
+  // console.log('roomnum',roomnum);
   try{
     const promise = new Promise((res,rej)=>{
       connection.query(`select * from quezeshowqueze where roomnum = '${roomnum}'`,async (err,quezeshowqueze_result)=>{
         quezeshowqueze = quezeshowqueze_result[0];
-        console.log('quezeshowqueze_result',quezeshowqueze_result);
+        // console.log('quezeshowqueze_result',quezeshowqueze_result);
         connection.query(`select * from quezeshowcontent where roomnum = '${roomnum}'`,(err,quezeshowcontent_result)=>{
-          console.log('quezeshowcontent_result',quezeshowcontent_result);
+          // console.log('quezeshowcontent_result',quezeshowcontent_result);
           Promise.all(quezeshowcontent_result.map(async(e,i)=>{
             if (e.data_type === 'video' || e.data_type === 'audio') {
               const youtubeResult = await new Promise((resolve, reject) => {
@@ -1382,7 +1382,7 @@ const get_quezeshowcontent_data = async (roomnum) => {
             }else {
               throw 'quezeshowcontent data_type err';
             }
-            console.log('quezeshowqueze',quezeshowqueze.quezeshow_type);
+            // console.log('quezeshowqueze',quezeshowqueze.quezeshow_type);
             if(quezeshowqueze.quezeshow_type === 'multiple'){
               const data = await get_choice_correct_choice(e.uuid2);
               send_[i] = {
@@ -1400,7 +1400,7 @@ const get_quezeshowcontent_data = async (roomnum) => {
             }else {
               throw 'quezeshowcontent data_type err'
             }
-            console.log('send message 만들어 자는 중 ');
+            // console.log('send message 만들어 자는 중 ');
           })).then(()=>{
             console.log({
               quezeshowqueze : quezeshowqueze,
@@ -1419,24 +1419,24 @@ const get_quezeshowcontent_data = async (roomnum) => {
     })
     return data;
   }catch(err){
-    console.log('get_quezeshowcontent_data err : ',err);
+    // console.log('get_quezeshowcontent_data err : ',err);
     throw err
   }
 }
 app.get('/modify_quezeshow_get_all_data',async (req,res)=>{
   const roomnum = req.query.roomnum;
   const quezesh_content = await get_quezeshowcontent_data(roomnum);
-  console.log('modify_quezeshow_get_all_data res data :',quezesh_content);
+  // console.log('modify_quezeshow_get_all_data res data :',quezesh_content);
   return res.set({ "Content-Type": 'mulipart/form-data'}).send(quezesh_content);
 })
 app.get('/quezeshowqueze',(req,res)=>{
   const roomnum = req.query.roomnum;
   let send_ = [];
-  console.log(roomnum);
+  // console.log(roomnum);
   connection.query(`select * from quezeshowcontent where roomnum = '${roomnum}'`,(err,result)=>{
-    console.log(result);
+    // console.log(result);
     Promise.all(result.map(async(e,i)=>{
-      console.log(e,e.data_type,e.data_type.length);
+      // console.log(e,e.data_type,e.data_type.length);
       if (e.data_type === 'video' || e.data_type === 'audio') {
         const youtubeResult = await new Promise((resolve, reject) => {
           connection.query(`select * from youtube where uuid='${e.uuid2}'`, (err, result) => {
@@ -1444,7 +1444,7 @@ app.get('/quezeshowqueze',(req,res)=>{
             resolve(result);
           });
         });
-        console.log('data type video send_만들어지는 중');
+        // console.log('data type video send_만들어지는 중');
         send_[i] = {
           img: e.img,
           title: e.title,
@@ -1493,21 +1493,21 @@ app.get('/quezeshowqueze',(req,res)=>{
       }else {
         throw 'quezeshowcontent data_type err';
       }
-      console.log('send message 만들어 자는 중 ');
+      // console.log('send message 만들어 자는 중 ');
     })).then(()=>{
-      console.log('res send',send_);
+      // console.log('res send',send_);
       return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
     })
   })
 })
 app.get('/select_choice_correct',(req,res)=>{
   const uuid = req.query.uuid;
-  console.log(uuid);
+  // console.log(uuid);
   connection.query(`select * from choice where uuid ='${uuid}'`,(err,choice_result)=>{
     connection.query(`select * from correct_choice where uuid ='${uuid}'`,(err,correct_result)=>{
       let send_ = [];
       // Promise.all(choice_result.map((e,i)=>{
-      //   console.log(choice_result,correct_result);
+        console.log(choice_result,correct_result);
       //   send_[i] = {choice : choice_result[i], correct_choice : correct_result[i].correct_choice}
       // })).then((e)=>{
       //   return res.send(send_);
@@ -1521,7 +1521,7 @@ app.get('/select_choice_correct',(req,res)=>{
 //   const roomnum = req.query.roomnum;
 //   const uuid = req.query.uuid;
 //   let send_ = [];
-//   console.log(roomnum);
+  console.log(roomnum);
 //   connection.query(`select * from space_content where roomnum = ${roomnum} && uuid = '${uuid}'`,(err,result)=>{
 //     Promise.all(result.map(async(e,i)=>{
 //       if(e.img === ''){
@@ -1555,9 +1555,9 @@ app.get('/select_choice_correct',(req,res)=>{
 //           value : e.value
 //         }
 //       }
-//       console.log('send message 만들어 자는 중 ');
+      console.log('send message 만들어 자는 중 ');
 //     })).then(()=>{
-//       console.log('res send',send_);
+      console.log('res send',send_);
 //       return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
 //     })
 //   })
@@ -1565,7 +1565,7 @@ app.get('/select_choice_correct',(req,res)=>{
 app.post('/quezeshowqueze_plus_value',(req,res)=>{
   const uuid2 = req.body.uuid2;
   connection.query(`select value from quezeshowcontent where uuid2 = '${uuid2}'`,(err,result)=>{
-    console.log('select value from quezeshowcontent where uuid2 = ${uuid2}',result);
+    // console.log('select value from quezeshowcontent where uuid2 = ${uuid2}',result);
     connection.query(`update quezeshowcontent set value = ${result[0].value + 1} where uuid2 = '${uuid2}'`);  
     return res.send('success');
   })
@@ -1573,9 +1573,9 @@ app.post('/quezeshowqueze_plus_value',(req,res)=>{
 // app.post('/spacequezeshowqueze_plus_value',(req,res)=>{
 //   const uuid = req.body.uuid;
 //   connection.query(`select value from space_content where uuid3 = '${uuid}'`,(err,result)=>{
-//     console.log('select value from space_content where uuid2 = ${uuid2 & uuid = space_uuid',result);
+    console.log('select value from space_content where uuid2 = ${uuid2 & uuid = space_uuid',result);
 //     if(result.length === 0) {
-//       console.log(err);
+      console.log(err);
 //       return res.send('spacequezeshowqueze_plus_value err, 값을 올릴 수 없습니다. result.length === 0');
 //     }else{
 //       connection.query(`update space_content set value = ${result[0].value + 1} where uuid3 = '${uuid}'`);  
@@ -1596,7 +1596,7 @@ app.get('/spacequezeshowcomment',(req,res)=>{
   const roomnum = req.query.roomnum;
   const uuid = req.query.uuid;
   const uuid2 = req.query.uuid2;
-  console.log(roomnum,uuid,uuid2);
+  // console.log(roomnum,uuid,uuid2);
   connection.query(`select * from spacequezeshowcomment where roomnum=${roomnum} && uuid = '${uuid}' && uuid2 = '${uuid2}' order by likes desc`,(err,result)=>{
     return res.send(result);
   });
@@ -1607,13 +1607,13 @@ app.post('/quezeshowcommentchange',(req,res)=>{
   const uuid2 = req.body.uuid2;
   if(type === 'plus'){
     connection.query(`select likes from quezeshowcomment where uuid2 = "${uuid2}"`,(err,result)=>{
-      console.log(result);
+      // console.log(result);
       connection.query(`update quezeshowcomment set likes = ${result[0].likes + 1} where uuid2 = "${uuid2}"`);
     });
   }
   else if(type === 'minus'){  
     connection.query(`select likes from quezeshowcomment where uuid2 = "${uuid2}"`,(err,result)=>{
-      console.log(result);
+      // console.log(result);
       connection.query(`update quezeshowcomment set likes = ${result[0].likes - 1} where uuid2 = "${uuid2}"`);
     });
   }
@@ -1625,13 +1625,13 @@ app.post('/quezeshowcommentchange',(req,res)=>{
 //   const uuid3 = req.body.uuid3;
 //   if(type === 'plus'){
 //     connection.query(`select likes from spacequezeshowcomment where uuid3 = "${uuid3}"`,(err,result)=>{
-//       console.log(result);
+      console.log(result);
 //       connection.query(`update spacequezeshowcomment set likes = ${result[0].likes + 1} where uuid3 = "${uuid3}"`);
 //     });
 //   }
 //   else if(type === 'minus'){  
 //     connection.query(`select likes from spacequezeshowcomment where uuid3 = "${uuid3}"`,(err,result)=>{
-//       console.log(result);
+      console.log(result);
 //       connection.query(`update spacequezeshowcomment set likes = ${result[0].likes - 1} where uuid3 = "${uuid3}"`);
 //     });
 //   }
@@ -1654,13 +1654,13 @@ app.post('/quezeshowcomment_upload',(req,res)=>{
 //   const title = req.body.title;
 //   const text = req.body.text;
 //   const roomnum = req.body.roomnum;
-//   console.log(uuid,uuid2,title,text,roomnum);
+  console.log(uuid,uuid2,title,text,roomnum);
 //   connection.query(`insert into spacequezeshowcomment (title, text, likes, uuid, uuid2, uuid3, roomnum) value('${title}', '${text}', 0, '${uuid}', '${uuid2}','${uuidv4()}', ${roomnum})`,(err,result)=>{
 //     return res.send(result);
 //   });
 // })
 app.post('/community_plus',(req,res)=>{
-  console.log(req.body);
+  // console.log(req.body);
   const text = req.body.text;
   const date = req.body.date;
   const usertype = req.body.usertype;
@@ -1681,13 +1681,13 @@ app.post('/community_likes_change',(req,res)=>{
   const uuid = req.body.uuid;
   if(type === 'plus'){
     connection.query(`select likes from community where uuid = "${uuid}";`,(err,result)=>{
-      console.log('result nommunity likes',result);
+      // console.log('result nommunity likes',result);
       connection.query(`update community set likes = ${result[0].likes + 1} where uuid = "${uuid}";`);
     });
   }
   else if(type === 'minus'){  
     connection.query(`select likes from community where uuid = "${uuid}";`,(err,result)=>{
-      console.log('result nommunity likes',result);
+      // console.log('result nommunity likes',result);
       connection.query(`update community set likes = ${result[0].likes - 1} where uuid = "${uuid}";`);
     });
   }
@@ -1743,9 +1743,9 @@ app.get('/prerendering',(req,res)=>{
 //           intro_text : e.intro_text
 //         }
 //       }
-//       console.log('send message 만들어 자는 중 ');
+      console.log('send message 만들어 자는 중 ');
 //     })).then(()=>{
-//       console.log('res send',send_);
+      console.log('res send',send_);
 //       return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
 //     })
 //   })
@@ -1776,9 +1776,9 @@ app.get('/prerendering',(req,res)=>{
 //           uuid : e.uuid,
 //         }
 //       }
-//       console.log('send message 만들어 자는 중 ');
+      console.log('send message 만들어 자는 중 ');
 //     })).then(()=>{
-//       console.log('res send',send_);
+      console.log('res send',send_);
 //       return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
 //     })
 //   })
@@ -1786,7 +1786,7 @@ app.get('/prerendering',(req,res)=>{
 // app.get('/search_space',(req,res)=>{
 //   let send_ = [];
 //   connection.query(`select * from space where title like "%${req.query.value}%";`,(err,result)=>{
-//     console.log(result);
+    console.log(result);
 //     if(result.length !== 0){
 //       Promise.all(
 //         result.map(async(e,i)=>{
@@ -1821,12 +1821,12 @@ app.get('/prerendering',(req,res)=>{
 //           }
 //         })
 //       ).then(()=>{
-//         console.log('res send');
+        console.log('res send');
 //         return res.set({ "Content-Type": 'mulipart/form-data'}).send(send_);
 
 //       })
 //     }else {
-//       console.log('err');
+      console.log('err');
 //       return res.send(false);
 //     } 
 //   })
@@ -1841,9 +1841,9 @@ app.get('/prerendering',(req,res)=>{
 //   const date = req.body.date;
 //   const representativeimg = req.body.representativeimg;
 //   let result_roomnum;
-//   console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'uuid2',uuid2,'date',date,'representativeimg',representativeimg);
+  console.log('queze_title',queze_title,'content_title',content_title,'explain_text',explain_text,'img_tinyint',img_tinyint,'uuid',uuid,'uuid2',uuid2,'date',date,'representativeimg',representativeimg);
 //   connection.query(`select roomnum from spacequezeshowqueze where uuid = '${uuid}' order by roomnum desc limit 1`,(err,result)=>{
-//     console.log('make space quezeshow result : ',result);
+    console.log('make space quezeshow result : ',result);
 //     if(result.length === 0){
 //       result_roomnum = 0;
 //     }
@@ -1864,9 +1864,9 @@ app.get('/prerendering',(req,res)=>{
 //       })
 //     }
 //     if(typeof(content_title) === 'string'){ // content 하나 일때
-//       console.log('make quezeshow 선택지 하나만 들어옴');
+      console.log('make quezeshow 선택지 하나만 들어옴');
 //       if(img_tinyint === 'true'){
-//         console.log('이미지 있음');
+        console.log('이미지 있음');
 //         connection.query(`insert into space_content (uuid, title, existence, img, text, uuid2, value, roomnum, uuid3) value('${uuid}', '${content_title}', 1, '${0}.jpg', '${explain_text}', '${uuid2}',0, ${result_roomnum + 1}), '${uuidv4()}'`,(err,result)=>{
 //           if(err){
 //             throw err
@@ -1874,7 +1874,7 @@ app.get('/prerendering',(req,res)=>{
 //         })
 //       }
 //       else{
-//         console.log('이미지 없음');
+        console.log('이미지 없음');
 //         connection.query(`insert into space_content (uuid, title, existence, img, text, uuid2, value, roomnum, uuid3) value('${uuid}', '${content_title}', 1, '', '${explain_text}', '${uuid2}',0, ${result_roomnum + 1}), '${uuidv4()}'`,(err,result)=>{
 //           if(err){
 //             throw err
@@ -1883,10 +1883,10 @@ app.get('/prerendering',(req,res)=>{
 //       }
 //     }
 //     else{
-//       console.log('make quezeshow 선택지 여러개');
+      console.log('make quezeshow 선택지 여러개');
 //       content_title.map((e,i)=>{
 //         if(img_tinyint[i] === 'true'){
-//           console.log('이미지 있음');
+          console.log('이미지 있음');
 //           connection.query(`insert into space_content (uuid, title, existence, img, text, uuid2, value, roomnum, uuid3) value('${uuid}', '${content_title[i]}', 1, '${i}.jpg', '${explain_text[i]}', '${uuid2}',0, ${result_roomnum + 1}, '${uuidv4()}')`,(err,result)=>{
 //             if(err){
 //               throw err
@@ -1894,7 +1894,7 @@ app.get('/prerendering',(req,res)=>{
 //           })
 //         }
 //         else{
-//           console.log('이미지 없음');
+          console.log('이미지 없음');
 //           connection.query(`insert into space_content (uuid, title, existence, img, text, uuid2, value, roomnum, uuid3) value('${uuid}', '${content_title[i]}', 1, '', '${explain_text[i]}', '${uuid2}',0, ${result_roomnum + 1}, '${uuidv4()}')`,(err,result)=>{
 //             if(err){
 //               throw err
@@ -1909,7 +1909,7 @@ app.get('/prerendering',(req,res)=>{
 // })
 // app.get('/shar_quezeshow',(req,res)=>{
 //   connection.query(`select * from space where title like "%${req.query.value}%" limit 7`,(err,result)=>{
-//     console.log('shar_quezeshow',result);
+    console.log('shar_quezeshow',result);
 //     if(result.length === 0) return res.send(false);
 //     else return res.send(result);
 //   })
@@ -1922,8 +1922,8 @@ app.get('/prerendering',(req,res)=>{
 //   })
 // })
 app.listen(port, (err) => {
-  console.log(`Example app listening on port ${port}`)
-  console.log(err);
-  console.log("working");
+  // console.log(`Example app listening on port ${port}`)
+  // console.log(err);
+  // console.log("working");
 
 })
