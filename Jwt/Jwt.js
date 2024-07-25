@@ -41,7 +41,7 @@ const get_login = (payload) => {
     const accessToken = generateToken(payload);
     const refreshToken =getRefrshToken(payload);
     // const expiredAt = addDaysToDate(new Date(),7);
-    const expiredAt = Date.now() + 10000;
+    const expiredAt = Date.now() + 3000000;
     const res_data = {
         accessToken,
         refreshToken,
