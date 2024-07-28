@@ -906,6 +906,7 @@ app.post('/add_quezeshowcontent',(req,res)=>{
 //   modify_last_img_i    : modify_last_img_i,
 //   quezeshow_type       : quezeshow_type,
 //   room_num             : room_num 
+  const token = req.headers.authorization;
   const uuid = req.body.uuid;
   const content_object = req.body.content_object;
   const date = req.body.date;
