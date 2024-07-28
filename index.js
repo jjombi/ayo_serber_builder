@@ -908,45 +908,52 @@ app.post('/add_quezeshowcontent',(req,res)=>{
 //   room_num             : room_num 
   const uuid = req.body.uuid;
   const content_object = req.body.content_object;
-  const choice = req.body.choice;
-  const correct_choice = req.body.correct_choice;
   const date = req.body.date;
   const modify_last_img_i = req.body.modify_last_img_i;
   const quezeshow_type = req.body.quezeshow_type;
   const room_num = req.body.room_num;
-  content_object.map((e,i)=>{
-    const uuid2 = uuidv4();
-    if(quezeshow_type === 'multiple'){// queze type 문제 생성 
-      connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${correct_choice[i]}')`)
-      choice[i].map((e,i)=>{
-        connection.query(`insert into choice (uuid, choice) value('${uuid2}','${e}')`);
-      })      }
-    else if(quezeshow_type === 'descriptive'){
-      correct_choice[i].map((ev,i)=>{
-        connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${ev}')`)
-      })
+
+  jwt.verify(token, process.env.JWT_SECRET_KEY,(err,decoded)=>{
+    if (err) return res.send('토큰 만료');
+    else{
+      content_object.map((e,i)=>{
+        const uuid2 = uuidv4();
+        if(quezeshow_type === 'multiple'){// queze type 문제 생성 
+          connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${e.correct_choice}')`)
+          e.choice.map((ev,i)=>{
+            connection.query(`insert into choice (uuid, choice) value('${uuid2}','${ev}')`);
+          })      
+        }else if(quezeshow_type === 'descriptive'){
+          e.correct_choice.map((ev,i)=>{
+            connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${ev}')`)
+          })
+        }
+        // else if(quezeshow_type === 'ox'){
+        //   connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${e.correct_choice}')`)
+        // }
+        
+        if(e.data_type === 'image'){
+          if(e.img === 'false'){
+            connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '', '${e.text}', '${uuid2}',0, ${room_num}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
+          }else if(e.img = 'true'){
+            connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${modify_last_img_i+i+1}', '${e.text}', '${uuid2}',0, ${room_num}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
+          }
+        }else if(e.data_type === 'video'){
+          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${room_num}, '${e.data_type}')`,(err,result)=>{console.log(err,result)
+            connection.query(`insert into youtube (uuid, start, end) value('${uuid2}', ${e.start}, ${e.end})`)
+          })
+        }else if(e.data_type === 'audio'){
+          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${room_num}, '${e.data_type}')`,(err,result)=>{console.log(err,result)
+            connection.query(`insert into youtube (uuid, start, end) value('${uuid2}', ${e.start}, ${e.end})`)
+          })
+        }else if(e.data_type === 'text'){
+          connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${room_num}, '${e.data_type}')`,(err,result)=>{console.log(err,result)
+          })
+        }
+      })   
+      return res.send('success');
     }
-    
-    if(e.data_type === 'image'){
-      if(e.img === 'false'){
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '', '${e.text}', '${uuid2}',0, ${room_num}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
-      }else if(e.img = 'true'){
-        connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${modify_last_img_i+i+1}', '${e.text}', '${uuid2}',0, ${room_num}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
-      }
-    }else if(e.data_type === 'video'){
-      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${room_num}, '${e.data_type}')`,(err,result)=>{console.log(err,result)
-        connection.query(`insert into youtube (uuid, start, end) value('${uuid2}', ${e.start}, ${e.end})`)
-      })
-    }else if(e.data_type === 'audio'){
-      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${room_num}, '${e.data_type}')`,(err,result)=>{console.log(err,result)
-        connection.query(`insert into youtube (uuid, start, end) value('${uuid2}', ${e.start}, ${e.end})`)
-      })
-    }else if(e.data_type === 'text'){
-      connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${room_num}, '${e.data_type}')`,(err,result)=>{console.log(err,result)
-      })
-    }
-  })   
-  return res.send('success');
+  })
 })
 const search_query_func = (query,res) => {
   // console.log('query',query);
