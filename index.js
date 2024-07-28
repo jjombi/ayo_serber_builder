@@ -923,11 +923,11 @@ app.post('/add_quezeshowcontent',(req,res)=>{
         if(quezeshow_type === 'multiple'){// queze type 문제 생성 
           connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${e.correct_choice.replace(/'/g,"\\'").replace(/"/g,'\\"')}')`);
           e.choice.map((ev,i)=>{
-            connection.query(`insert into choice (uuid, choice) value('${uuid2}','${ev.replace(/'/g,"\\'").replace(/"/g,'\\"')}}')`);
+            connection.query(`insert into choice (uuid, choice) value('${uuid2}','${ev.replace(/'/g,"\\'").replace(/"/g,'\\"')}')`);
           })      
         }else if(quezeshow_type === 'descriptive'){
           e.correct_choice.map((ev,i)=>{
-            connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${ev.replace(/'/g,"\\'").replace(/"/g,'\\"')}}')`)
+            connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${ev.replace(/'/g,"\\'").replace(/"/g,'\\"')}')`)
           })
         }
         // else if(quezeshow_type === 'ox'){
