@@ -918,6 +918,7 @@ app.post('/add_quezeshowcontent',(req,res)=>{
     if (err) return res.send('토큰 만료');
     else{
       content_object.map((e,i)=>{
+        console.log(i,'.e',e);
         const uuid2 = uuidv4();
         if(quezeshow_type === 'multiple'){// queze type 문제 생성 
           connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${e.correct_choice}')`)
