@@ -39,8 +39,8 @@ app.use(cors({
   methods : '*',
 }))
 app.use(express.urlencoded({ extended: false }));
-app.use(body_parser.json({limit: '50mb'}));
-app.use(body_parser.urlencoded({limit: '50mb', extended: true}));
+app.use(body_parser.json({limit: '100mb'}));
+app.use(body_parser.urlencoded({limit: '100mb', extended: true}));
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
