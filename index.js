@@ -28,7 +28,6 @@ app.use(
     extended: true,
   })
 );
-app.use(express.urlencoded({ extended: false }));
 app.use(fileUpload());
 app.use(cors({
   // origin : "https://ay0.netlify.app",
@@ -39,6 +38,8 @@ app.use(cors({
   // optionsSuccessStatus: 200, // 응답 상태 200으로 설정
   methods : '*',
 }))
+app.use(express.json({limit: '100mb'}));
+app.use(express.urlencoded({limit: '100mb', extended: false}));
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
