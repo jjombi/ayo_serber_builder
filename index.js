@@ -881,7 +881,7 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
           }
           
           if(e.data_type === 'image'){
-            if(e.img === '' || e.img === 'data:image/png;base64,'){
+            if(!e.img){
               connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)})
             }else {
               connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '${i}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)})
@@ -929,13 +929,13 @@ app.post('/add_quezeshowcontent',(req,res)=>{
         console.log(i,'.e',e);
         const uuid2 = uuidv4();
         if(quezeshow_type === 'multiple'){// queze type 문제 생성 
-          connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${e.correct_choice.replace(/'/g,"\\'").replace(/"/g,'\\"')}')`);
+          connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${typeof e.correct_choice === 'string' ? e.correct_choice.replace(/'/g,"\\'").replace(/"/g,'\\"') : e.correct_choice}')`);
           e.choice.map((ev,i)=>{
-            connection.query(`insert into choice (uuid, choice) value('${uuid2}','${ev.replace(/'/g,"\\'").replace(/"/g,'\\"')}')`);
+            connection.query(`insert into choice (uuid, choice) value('${uuid2}','${typeof ev === 'string' ? ev.replace(/'/g,"\\'").replace(/"/g,'\\"') : ev}')`);
           })      
         }else if(quezeshow_type === 'descriptive'){
           e.correct_choice.map((ev,i)=>{
-            connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${ev.replace(/'/g,"\\'").replace(/"/g,'\\"')}')`)
+            connection.query(`insert into correct_choice (uuid, correct_choice) value('${uuid2}', '${typeof ev === 'string' ? ev.replace(/'/g,"\\'").replace(/"/g,'\\"') : ev}')`)
           })
         }
         // else if(quezeshow_type === 'ox'){
@@ -943,9 +943,9 @@ app.post('/add_quezeshowcontent',(req,res)=>{
         // }
         
         if(e.data_type === 'image'){
-          if(e.img === 'false'){
+          if(e.img == false){
             connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '', '${e.text}', '${uuid2}',0, ${room_num}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
-          }else if(e.img = 'true'){
+          }else{
             connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type) value('${uuid}', '${e.title}', 1, '${modify_last_img_i+i+1}', '${e.text}', '${uuid2}',0, ${room_num}, '${e.data_type}')`,(err,result)=>{console.log(err,result)})
           }
         }else if(e.data_type === 'video'){
