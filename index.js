@@ -38,8 +38,9 @@ app.use(cors({
   // optionsSuccessStatus: 200, // 응답 상태 200으로 설정
   methods : '*',
 }))
-app.use(express.bodyParser({limit: '100mb'}));
-app.use(express.urlencoded({limit: '100mb', extended: false}));
+app.use(express.urlencoded({ extended: false }));
+app.use(body_parser.json({limit: '50mb'}));
+app.use(body_parser.urlencoded({limit: '50mb', extended: true}));
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
