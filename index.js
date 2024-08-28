@@ -1064,11 +1064,11 @@ app.get('/search_quezeshow',async (req,res)=>{
       console.log('옵션없음');
       if(Number(type) === 0){ 
         console.log('최신순');
-        search_query_func(`select * from quezeshowqueze order by date desc limit 20`,res);
+        search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze order by quezeshowqueze.date desc limit 20`,res);
 
       }else if(Number(type) === 1){
         console.log('인기순');
-        search_query_func(`select * from quezeshowqueze order by likes desc limit 20`,res);
+        search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze order by quezeshowqueze.likes desc limit 20`,res);
       }
     }
   }else{
