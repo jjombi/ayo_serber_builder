@@ -881,11 +881,11 @@ app.post('/make_quezeshow',(req,res)=>{ //퀴즈 문제 만들기
           }
           
           if(e.data_type === 'image'){
-            if(!e.img){
-              connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)})
-            }else {
+            // if(!e.img){
+            //   connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)})
+            // }else {
               connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '${i}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)})
-            }
+            // }
           }else if(e.data_type === 'video'){
             connection.query(`insert into quezeshowcontent (uuid, title, existence, img, text, uuid2, value, roomnum, data_type, hint) value('${uuid}', '${e.title}', 1, '${e.src}', '${e.text}', '${uuid2}',0, ${result_roomnum + 1}, '${e.data_type}', '${e.hint}')`,(err,result)=>{console.log(err,result)
               connection.query(`insert into youtube (uuid, start, end) value('${uuid2}', ${e.start}, ${e.end})`)
@@ -1017,6 +1017,12 @@ app.get('/get_all_quezeshow',(req,res)=>{
     return res.send(result);
   })
 })
+app.get('/search_quezeshow_public',async (req,res)=>{
+  connection.query(`select * from quezeshowqueze_public;`,(err,result)=>{
+    return res.send(result);
+  })
+})
+
 app.get('/search_quezeshow',async (req,res)=>{
   // console.log(req);
   // let base64_img_arr = [];
@@ -1026,47 +1032,47 @@ app.get('/search_quezeshow',async (req,res)=>{
   const tag = req.query.tag;// null or str val
   const user_email = req.query.user_email;// null or str val
   if(typeof(user_email) === 'string'){
-    // console.log('로그인 유저',type);
+    console.log('로그인 유저',type);
     if(typeof(search_value) === 'string'){
-      // console.log('검색 값있음');
+      console.log('검색 값있음');
       if(Number(type) === 0){ 
-        // console.log('최신순');
+        console.log('최신순');
         search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1  && quezeshowqueze.uuid = ${user_email}.likes_queze where quezeshowqueze.title like "%${search_value}%" order by quezeshowqueze.date desc limit 20`,res);
       }else if(Number(type) === 1){
-        // console.log('인기순');
+        console.log('인기순');
         search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1  && quezeshowqueze.uuid = ${user_email}.likes_queze where quezeshowqueze.title like "%${search_value}%" order by quezeshowqueze.likes desc limit 20`,res);
       }
     }else if(typeof(email) === 'string'){
-      // console.log('특정 유저 퀴즈');
+      console.log('특정 유저 퀴즈');
       if(Number(type) === 0){ 
         // console.log('최신순');
         search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze where quezeshowqueze.user_id = "${email}" order by quezeshowqueze.date desc limit 20`,res);
 
       }else if(Number(type) === 1){
-        // console.log('인기순');
+        console.log('인기순');
         search_query_func(`select * from quezeshowqueze left join ${user_email} on quezeshowqueze.existence = 1 && quezeshowqueze.uuid = ${user_email}.likes_queze where quezeshowqueze.user_id = "${email}" order by quezeshowqueze.likes desc limit 20`,res);
       }
     }else if(typeof(tag) === 'string'){
-      // console.log('테그 검색');
+      console.log('테그 검색');
       if(Number(type) === 0){ 
-        // console.log('최신순');
+        console.log('최신순');
 
       }else if(Number(type) === 1){
-        // console.log('인기순');
+        console.log('인기순');
       }
     }else{
-      // console.log('옵션없음');
+      console.log('옵션없음');
       if(Number(type) === 0){ 
-        // console.log('최신순');
+        console.log('최신순');
         search_query_func(`select * from quezeshowqueze order by date desc limit 20`,res);
 
       }else if(Number(type) === 1){
-        // console.log('인기순');
+        console.log('인기순');
         search_query_func(`select * from quezeshowqueze order by likes desc limit 20`,res);
       }
     }
   }else{
-    // console.log('비로그인 유저',type);
+    console.log('비로그인 유저',type);
     if(typeof(search_value) === 'string'){
       // console.log('검색 값있음');
       if(Number(type) === 0){ 
